@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOV.UK | Official Government Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gelasio:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gov-brand { color: #005ea5; }
+        .bg-gov-brand { background-color: #005ea5; }
+        .border-gov-brand { border-color: #005ea5; }
+        .gov-gradient { background: #0b0c0c; }
+        h1, h2, h3 { font-family: 'Gelasio', serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <!-- Top Nav -->
+    <nav class="bg-[#0b0c0c] border-b-4 border-[#005ea5] sticky top-0 z-50 py-2">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-12">
+                <div class="flex items-center gap-3">
+                    <iconify-icon icon="solar:crown-minimalistic-bold" class="text-3xl text-white"></iconify-icon>
+                    <span class="text-xl font-bold tracking-tight text-white">GOV.UK</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search GOV.UK" class="bg-white border-none py-1 px-4 text-sm w-48 focus:ring-2 focus:ring-gov-brand">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="bg-white py-12 border-b border-slate-200">
+        <div class="max-w-4xl mx-auto px-4 text-center md:text-left">
+            <h1 class="text-4xl font-extrabold mb-4">Welcome to GOV.UK</h1>
+            <p class="text-lg opacity-90 mb-8">The best place to find government services and information.</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="#" class="bg-slate-100 hover:bg-slate-200 p-4 border-b-2 border-slate-300 transition">
+                    <iconify-icon icon="solar:passport-bold" class="text-2xl mb-2 gov-brand"></iconify-icon>
+                    <div class="text-xs font-bold">Passports</div>
+                </a>
+                <a href="#" class="bg-slate-100 hover:bg-slate-200 p-4 border-b-2 border-slate-300 transition">
+                    <iconify-icon icon="solar:card-2-bold" class="text-2xl mb-2 gov-brand"></iconify-icon>
+                    <div class="text-xs font-bold">DVLA</div>
+                </a>
+                <a href="#" class="bg-slate-100 hover:bg-slate-200 p-4 border-b-2 border-slate-300 transition">
+                    <iconify-icon icon="solar:health-bold" class="text-2xl mb-2 gov-brand"></iconify-icon>
+                    <div class="text-xs font-bold">NHS Services</div>
+                </a>
+                <a href="#" class="bg-slate-100 hover:bg-slate-200 p-4 border-b-2 border-slate-300 transition">
+                    <iconify-icon icon="solar:shield-user-bold" class="text-2xl mb-2 gov-brand"></iconify-icon>
+                    <div class="text-xs font-bold">Universal Credit</div>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-8">
+                <section>
+                    <h2 class="text-2xl font-bold mb-6">Latest Updates from Whitehall</h2>
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-gov-brand bg-white p-6 shadow-sm hover:shadow-md transition">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">GCHQ Bulletin</span>
+                            <h3 class="text-xl font-bold mt-1 mb-2 hover:text-gov-brand">National Cyber Security Centre issues warning on ransomware</h3>
+                            <p class="text-slate-600 line-clamp-2">A new series of alerts has been issued regarding sophisticated phishing campaigns targeting public sector employees...</p>
+                        </div>
+                        <div class="border-l-4 border-gov-brand bg-white p-6 shadow-sm hover:shadow-md transition">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Treasury</span>
+                            <h3 class="text-xl font-bold mt-1 mb-2 hover:text-gov-brand">Spring Budget highlights tech sector incentives</h3>
+                            <p class="text-slate-600 line-clamp-2">New tax breaks for AI startups and data center infrastructure have been confirmed by the Chancellor...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="space-y-8">
+                <section class="bg-slate-900 text-white p-8 rounded-sm">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <iconify-icon icon="solar:danger-bold" class="text-amber-400"></iconify-icon>
+                        UK Threat Levels
+                    </h2>
+                    <div class="bg-white/10 p-4 border-l-4 border-amber-400 mb-6">
+                        <div class="text-sm font-bold opacity-70 mb-1">Cyber Alert</div>
+                        <div class="text-2xl font-black text-amber-400">SUBSTANTIAL</div>
+                        <div class="text-[10px] opacity-60 mt-1 uppercase">An attack is a strong possibility</div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="opacity-70">Grid Stability</span>
+                            <span class="font-mono text-emerald-400">STABLE</span>
+                        </div>
+                        <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden">
+                            <div class="bg-emerald-400 h-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-[#e5e6e7] border-t border-slate-300 py-12 mt-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center gap-2 mb-4 opacity-70">
+                <iconify-icon icon="solar:crown-minimalistic-bold" class="text-2xl"></iconify-icon>
+                <span class="font-bold uppercase tracking-widest text-sm">OGL — Open Government Licence</span>
+            </div>
+            <p class="text-xs text-slate-500 max-w-2xl">
+                All content is available under the Open Government Licence v3.0, except where otherwise stated. All traffic is logged and subject to the Investigatory Powers Act.
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

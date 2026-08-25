@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIDDEN AGENDA: REVOLUTION</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg: #1a1a1a; --ui: #222; --accent: #ffd700; --text: #ddd; --danger: #ff4444; --success: #44ff44; --border: #333; }
+        body { background: var(--bg); color: var(--text); font-family: 'Times New Roman', serif; margin: 0; overflow: hidden; height: 100vh; font-size: 14px; }
+        #root { display: flex; height: 100%; flex-direction: column; border: 10px solid #111; }
+        .header { background: #000; padding: 20px; border-bottom: 2px solid var(--accent); text-align: center; }
+        .main { flex: 1; display: grid; grid-template-columns: 300px 1fr 300px; gap: 5px; background: #333; }
+        .sidebar { background: var(--ui); padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .desk { background: #252525; padding: 30px; position: relative; display: flex; flex-direction: column; align-items: center; }
+        .document { width: 500px; background: #fdf6e3; color: #1a1a1a; padding: 40px; box-shadow: 10px 10px 0 rgba(0,0,0,0.5); position: relative; }
+        .btn { background: #333; border: 1px solid var(--accent); color: var(--accent); padding: 10px; cursor: pointer; font-weight: bold; width: 100%; font-family: inherit; margin-top: 10px; text-transform: uppercase; }
+        .btn:hover { background: var(--accent); color: #000; }
+        .meter { height: 10px; background: #000; border: 1px solid #444; margin-top: 5px; }
+        .meter-fill { height: 100%; transition: width 0.5s; }
+        .stat-label { font-size: 11px; color: #888; font-weight: bold; margin-bottom: 2px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+
+        const App = () => {
+            const [stability, setStability] = useState(60);
+            const [relations, setRelations] = useState({ workers: 50, military: 40, usa: 30 });
+            const [currentDay, setDay] = useState(1);
+            const [logs, setLogs] = useState(["Revolution Successful. The Provisional Government has been formed."]);
+
+            const makeDecision = (choice) => {
+                setDay(d => d + 1);
+                if (choice === 'REFORM') {
+                    setRelations(prev => ({ ...prev, workers: 80, usa: 10, military: 20 }));
+                    setStability(s => Math.max(0, s - 10));
+                    setLogs(p => ["Radical land reform implemented. International tension rising.", ...p]);
+                } else {
+                    setRelations(prev => ({ ...prev, usa: 60, military: 70, workers: 20 }));
+                    setStability(s => Math.min(100, s + 15));
+                    setLogs(p => ["Austerity measures approved. IMF loan secured.", ...p]);
+                }
+            };
+
+            return (
+                <div id="root">
+                    <div className="header">
+                        <h1 style={{margin:0, letterSpacing:'5px'}}>CHIMERICA // GOVERNMENT PORTAL</h1>
+                    </div>
+                    <div className="main">
+                        <div className="sidebar">
+                            <h3>VITAL SIGNS</h3>
+                            <div>
+                                <div className="stat-label">NATIONAL STABILITY</div>
+                                <div className="meter"><div className="meter-fill" style={{width:`${stability}%`, background: stability < 30 ? 'red' : 'green'}}></div></div>
+                            </div>
+                            <div>
+                                <div className="stat-label">WORKER SUPPORT</div>
+                                <div className="meter"><div className="meter-fill" style={{width:`${relations.workers}%`, background: 'var(--success)'}}></div></div>
+                            </div>
+                            <div>
+                                <div className="stat-label">MILITARY LOYALTY</div>
+                                <div className="meter"><div className="meter-fill" style={{width:`${relations.military}%`, background: 'var(--accent)'}}></div></div>
+                            </div>
+                        </div>
+                        <div className="desk">
+                            <div className="document">
+                                <h2 style={{borderBottom:'2px solid #1a1a1a'}}>LEGISLATIVE ORDER #042</h2>
+                                <p>Mr. President, the economy is collapsing. We must decide on the Land Reform bill immediately.</p>
+                                <hr/>
+                                <button className="btn" onClick={()=>makeDecision('REFORM')}>EXECUTE RADICAL LAND REFORM</button>
+                                <button className="btn" onClick={()=>makeDecision('AUSTERITY')}>ENACT FISCAL AUSTERITY</button>
+                            </div>
+                        </div>
+                        <div className="sidebar">
+                            <h3>OFFICIAL CHRONICLE</h3>
+                            <div style={{fontSize:'12px', color:'#888'}}>
+                                {logs.map((l, i) => <div key={i} style={{marginBottom:10, borderBottom:'1px solid #333', paddingBottom:5}}>{l}</div>)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>

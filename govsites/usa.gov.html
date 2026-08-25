@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USA.gov | Official Government Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gov-brand { color: #00274c; }
+        .bg-gov-brand { background-color: #00274c; }
+        .border-gov-brand { border-color: #00274c; }
+        .gov-gradient { background: linear-gradient(135deg, #00274c 0%, #bf0d3e 100%); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <!-- Top Nav -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <iconify-icon icon="solar:globus-bold" class="text-3xl gov-brand"></iconify-icon>
+                    <span class="text-xl font-bold tracking-tight">USA.gov</span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
+                    <a href="#" class="hover:text-gov-brand">Services</a>
+                    <a href="#" class="hover:text-gov-brand">Departments</a>
+                    <a href="#" class="hover:text-gov-brand">News</a>
+                    <a href="#" class="hover:text-gov-brand">Transparency</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search services..." class="bg-slate-100 border-none rounded-full py-2 px-4 text-sm w-48 focus:ring-2 focus:ring-gov-brand">
+                    </div>
+                    <button class="bg-gov-brand text-white px-4 py-2 rounded-md text-sm font-semibold shadow-sm hover:opacity-90 transition">Login</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="gov-gradient py-16 text-white text-center">
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="text-4xl font-extrabold mb-4">Official Guide to Government Information and Services</h1>
+            <p class="text-lg opacity-90 mb-8">Access federal, state, and local government resources across the United States.</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="#" class="bg-white/10 hover:bg-white/20 p-4 rounded-lg backdrop-blur-sm transition">
+                    <iconify-icon icon="solar:passport-bold" class="text-2xl mb-2"></iconify-icon>
+                    <div class="text-xs font-bold">Passports</div>
+                </a>
+                <a href="#" class="bg-white/10 hover:bg-white/20 p-4 rounded-lg backdrop-blur-sm transition">
+                    <iconify-icon icon="solar:card-2-bold" class="text-2xl mb-2"></iconify-icon>
+                    <div class="text-xs font-bold">Tax Filing</div>
+                </a>
+                <a href="#" class="bg-white/10 hover:bg-white/20 p-4 rounded-lg backdrop-blur-sm transition">
+                    <iconify-icon icon="solar:health-bold" class="text-2xl mb-2"></iconify-icon>
+                    <div class="text-xs font-bold">Healthcare</div>
+                </a>
+                <a href="#" class="bg-white/10 hover:bg-white/20 p-4 rounded-lg backdrop-blur-sm transition">
+                    <iconify-icon icon="solar:shield-user-bold" class="text-2xl mb-2"></iconify-icon>
+                    <div class="text-xs font-bold">Employment</div>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Left: News -->
+            <div class="lg:col-span-2 space-y-8">
+                <section>
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                        <iconify-icon icon="solar:document-text-bold" class="gov-brand"></iconify-icon>
+                        Latest Updates
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Digital Security</span>
+                            <h3 class="text-xl font-bold mt-1 mb-2 hover:text-gov-brand">New Cybersecurity Framework for National Infrastructure</h3>
+                            <p class="text-slate-600 line-clamp-2">The Department of Homeland Security has announced a comprehensive update to the nation's defensive cyber protocols...</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Economy</span>
+                            <h3 class="text-xl font-bold mt-1 mb-2 hover:text-gov-brand">Quarterly Growth Targets Surpass Projections</h3>
+                            <p class="text-slate-600 line-clamp-2">Recent economic data suggests a robust recovery in the tech and manufacturing sectors following recent trade agreements...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right: Critical Alerts & Stats -->
+            <div class="space-y-8">
+                <section class="bg-slate-900 text-white p-8 rounded-2xl shadow-xl">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <iconify-icon icon="solar:danger-bold" class="text-amber-400"></iconify-icon>
+                        National Alert Status
+                    </h2>
+                    <div class="bg-white/10 p-4 rounded-lg border border-white/20 mb-6">
+                        <div class="text-sm font-bold opacity-70 mb-1">Cyber Threat Level</div>
+                        <div class="text-2xl font-black text-amber-400">ELEVATED</div>
+                        <div class="text-[10px] opacity-60 mt-1 uppercase tracking-tighter">Increased scan activity detected on federal nodes</div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="opacity-70">Infrastructure Integrity</span>
+                            <span class="font-mono text-emerald-400">99.98%</span>
+                        </div>
+                        <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-emerald-400 h-full" style="width: 99.98%"></div>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="opacity-70">Public Connectivity</span>
+                            <span class="font-mono text-emerald-400">OPTIMAL</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-white p-6 rounded-xl border border-slate-200">
+                    <h2 class="font-bold mb-4">Official Channels</h2>
+                    <div class="space-y-3">
+                        <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition">
+                            <iconify-icon icon="solar:chat-round-dots-bold" class="text-xl text-slate-400"></iconify-icon>
+                            <span class="text-sm font-medium">Citizen Helpline</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition">
+                            <iconify-icon icon="solar:mailbox-bold" class="text-xl text-slate-400"></iconify-icon>
+                            <span class="text-sm font-medium">FOIA Requests</span>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-100 border-t border-slate-200 py-12 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex justify-center items-center gap-2 mb-4 opacity-50">
+                <iconify-icon icon="solar:globus-bold" class="text-2xl"></iconify-icon>
+                <span class="font-bold uppercase tracking-widest text-sm">Official USA.gov Portal</span>
+            </div>
+            <p class="text-xs text-slate-500 max-w-2xl mx-auto italic">
+                All communications on this platform are monitored and recorded for national security purposes. Unauthorized access is strictly prohibited and punishable by federal law.
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

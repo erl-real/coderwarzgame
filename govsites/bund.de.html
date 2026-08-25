@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bund.de | Official Government Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gov-brand { color: #000000; }
+        .bg-gov-brand { background-color: #000000; }
+        .border-gov-brand { border-color: #000000; }
+        .gov-gradient { background: linear-gradient(135deg, #000000 0%, #dd0000 50%, #ffce00 100%); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <!-- Top Nav -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <iconify-icon icon="solar:globus-bold" class="text-3xl gov-brand"></iconify-icon>
+                    <span class="text-xl font-bold tracking-tight">bund.de</span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
+                    <a href="#" class="hover:text-gov-brand">Verwaltung</a>
+                    <a href="#" class="hover:text-gov-brand">Behörden</a>
+                    <a href="#" class="hover:text-gov-brand">Aktuelles</a>
+                    <a href="#" class="hover:text-gov-brand">English</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="bg-gov-brand text-white px-4 py-2 rounded-md text-sm font-semibold shadow-sm hover:opacity-90 transition">BundID Login</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="gov-gradient py-1 text-white text-center">
+        <div class="bg-black/40 backdrop-blur-md py-16">
+            <div class="max-w-4xl mx-auto px-4">
+                <h1 class="text-4xl font-extrabold mb-4">Verwaltung des Bundes</h1>
+                <p class="text-lg opacity-90 mb-8">Access to the federal administration's services and digital identity portals.</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <a href="#" class="bg-white/10 hover:bg-white/20 p-4 rounded-lg backdrop-blur-sm transition">
+                        <iconify-icon icon="solar:passport-bold" class="text-2xl mb-2"></iconify-icon>
+                        <div class="text-xs font-bold">Ausweisapp</div>
+                    </a>
+                    <a href="#" class="bg-white/10 hover:bg-white/20 p-4 rounded-lg backdrop-blur-sm transition">
+                        <iconify-icon icon="solar:card-2-bold" class="text-2xl mb-2"></iconify-icon>
+                        <div class="text-xs font-bold">ELSTER Tax</div>
+                    </a>
+                    <a href="#" class="bg-white/10 hover:bg-white/20 p-4 rounded-lg backdrop-blur-sm transition">
+                        <iconify-icon icon="solar:health-bold" class="text-2xl mb-2"></iconify-icon>
+                        <div class="text-xs font-bold">Gesundheit</div>
+                    </a>
+                    <a href="#" class="bg-white/10 hover:bg-white/20 p-4 rounded-lg backdrop-blur-sm transition">
+                        <iconify-icon icon="solar:shield-user-bold" class="text-2xl mb-2"></iconify-icon>
+                        <div class="text-xs font-bold">Arbeitsagentur</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-8">
+                <section>
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                        <iconify-icon icon="solar:document-text-bold" class="gov-brand"></iconify-icon>
+                        Aktuelle Meldungen
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">BSI</span>
+                            <h3 class="text-xl font-bold mt-1 mb-2 hover:text-gov-brand">BSI Warnstufe: Erhöhte Aufmerksamkeit im Finanzsektor</h3>
+                            <p class="text-slate-600 line-clamp-2">The Federal Office for Information Security (BSI) has raised the alert level following coordinated DDoS attempts...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="space-y-8">
+                <section class="bg-slate-900 text-white p-8 rounded-2xl shadow-xl">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <iconify-icon icon="solar:danger-bold" class="text-amber-400"></iconify-icon>
+                        Warnstufe
+                    </h2>
+                    <div class="bg-white/10 p-4 rounded-lg border border-white/20 mb-6">
+                        <div class="text-sm font-bold opacity-70 mb-1">Cyber-Sicherheitslage</div>
+                        <div class="text-2xl font-black text-amber-400">GELB (2/4)</div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-100 border-t border-slate-200 py-12 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-xs text-slate-500 max-w-2xl mx-auto">
+                Offizielles Portal der Bundesverwaltung.
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

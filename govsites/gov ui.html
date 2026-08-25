@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOW PRESIDENT: NEW WORLD ORDER</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0b0f19; --panel: #141b2d; --header: #1f2a40; --border: #2d3b55;
+            --accent: #3b82f6; --text: #e2e8f0; --text-dim: #94a3b8;
+            --success: #10b981; --danger: #ef4444; --warn: #f59e0b;
+            --us: #3b82f6; --ru: #ef4444; --cn: #f59e0b; --eu: #10b981;
+        }
+        * { box-sizing: border-box; outline: none; user-select: none; }
+        body { 
+            background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif;
+            margin: 0; height: 100vh; overflow: hidden; font-size: 12px;
+        }
+        #root { display: flex; height: 100%; flex-direction: column; }
+
+        /* --- LAYOUT --- */
+        .top-bar { height: 40px; background: var(--header); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; z-index: 20; }
+        .workspace { flex: 1; display: grid; grid-template-columns: 300px 1fr 350px; overflow: hidden; }
+        .sidebar { background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 10; }
+        .right-panel { background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; z-index: 10; }
+        .main-map { position: relative; background: #000; overflow: hidden; }
+
+        /* --- UI ELEMENTS --- */
+        .btn { 
+            background: #1f2a40; border: 1px solid var(--border); color: var(--text); 
+            padding: 6px 12px; border-radius: 3px; cursor: pointer; font-weight: 600;
+            transition: 0.1s; text-transform: uppercase; font-size: 0.75rem;
+        }
+        .btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn.danger { border-color: var(--danger); color: var(--danger); }
+        .btn.danger:hover { background: var(--danger); color: #fff; }
+        .btn.block { width: 100%; display: block; margin-bottom: 5px; }
+
+        .card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); margin-bottom: 10px; }
+        .card-head { padding: 8px 12px; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); font-weight: bold; color: var(--accent); display: flex; justify-content: space-between; }
+        .card-body { padding: 10px; }
+
+        .stat-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed #333; }
+        .stat-val { font-weight: bold; }
+
+        .tab-bar { display: flex; border-bottom: 1px solid var(--border); background: var(--header); }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: var(--text-dim); }
+        .tab.active { background: var(--panel); color: var(--accent); border-bottom: 2px solid var(--accent); }
+
+        /* --- MAP & UNITS --- */
+        .map-layer { position: absolute; inset: 0; }
+        .unit-icon { 
+            position: absolute; width: 16px; height: 16px; border: 1px solid #fff; 
+            transform: translate(-50%, -50%); cursor: pointer; z-index: 50; display: flex; 
+            align-items: center; justify-content: center; font-size: 10px; font-weight: bold;
+            box-shadow: 0 0 5px rgba(0,0,0,0.8); transition: top 0.5s, left 0.5s;
+        }
+        .unit-icon:hover { transform: translate(-50%, -50%) scale(1.5); z-index: 100; }
+        .unit-icon.selected { box-shadow: 0 0 0 2px #fff, 0 0 15px var(--accent); }
+        .unit-icon.us { background: var(--us); color: #fff; }
+        .unit-icon.enemy { background: var(--danger); color: #fff; }
+
+        .country-dot {
+            position: absolute; width: 8px; height: 8px; border-radius: 50%; 
+            transform: translate(-50%, -50%); cursor: pointer; opacity: 0.8;
+        }
+        .country-dot:hover { transform: translate(-50%, -50%) scale(2); opacity: 1; }
+        .country-dot.ally { background: var(--success); }
+        .country-dot.rival { background: var(--danger); }
+        .country-dot.neutral { background: #555; }
+
+        /* --- DEFCON --- */
+        .defcon-display { 
+            width: 50px; height: 30px; background: #000; border: 2px solid #333; 
+            display: flex; align-items: center; justify-content: center; font-weight: 900; 
+            font-size: 1.2rem; margin-right: 15px;
+        }
+
+        /* --- MODALS --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; display: flex; align-items: center; justify-content: center; }
+        .modal { width: 700px; background: var(--panel); border: 1px solid var(--accent); box-shadow: 0 0 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; max-height: 80vh; }
+        
+        .ticker { position: absolute; bottom: 0; left: 0; right: 0; height: 25px; background: #000; border-top: 1px solid var(--border); display: flex; align-items: center; padding: 0 10px; font-family: monospace; color: var(--accent); z-index: 50; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+        // ==========================================
+        // HUGE DATABASE
+        // ==========================================
+        const TECH_TREE = [
+            { id: 't1', name: 'Stealth Tech', cost: 5000, desc: 'Unlocks B-2 Bombers' },
+            { id: 't2', name: 'SDI Defense', cost: 20000, desc: '20% Chance to block Nukes' },
+            { id: 't3', name: 'Cyber Command', cost: 8000, desc: 'Unlocks Cyber Attacks' },
+            { id: 't4', name: 'Fusion Power', cost: 15000, desc: 'GDP Growth +5%' }
+        ];
+
+        const UNITS = {
+            'infantry': { name: 'Infantry Div', icon: '♟️', cost: 1, upkeep: 0.1, str: 10 },
+            'tank': { name: 'Armor Div', icon: '🚜', cost: 5, upkeep: 0.5, str: 50 },
+            'air': { name: 'Fighter Sqd', icon: '✈️', cost: 10, upkeep: 1, str: 80 },
+            'carrier': { name: 'Carrier Grp', icon: '🚢', cost: 50, upkeep: 5, str: 500 },
+            'sub': { name: 'Nuclear Sub', icon: '⚓', cost: 30, upkeep: 3, str: 200, nuke: true }
+        };
+
+        // Procedural World Generator (150+ Nations simulated)
+        const generateWorld = () => {
+            const world = [];
+            const prefixes = ['New', 'Republic of', 'United', 'Democratic', 'People\'s', 'Federation of'];
+            const names = ['Arstotzka', 'Borginia', 'Qumar', 'Tazbekistan', 'Zambia', 'Moldova', 'Estovakia', 'Osea', 'Yuktobania', 'Belka'];
+            
+            // Major Powers (Hardcoded)
+            world.push({ id: 0, name: 'United States', type: 'PLAYER', gdp: 23000, pop: 330, stab: 80, align: 100, nukes: 5000, x: 200, y: 200, color: '#3b82f6' });
+            world.push({ id: 1, name: 'Russia', type: 'RIVAL', gdp: 1700, pop: 144, stab: 60, align: 10, nukes: 4500, x: 600, y: 150, color: '#ef4444' });
+            world.push({ id: 2, name: 'China', type: 'RIVAL', gdp: 18000, pop: 1400, stab: 90, align: 20, nukes: 350, x: 700, y: 250, color: '#f59e0b' });
+            world.push({ id: 3, name: 'Euro Fed', type: 'ALLY', gdp: 17000, pop: 450, stab: 85, align: 95, nukes: 200, x: 450, y: 180, color: '#10b981' });
+
+            // Generate Minor Nations
+            for(let i=4; i<50; i++) {
+                const name = `${names[Math.floor(Math.random()*names.length)]} ${Math.floor(Math.random()*99)}`;
+                world.push({
+                    id: i, name,
+                    type: Math.random() > 0.7 ? 'RIVAL' : Math.random() > 0.4 ? 'ALLY' : 'NEUTRAL',
+                    gdp: Math.floor(Math.random() * 500) + 10,
+                    pop: Math.floor(Math.random() * 50) + 1,
+                    stab: Math.floor(Math.random() * 100),
+                    align: 50,
+                    nukes: 0,
+                    x: Math.random() * 800 + 50,
+                    y: Math.random() * 500 + 50,
+                    color: '#888'
+                });
+            }
+            return world;
+        };
+
+        // ==========================================
+        // ENGINE CORE
+        // ==========================================
+        const App = () => {
+            // Global State
+            const [date, setDate] = useState(new Date('1990-01-01'));
+            const [defcon, setDefcon] = useState(5);
+            const [budget, setBudget] = useState(5000); // Billions
+            const [approval, setApproval] = useState(60);
+            
+            // Simulation State
+            const [countries, setCountries] = useState([]);
+            const [units, setUnits] = useState([]);
+            const [selectedCountry, setSelectedCountry] = useState(null);
+            const [selectedUnit, setSelectedUnit] = useState(null);
+            
+            // UI State
+            const [view, setView] = useState('MAP'); // MAP, TECH, CABINET, BUDGET
+            const [logs, setLogs] = useState([{ msg: "Welcome, Mr. President. The world awaits.", type: 'sys' }]);
+            const [modal, setModal] = useState(null);
+
+            // Refs
+            const mapRef = useRef(null);
+
+            // --- INIT ---
+            useEffect(() => {
+                const world = generateWorld();
+                setCountries(world);
+                
+                // Initial Units
+                setUnits([
+                    { id: 'u1', type: 'carrier', owner: 0, x: 250, y: 250, hp: 100, name: 'USS Enterprise' },
+                    { id: 'u2', type: 'tank', owner: 0, x: 210, y: 210, hp: 100, name: '1st Armored' },
+                    { id: 'u3', type: 'sub', owner: 0, x: 300, y: 300, hp: 100, name: 'USS Ohio' },
+                    { id: 'u4', type: 'tank', owner: 1, x: 580, y: 160, hp: 100, name: '3rd Guards' }, // Enemy
+                ]);
+            }, []);
+
+            // --- GAME LOOP ---
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    // Time Advance
+                    setDate(d => {
+                        const n = new Date(d);
+                        n.setDate(d.getDate() + 1);
+                        return n;
+                    });
+
+                    // Unit Movement
+                    setUnits(prev => prev.map(u => {
+                        if (u.target) {
+                            const dx = u.target.x - u.x;
+                            const dy = u.target.y - u.y;
+                            const dist = Math.hypot(dx, dy);
+                            if (dist < 2) {
+                                return { ...u, x: u.target.x, y: u.target.y, target: null };
+                            } else {
+                                return { ...u, x: u.x + (dx/dist)*2, y: u.y + (dy/dist)*2 };
+                            }
+                        }
+                        return u;
+                    }));
+
+                    // Random Events
+                    if (Math.random() < 0.02) {
+                        const target = countries[Math.floor(Math.random()*countries.length)];
+                        if (target && target.id !== 0) {
+                            addLog(`${target.name} government collapses!`, 'warn');
+                            target.stab -= 20;
+                        }
+                    }
+
+                }, 200); // 5 days per second
+                return () => clearInterval(timer);
+            }, [countries]);
+
+            const addLog = (msg, type='info') => setLogs(p => [{ msg, type, id: Date.now() }, ...p].slice(0, 50));
+
+            // --- ACTIONS ---
+            const handleMapClick = (e) => {
+                const rect = mapRef.current.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // 1. Check Unit Click
+                const clickedUnit = units.find(u => Math.hypot(u.x - x, u.y - y) < 15);
+                if (clickedUnit) {
+                    if (clickedUnit.owner === 0) {
+                        setSelectedUnit(clickedUnit);
+                        setSelectedCountry(null);
+                        return;
+                    }
+                }
+
+                // 2. Unit Move Order
+                if (selectedUnit && selectedUnit.owner === 0) {
+                    setUnits(prev => prev.map(u => u.id === selectedUnit.id ? { ...u, target: {x, y} } : u));
+                    // Check if targeting country
+                    const targetC = countries.find(c => Math.hypot(c.x - x, c.y - y) < 20);
+                    if (targetC) {
+                        addLog(`${selectedUnit.name} ordered to ${targetC.name}.`, 'cmd');
+                    }
+                    return;
+                }
+
+                // 3. Check Country Click
+                const clickedCountry = countries.find(c => Math.hypot(c.x - x, c.y - y) < 20);
+                if (clickedCountry) {
+                    setSelectedCountry(clickedCountry);
+                    setSelectedUnit(null);
+                } else {
+                    setSelectedCountry(null);
+                    setSelectedUnit(null);
+                }
+            };
+
+            const deployUnit = (type) => {
+                if (budget < UNITS[type].cost) return addLog("Insufficient Budget", 'err');
+                setBudget(b => b - UNITS[type].cost);
+                const newUnit = {
+                    id: Math.random().toString(36),
+                    type, owner: 0, x: 200, y: 200, hp: 100,
+                    name: `${UNITS[type].name} ${Math.floor(Math.random()*100)}`
+                };
+                setUnits(prev => [...prev, newUnit]);
+                addLog(`Deployed ${newUnit.name}.`, 'success');
+            };
+
+            const launchNuke = (targetId) => {
+                setModal(null);
+                setDefcon(1);
+                const target = countries.find(c => c.id === targetId);
+                addLog(`NUCLEAR LAUNCH DETECTED against ${target.name}.`, 'crit');
+                
+                // Visual FX (Shake?)
+                // Wipe Country
+                setCountries(prev => prev.map(c => c.id === targetId ? { ...c, pop: 0, gdp: 0, destroyed: true } : c));
+                
+                // Retaliation
+                if (target.nukes > 0) {
+                    setTimeout(() => {
+                        addLog("RETALIATORY LAUNCH DETECTED!", 'crit');
+                        alert("GAME OVER: NUCLEAR WINTER");
+                        window.location.reload();
+                    }, 3000);
+                }
+            };
+
+            // --- RENDERERS ---
+            const renderMap = () => (
+                <div className="main-map" ref={mapRef} style={{height:'100%'}} onClick={handleMapClick}>
+                    {/* GRID */}
+                    <svg width="100%" height="100%" style={{position:'absolute', opacity:0.2, pointerEvents:'none'}}>
+                        <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5"/></pattern></defs>
+                        <rect width="100%" height="100%" fill="url(#grid)" />
+                    </svg>
+
+                    {/* COUNTRIES */}
+                    {countries.map(c => (
+                        <div key={c.id} 
+                            className={`country-dot ${c.type === 'PLAYER' ? 'us' : c.type === 'ALLY' ? 'ally' : c.type === 'RIVAL' ? 'rival' : 'neutral'}`}
+                            style={{left: c.x, top: c.y, width: c.gdp > 5000 ? 20 : 8, height: c.gdp > 5000 ? 20 : 8, border: selectedCountry?.id===c.id?'2px solid #fff':'none', opacity: c.destroyed ? 0.2 : 1}}
+                        >
+                            {c.gdp > 5000 && <span style={{position:'absolute', top:20, left:-20, color:'#fff', textShadow:'0 0 2px #000', pointerEvents:'none'}}>{c.name}</span>}
+                        </div>
+                    ))}
+
+                    {/* UNITS */}
+                    {units.map(u => (
+                        <div key={u.id}
+                            className={`unit-icon ${u.owner===0?'us':'enemy'} ${selectedUnit?.id===u.id?'selected':''}`}
+                            style={{left: u.x, top: u.y}}
+                        >
+                            {UNITS[u.type].icon}
+                        </div>
+                    ))}
+                </div>
+            );
+
+            const renderRightPanel = () => {
+                if (selectedUnit && selectedUnit.owner === 0) {
+                    return (
+                        <div className="card">
+                            <div className="card-head">UNIT CONTROL</div>
+                            <div className="card-body">
+                                <h3>{selectedUnit.name}</h3>
+                                <div className="stat-row"><span>Type</span> <span>{selectedUnit.type}</span></div>
+                                <div className="stat-row"><span>Health</span> <span>{selectedUnit.hp}%</span></div>
+                                <button className="btn block" style={{marginTop:10}}>Fortify</button>
+                                <button className="btn block">Patrol Sector</button>
+                                <button className="btn block danger">Decommission</button>
+                            </div>
+                        </div>
+                    );
+                }
+                if (selectedCountry) {
+                    return (
+                        <div className="card">
+                            <div className="card-head">TARGET: {selectedCountry.name.toUpperCase()}</div>
+                            <div className="card-body">
+                                <div className="stat-row"><span>GDP</span> <span>${selectedCountry.gdp}B</span></div>
+                                <div className="stat-row"><span>Pop</span> <span>{selectedCountry.pop}M</span></div>
+                                <div className="stat-row"><span>Stab</span> <span style={{color:selectedCountry.stab<50?'red':'green'}}>{selectedCountry.stab}%</span></div>
+                                <div className="stat-row"><span>Align</span> <span>{selectedCountry.align}%</span></div>
+                                <div style={{marginTop:15, borderTop:'1px solid #333', paddingTop:10}}>
+                                    <div style={{color:'#aaa', marginBottom:5, fontSize:'0.7rem'}}>DIPLOMACY</div>
+                                    <button className="btn block">Send Aid ($5B)</button>
+                                    <button className="btn block">Trade Treaty</button>
+                                    <div style={{color:'#aaa', marginBottom:5, fontSize:'0.7rem', marginTop:10}}>COVERT OPS</div>
+                                    <button className="btn block">Fund Rebels ($2B)</button>
+                                    <button className="btn block danger">Coup D'état</button>
+                                    <div style={{color:'#aaa', marginBottom:5, fontSize:'0.7rem', marginTop:10}}>MILITARY</div>
+                                    <button className="btn block danger">Air Strike</button>
+                                    <button className="btn block danger" style={{background:'#300'}} onClick={()=>setModal({type:'NUKE', target:selectedCountry})}>NUCLEAR LAUNCH</button>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                }
+                return <div style={{padding:20, color:'#666', textAlign:'center'}}>Select a Country or Unit on the map.</div>;
+            };
+
+            return (
+                <div id="root">
+                    <div className="top-bar">
+                        <div style={{display:'flex', alignItems:'center', gap:15}}>
+                            <i className="fas fa-globe" style={{fontSize:'1.5rem', color:'var(--accent)'}}></i>
+                            <span style={{fontWeight:'bold', letterSpacing:1}}>WORLD ORDER</span>
+                        </div>
+                        <div style={{display:'flex', gap:20}}>
+                            <div className="defcon-display" style={{color: defcon===1?'#fff':`var(--defcon${defcon})`, background: defcon===1?'red':'#000'}}>
+                                {defcon}
+                            </div>
+                            <div style={{display:'flex', flexDirection:'column', justifyContent:'center'}}>
+                                <div style={{fontSize:'0.7rem', color:'var(--text-dim)'}}>DATE</div>
+                                <div>{date.toDateString()}</div>
+                            </div>
+                            <div style={{display:'flex', flexDirection:'column', justifyContent:'center'}}>
+                                <div style={{fontSize:'0.7rem', color:'var(--text-dim)'}}>BUDGET</div>
+                                <div style={{color:'var(--success)'}}>${budget}B</div>
+                            </div>
+                            <div style={{display:'flex', flexDirection:'column', justifyContent:'center'}}>
+                                <div style={{fontSize:'0.7rem', color:'var(--text-dim)'}}>APPROVAL</div>
+                                <div style={{color: approval>50?'var(--success)':'var(--danger)'}}>{approval}%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="workspace">
+                        {/* LEFT SIDEBAR */}
+                        <div className="sidebar">
+                            <div className="tab-bar">
+                                <div className={`tab ${view==='MAP'?'active':''}`} onClick={()=>setView('MAP')}>MAP</div>
+                                <div className={`tab ${view==='INTEL'?'active':''}`} onClick={()=>setView('INTEL')}>INTEL</div>
+                                <div className={`tab ${view==='TECH'?'active':''}`} onClick={()=>setView('TECH')}>TECH</div>
+                            </div>
+                            
+                            <div style={{flex:1, overflowY:'auto', padding:10}}>
+                                {view === 'MAP' && (
+                                    <>
+                                        <div className="card">
+                                            <div className="card-head">QUICK DEPLOY</div>
+                                            <div className="card-body">
+                                                {Object.entries(UNITS).map(([k, v]) => (
+                                                    <button key={k} className="btn block" style={{display:'flex', justifyContent:'space-between'}} onClick={()=>deployUnit(k)}>
+                                                        <span>{v.icon} {v.name}</span>
+                                                        <span>${v.cost}B</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="card">
+                                            <div className="card-head">GLOBAL ALERTS</div>
+                                            <div className="card-body" style={{fontSize:'0.75rem'}}>
+                                                {countries.filter(c => c.stab < 30).map(c => (
+                                                    <div key={c.id} style={{color:'var(--danger)', marginBottom:2}}>
+                                                        • {c.name}: Civil Unrest
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                                {view === 'TECH' && (
+                                    <div className="card">
+                                        <div className="card-head">RESEARCH LABS</div>
+                                        <div className="card-body">
+                                            {TECH_TREE.map(t => (
+                                                <div key={t.id} style={{marginBottom:10, borderBottom:'1px solid #333', paddingBottom:5}}>
+                                                    <div style={{fontWeight:'bold', color:'#fff'}}>{t.name}</div>
+                                                    <div style={{fontSize:'0.7rem', color:'#aaa'}}>{t.desc}</div>
+                                                    <button className="btn block" style={{marginTop:5}} onClick={()=>addLog(`Researching ${t.name}...`)}>START (${t.cost}B)</button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="ticker">
+                                {logs[0]?.msg}
+                            </div>
+                        </div>
+
+                        {/* CENTER MAP */}
+                        {renderMap()}
+
+                        {/* RIGHT PANEL */}
+                        <div className="right-panel">
+                            {renderRightPanel()}
+                            <div style={{marginTop:'auto', height:200, background:'#000', borderTop:'1px solid var(--border)', overflowY:'auto', padding:5, fontFamily:'monospace', fontSize:'0.7rem'}}>
+                                {logs.map(l => (
+                                    <div key={l.id} style={{marginBottom:2, color: l.type==='crit'?'#f00':l.type==='warn'?'#fa0':l.type==='cmd'?'#0ff':'#aaa'}}>
+                                        [{new Date(l.id).toLocaleTimeString()}] {l.msg}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {modal && modal.type === 'NUKE' && (
+                        <div className="modal-overlay">
+                            <div className="modal" style={{borderColor:'red', background:'#100'}}>
+                                <div style={{padding:20, textAlign:'center'}}>
+                                    <h1 style={{color:'red', fontSize:'2rem'}}>NUCLEAR AUTHORIZATION</h1>
+                                    <p style={{color:'#fff', fontSize:'1.2rem', margin:'20px 0'}}>
+                                        Confirm launch sequence against <b>{modal.target.name}</b>?<br/>
+                                        This action is irreversible.
+                                    </p>
+                                    <div style={{display:'flex', gap:20, justifyContent:'center'}}>
+                                        <button className="btn" style={{width:150, height:50}} onClick={()=>setModal(null)}>ABORT</button>
+                                        <button className="btn danger" style={{width:150, height:50, fontSize:'1.2rem'}} onClick={()=>launchNuke(modal.target.id)}>TURN KEY</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

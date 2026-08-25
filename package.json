@@ -1,0 +1,11 @@
+{
+  "name": "hackgame",
+  "version": "1.0.0",
+  "description": "A fun hacking simulator game.",
+  "scripts": {
+    "dev": "serve"
+  },
+  "devDependencies": {
+    "serve": "^14.2.3"
+  }
+}

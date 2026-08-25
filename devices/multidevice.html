@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Device Interface - Coder Warz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@0.447.0/dist/umd/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --phone-width: 360px;
+            --phone-height: 740px;
+            --os-primary: #00ff99;
+            --os-bg: #050505;
+        }
+
+        /* --- GLOBAL & UTILS --- */
+        body {
+            background: linear-gradient(to bottom, black 15%, gray 105%, white 120%);
+            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            gap: 20px;
+            user-select: none;
+        }
+
+        .scroll-hide::-webkit-scrollbar { display: none; }
+        .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- DEVICE SELECTOR --- */
+        .device-selector {
+            position: fixed;
+            top: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            background: rgba(0,0,0,0.6);
+            padding: 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .dev-btn {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            color: white;
+            font-weight: 500;
+        }
+        .dev-btn:hover { background: rgba(255,255,255,0.1); }
+        .dev-btn.active { background: var(--os-primary); color: #000; font-weight: bold; box-shadow: 0 0 15px var(--os-primary); }
+
+        /* --- UNIFIED DEVICE FRAME --- */
+        .device-container { position: relative; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .phone-frame {
+            width: var(--phone-width);
+            height: var(--phone-height);
+            position: relative;
+            display: flex;
+            transition: all 0.5s;
+            overflow: visible;
+        }
+
+        /* --- PHYSICAL BUTTONS --- */
+        .physical-btn {
+            position: absolute;
+            background: #2a2a2a;
+            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 50;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .physical-btn:hover { background: #333; }
+        .physical-btn:active { transform: scale(0.9) !important; background: #444; }
+
+        .skin-apple .btn-power { right: -14px; top: 160px; width: 6px; height: 80px; border-radius: 0 4px 4px 0; }
+        .skin-apple .btn-vol-up { left: -14px; top: 140px; width: 6px; height: 50px; border-radius: 4px 0 0 4px; }
+        .skin-apple .btn-vol-down { left: -14px; top: 200px; width: 6px; height: 50px; border-radius: 4px 0 0 4px; }
+
+        .skin-cyber .btn-power { right: -10px; top: 120px; width: 5px; height: 60px; background: #333; border: 1px solid rgba(255,255,255,0.1); }
+        .skin-cyber .btn-vol-up { left: -10px; top: 150px; width: 5px; height: 40px; background: #333; }
+        .skin-cyber .btn-vol-down { left: -10px; top: 200px; width: 5px; height: 40px; background: #333; }
+
+        .skin-flipper .btn-power { right: 15%; top: -14px; width: 60px; height: 6px; border-radius: 4px 4px 0 0; }
+        .skin-flipper .btn-vol-up { left: -14px; top: 40%; width: 6px; height: 60px; }
+        .skin-flipper .btn-vol-down { left: -14px; top: 52%; width: 6px; height: 60px; }
+
+        .skin-console .btn-power { left: -15px; top: 100px; width: 8px; height: 60px; border-radius: 4px 0 0 4px; display: block; background: #222; }
+        .skin-console .btn-vol-up { right: -15px; top: 80px; width: 8px; height: 40px; border-radius: 0 4px 4px 0; display: block; background: #222; }
+        .skin-console .btn-vol-down { right: -15px; top: 130px; width: 8px; height: 40px; border-radius: 0 4px 4px 0; display: block; background: #222; }
+
+        .skin-console .app-grid { grid-template-columns: repeat(7, 1fr); gap: 15px; padding: 30px; }
+        .skin-console .status-bar { padding: 0 40px; }
+        .skin-console .nav-bar { height: 40px; }
+        .skin-console #lock-screen .grid { grid-template-columns: repeat(6, 1fr); gap: 10px; width: auto; }
+        .skin-console #lock-screen .w-16 { width: 50px; height: 50px; }
+
+        /* --- THE ACTUAL OS SCREEN --- */
+        .screen-area {
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+            background: var(--os-bg);
+            transition: all 0.5s;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- LAYERS --- */
+        .layer {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.4s cubic-bezier(0.1, 0.8, 0.2, 1), opacity 0.3s;
+            background: var(--os-bg);
+            z-index: 10;
+        }
+
+        #lock-screen { z-index: 100; background: var(--os-bg); }
+        #app-layer { z-index: 40; }
+        #home-screen { z-index: 20; }
+        
+        .layer.hidden-layer { 
+            opacity: 0; 
+            pointer-events: none; 
+            transform: translateY(20px) scale(0.95); 
+            z-index: 0 !important; 
+        }
+        
+        .wallpaper-bg {
+            position: absolute; inset: 0; z-index: -1;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* --- NEON CLOCK SCREENSAVER --- */
+        #screensaver {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            z-index: 500;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+        .power-off #screensaver { display: flex; }
+
+        .neon-clock {
+            display: grid;
+            grid-template-rows: auto auto; 
+            grid-template-columns: 1fr 1fr;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff, 0 0 10px #00eaff, 0 0 20px #00b3cc, 0 0 40px #0088aa;
+            font-family: 'Orbitron', 'JetBrains Mono', monospace;
+        }
+        .neon-digital { font-size: 48px; grid-row: 2/3; grid-column: 1/3; }
+        .neon-date { font-size: 14px; grid-row: 1/2; grid-column: 1/2; text-align: left; padding-left: 5px; opacity: 0.8; }
+        .neon-city { font-size: 14px; grid-row: 1/2; grid-column: 2/3; text-align: right; padding-right: 5px; opacity: 0.8; }
+
+        /* --- SKINS --- */
+        .skin-apple .phone-frame { border: 12px solid #1a1a1a; border-radius: 55px; box-shadow: 0 0 60px rgba(255,255,255,0.05); background: #000; }
+        .skin-apple .screen-area { border-radius: 43px; }
+        .skin-apple .notch {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 120px; height: 30px; background: #000;
+            border-bottom-left-radius: 18px; border-bottom-right-radius: 18px; z-index: 200;
+        }
+        .skin-apple .home-bar {
+            position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+            width: 120px; height: 5px; background: rgba(255,255,255,0.4); border-radius: 10px; z-index: 200; cursor: pointer;
+        }
+        .skin-apple .nav-bar { display: none; }
+        .skin-apple .rabbit-elements, .skin-apple .console-elements { display: none; }
+
+        .skin-cyber .phone-frame { border: 8px solid #333; border-radius: 24px; background: #000; }
+        .skin-cyber .screen-area { border-radius: 16px; }
+        .skin-cyber .notch, .skin-cyber .home-bar, .skin-cyber .rabbit-elements, .skin-cyber .console-elements { display: none; }
+        .skin-cyber .wallpaper-bg { 
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.2) 0px, rgba(0,0,0,0.2) 1px, transparent 1px, transparent 2px),
+                        linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        }
+
+        .skin-flipper .phone-frame {
+            width: 500px; aspect-ratio: 1/1.09;
+            background-color: #FE4802; border-radius: 10%; border-top: 2px solid white; border-bottom: 2px solid black;
+            box-shadow: 0px 0px 15px black; padding: 1.65%; align-items: center; overflow: visible;
+        }
+        .skin-flipper .screen-area { width: 100%; height: 100%; border-radius: 40px; background: #000; flex-grow: 0; }
+        .skin-flipper .notch, .skin-flipper .home-bar, .skin-flipper .nav-bar, .skin-flipper .console-elements { display: none; }
+
+        .skin-console .phone-frame { width: 90vw; max-width: 1300px; height: 80vh; max-height: 750px; transform: perspective(1200px) rotateX(10deg); transform-style: preserve-3d; background: transparent; overflow: visible; }
+        .skin-console .screen-area { position: absolute; top: 10.5%; left: 8.5%; width: 83%; height: 65%; border-radius: 0; z-index: 5; background: #000; box-shadow: inset 0 0 50px rgba(0,0,0,1); }
+        .skin-console .screen-area::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,255,153,0.03) 0px, rgba(0,255,153,0.03) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 100; }
+        .skin-console .screen-area::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%); pointer-events: none; z-index: 100; }
+        .skin-console .notch, .skin-console .home-bar, .skin-console .rabbit-elements { display: none; }
+        
+        #consoleHousing { position: absolute; inset: 0; background: linear-gradient(145deg, #c9b99a 0%, #a89678 50%, #8a7a5e 100%); border-radius: 15px 15px 5px 5px; box-shadow: 0 30px 80px rgba(0,0,0,0.9); z-index: 1; pointer-events: none; }
+        .console-vent { position: absolute; background: rgba(0,0,0,0.2); height: 10px; left: 5%; right: 5%; }
+        .side-panel { position: absolute; top: 7%; width: 4%; height: 72%; background: #7a6a5e; box-shadow: inset 0 2px 6px rgba(0,0,0,0.6); }
+        .side-panel.left { left: 1%; border-radius: 6px 0 0 6px; }
+        .side-panel.right { right: 1%; border-radius: 0 6px 6px 0; }
+        #monitorHousing { position: absolute; top: 7%; left: 6.5%; right: 6.5%; height: 72%; background: #2a2a2a; border-radius: 10px; padding: 14px; box-shadow: inset 0 6px 12px rgba(0,0,0,0.7); }
+        #controlPanel { position: absolute; bottom: 4%; left: 6.5%; right: 6.5%; height: 14%; background: #9a8a6e; border-radius: 8px; display: flex; justify-content: space-around; align-items: center; padding: 8px 15px; pointer-events: all; }
+        .dial { width: 50px; height: 50px; background: #333; border-radius: 50%; border: 3px solid #555; position: relative; cursor: pointer; }
+        .dial::before { content: ''; position: absolute; top: 8%; left: 50%; transform: translateX(-50%); width: 3px; height: 45%; background: #999; }
+        .led-strip { display: flex; gap: 7px; }
+        .led { width: 11px; height: 11px; border-radius: 50%; background: #1a1a1a; border: 2px solid #0a0a0a; }
+        .led.active { background: #4CAF50; box-shadow: 0 0 8px #4CAF50; }
+        .label { font-size: 7px; color: #333; text-transform: uppercase; font-weight: bold; }
+
+        /* --- SHARED COMPONENTS --- */
+        .status-bar { height: 30px; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; z-index: 160; cursor: pointer; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        #notification-shade { position: absolute; top: -100%; left: 0; width: 100%; height: 100%; background: rgba(10,10,10,0.85); backdrop-filter: blur(20px); z-index: 150; transition: top 0.4s cubic-bezier(0.1, 0.8, 0.2, 1); padding: 50px 20px 20px; display: flex; flex-direction: column; border-radius: inherit; }
+        #notification-shade.active { top: 0; }
+        #shade-overlay { position: absolute; inset: 0; z-index: 140; display: none; }
+        #shade-overlay.active { display: block; }
+
+        #volume-toast { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); z-index: 200; pointer-events: none; opacity: 0; transition: opacity 0.3s, transform 0.3s; }
+        #volume-toast.active { opacity: 1; transform: translateX(-50%) translateY(10px); }
+
+        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; padding: 20px; align-content: start; flex-grow: 1; }
+        .app-icon { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.1s; }
+        .icon-wrapper { width: 54px; height: 54px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; font-size: 24px; color: white; }
+        .app-label { font-size: 11px; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.8); text-align: center; }
+        .nav-bar { height: 50px; display: flex; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.2); backdrop-filter: blur(5px); z-index: 50; }
+        .app-header { height: 60px; display: flex; align-items: center; padding: 10px 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(20,20,20,0.95); }
+        
+        .power-off > *:not(#screensaver) { opacity: 0 !important; pointer-events: none !important; }
+
+    </style>
+</head>
+<body class="skin-apple">
+
+    <!-- Skin Switcher -->
+    <div class="device-selector">
+        <div class="dev-btn active" onclick="setSkin('apple', this)">EPeach</div>
+        <div class="dev-btn" onclick="setSkin('cyber', this)">CyberOS</div>
+        <div class="dev-btn" onclick="setSkin('flipper', this)">Rabbit R1</div>
+        <div class="dev-btn" onclick="setSkin('console', this)">Console</div>
+    </div>
+
+    <div class="device-container">
+        <div class="phone-frame" id="device-body">
+            
+            <!-- Physical Side Buttons -->
+            <div class="physical-btn btn-power" onclick="togglePower()"></div>
+            <div class="physical-btn btn-vol-up" onclick="changeVolume(10)"></div>
+            <div class="physical-btn btn-vol-down" onclick="changeVolume(-10)"></div>
+
+            <!-- Skin Elements: Apple/Cyber -->
+            <div class="notch"></div>
+            <div class="home-bar" onclick="goHome()"></div>
+
+            <!-- Skin Elements: Console -->
+            <div id="consoleHousing" class="console-elements">
+                <div class="console-vent" style="top: 6%;"></div>
+                <div class="console-vent" style="bottom: 18%;"></div>
+                <div class="side-panel left"></div>
+                <div class="side-panel right"></div>
+                <div id="monitorHousing"></div>
+                <div id="controlPanel">
+                    <div class="control-section"><div class="dial" onclick="togglePower()"></div><div class="label">Power</div></div>
+                    <div class="control-section"><div class="led-strip"><div class="led active"></div><div class="led active"></div><div class="led active"></div></div><div class="label">Status</div></div>
+                </div>
+            </div>
+
+            <!-- THE UNIFIED OS SCREEN -->
+            <div class="screen-area" id="main-screen">
+                <div class="wallpaper-bg"></div>
+
+                <!-- Screensaver (Always-On Neon Clock) -->
+                <div id="screensaver">
+                    <div class="neon-clock">
+                        <div class="neon-date" id="ss-date">Sep 10</div>
+                        <div class="neon-city">Neo-City</div>
+                        <div class="neon-digital" id="ss-time">12:34:00</div>
+                    </div>
+                </div>
+                
+                <!-- Status Bar -->
+                <div class="status-bar" onclick="toggleShade()">
+                    <span id="sb-time">12:00</span>
+                    <div class="flex gap-2 items-center">
+                        <div class="flex items-center gap-1" id="sb-icons"><i data-lucide="wifi" class="w-3 h-3"></i><i data-lucide="bluetooth" class="w-3 h-3 hidden" id="icon-bt"></i></div>
+                        <div class="flex items-center gap-1"><span class="text-[10px]" id="bat-pct">88%</span><i data-lucide="battery" class="w-4 h-4"></i></div>
+                    </div>
+                </div>
+
+                <!-- Volume HUD -->
+                <div id="volume-toast" class="bg-black/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-3">
+                    <i data-lucide="volume-2" class="w-4 h-4 text-white"></i>
+                    <div class="w-24 h-1 bg-white/20 rounded-full overflow-hidden">
+                        <div id="vol-bar" class="h-full bg-white transition-all duration-200" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <!-- Notification Shade Overlay -->
+                <div id="shade-overlay" onclick="toggleShade()"></div>
+
+                <!-- Notification Shade -->
+                <div id="notification-shade">
+                    <div class="flex justify-between items-end mb-6 px-2"><h2 class="text-3xl font-light" id="shade-time">12:00</h2><span class="text-sm text-gray-400" id="shade-date">Tue, Mar 10</span></div>
+                    <div class="qs-grid">
+                        <div class="qs-tile active" onclick="toggleQS('wifi')"><div class="qs-icon"><i data-lucide="wifi"></i></div><div class="qs-label">Wi-Fi</div></div>
+                        <div class="qs-tile" onclick="toggleQS('bt')"><div class="qs-icon"><i data-lucide="bluetooth"></i></div><div class="qs-label">Bluetooth</div></div>
+                        <div class="qs-tile"><div class="qs-icon"><i data-lucide="flashlight"></i></div><div class="qs-label">Flash</div></div>
+                        <div class="qs-tile"><div class="qs-icon"><i data-lucide="airplay"></i></div><div class="qs-label">Cast</div></div>
+                    </div>
+                    <div id="notif-list" class="space-y-2 overflow-y-auto flex-grow scroll-hide"></div>
+                </div>
+
+                <!-- Lock Screen -->
+                <div id="lock-screen" class="layer">
+                    <div class="flex flex-col items-center mt-12"><i data-lucide="lock" class="w-6 h-6 mb-2 opacity-50"></i><h1 class="text-6xl font-thin" id="lock-time">12:00</h1><p class="text-sm opacity-50 mt-2" id="lock-date">Tuesday, March 10</p></div>
+                    <div class="flex flex-col items-center w-full mb-12">
+                        <div class="flex gap-4 mb-8" id="dots-container"><div class="w-3 h-3 rounded-full border border-white dot"></div><div class="w-3 h-3 rounded-full border border-white dot"></div><div class="w-3 h-3 rounded-full border border-white dot"></div><div class="w-3 h-3 rounded-full border border-white dot"></div></div>
+                        <div class="grid grid-cols-3 gap-6">
+                            <button onclick="inputPass(1)" class="w-16 h-16 rounded-full bg-white/10 text-xl hover:bg-white/20">1</button><button onclick="inputPass(2)" class="w-16 h-16 rounded-full bg-white/10 text-xl hover:bg-white/20">2</button><button onclick="inputPass(3)" class="w-16 h-16 rounded-full bg-white/10 text-xl hover:bg-white/20">3</button>
+                            <button onclick="inputPass(4)" class="w-16 h-16 rounded-full bg-white/10 text-xl hover:bg-white/20">4</button><button onclick="inputPass(5)" class="w-16 h-16 rounded-full bg-white/10 text-xl hover:bg-white/20">5</button><button onclick="inputPass(6)" class="w-16 h-16 rounded-full bg-white/10 text-xl hover:bg-white/20">6</button>
+                            <button onclick="inputPass(7)" class="w-16 h-16 rounded-full bg-white/10 text-xl hover:bg-white/20">7</button><button onclick="inputPass(8)" class="w-16 h-16 rounded-full bg-white/10 text-xl hover:bg-white/20">8</button><button onclick="inputPass(9)" class="w-16 h-16 rounded-full bg-white/10 text-xl hover:bg-white/20">9</button>
+                            <div class="w-16"></div><button onclick="inputPass(0)" class="w-16 h-16 rounded-full bg-white/10 text-xl hover:bg-white/20">0</button><button onclick="inputPass(-1)" class="w-16 h-16 flex items-center justify-center opacity-70 hover:opacity-100"><i data-lucide="delete"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- App Layer -->
+                <div id="app-layer" class="layer hidden-layer"></div>
+
+                <!-- Home Screen -->
+                <div id="home-screen" class="layer bg-transparent">
+                    <div class="flex-grow pt-10 px-6 overflow-y-auto scroll-hide">
+                        <div class="text-5xl font-light mb-1" id="home-time">12:00</div>
+                        <div class="text-sm opacity-70" id="home-date">Tue, Mar 10</div>
+                        <div class="app-grid mt-6">
+                            <div class="app-icon" onclick="openApp('Comlink', 'phone', '#22c55e')"><div class="icon-wrapper bg-green-500 rounded-2xl shadow-lg"><i data-lucide="phone"></i></div><div class="app-label">Comlink</div></div>
+                            <div class="app-icon" onclick="openApp('Chatter', 'message-square', '#3b82f6')"><div class="icon-wrapper bg-blue-500 rounded-2xl shadow-lg"><i data-lucide="message-square"></i></div><div class="app-label">Chatter</div></div>
+                            <div class="app-icon" onclick="openApp('Postman', 'mail', '#ef4444')"><div class="icon-wrapper bg-red-500 rounded-2xl shadow-lg"><i data-lucide="mail"></i></div><div class="app-label">Postman</div></div>
+                            <div class="app-icon" onclick="openApp('Directory', 'users', '#a855f7')"><div class="icon-wrapper bg-purple-500 rounded-2xl shadow-lg"><i data-lucide="users"></i></div><div class="app-label">Directory</div></div>
+                            <div class="app-icon" onclick="openApp('Lens', 'camera', '#374151')"><div class="icon-wrapper bg-gray-700 rounded-2xl shadow-lg"><i data-lucide="camera"></i></div><div class="app-label">Lens</div></div>
+                            <div class="app-icon" onclick="openApp('Gallery', 'image', '#f97316')"><div class="icon-wrapper bg-orange-500 rounded-2xl shadow-lg"><i data-lucide="image"></i></div><div class="app-label">Gallery</div></div>
+                            <div class="app-icon" onclick="openApp('WebNet', 'globe', '#0ea5e9')"><div class="icon-wrapper bg-sky-500 rounded-2xl shadow-lg"><i data-lucide="globe"></i></div><div class="app-label">WebNet</div></div>
+                            <div class="app-icon" onclick="openApp('Planner', 'calendar', '#f43f5e')"><div class="icon-wrapper bg-rose-500 rounded-2xl shadow-lg"><i data-lucide="calendar"></i></div><div class="app-label">Planner</div></div>
+                            <div class="app-icon" onclick="openApp('Ticker', 'clock', '#64748b')"><div class="icon-wrapper bg-slate-500 rounded-2xl shadow-lg"><i data-lucide="clock"></i></div><div class="app-label">Ticker</div></div>
+                            <div class="app-icon" onclick="openApp('Archive', 'folder', '#eab308')"><div class="icon-wrapper bg-yellow-500 rounded-2xl shadow-lg"><i data-lucide="folder"></i></div><div class="app-label">Archive</div></div>
+                            <div class="app-icon" onclick="openApp('Sound', 'music', '#ec4899')"><div class="icon-wrapper bg-pink-500 rounded-2xl shadow-lg"><i data-lucide="music"></i></div><div class="app-label">Sound</div></div>
+                            <div class="app-icon" onclick="openApp('Nexus', 'shopping-bag', '#10b981')"><div class="icon-wrapper bg-emerald-500 rounded-2xl shadow-lg"><i data-lucide="shopping-bag"></i></div><div class="app-label">Nexus</div></div>
+                            <div class="app-icon" onclick="openApp('Hack', 'terminal', '#000000')"><div class="icon-wrapper bg-black border border-green-500/50 rounded-2xl shadow-lg"><i data-lucide="terminal" class="text-green-500"></i></div><div class="app-label">Hack</div></div>
+                            <div class="app-icon" onclick="openApp('Control', 'settings', '#94a3b8')"><div class="icon-wrapper bg-gray-400 rounded-2xl shadow-lg"><i data-lucide="settings"></i></div><div class="app-label">Control</div></div>
+                        </div>
+                    </div>
+                    <div class="nav-bar"><button onclick="goHome()" class="p-2 opacity-70 hover:opacity-100"><i data-lucide="circle"></i></button></div>
+                </div>
+            </div> <!-- End Screen Area -->
+
+            <!-- Skin Elements: Rabbit -->
+            <div class="controlsSection rabbit-elements">
+                <div class='cam'><div class='innerCam'><div class='mainCamContainer'><div class='mainCam'></div></div></div></div>
+                <div class='scrollWheelContainer' onclick="togglePower()"><div class='scrollWheel'></div></div>
+            </div>
+            <div class="knob rabbit-elements"></div>
+
+        </div>
+    </div>
+
+    <script>
+        const sys = { 
+            power: true, locked: true, passcode: [], correctPass: '1234', skin: 'apple',
+            activeApp: null, wifi: true, bt: false, brightness: 80, volume: 50,
+            contacts: [
+                { id: 'c1', name: 'Cipher', phone: '555-0101', color: 'bg-emerald-500', email: 'cipher@shadow.net' },
+                { id: 'c2', name: 'Architect', phone: '555-0999', color: 'bg-purple-500', email: 'arch@omni.corp' },
+                { id: 'c3', name: 'Echo-7', phone: '555-0422', color: 'bg-blue-500', email: 'echo7@void.io' }
+            ],
+            messages: [
+                { id: 1, contactId: 'c1', text: "Did you find the manifest?", time: "10:42 AM", fromMe: false },
+                { id: 2, contactId: 'c1', text: "Working on it now. Security is tight.", time: "10:45 AM", fromMe: true }
+            ],
+            emails: [
+                { id: 'e1', from: 'c2', subject: 'Mission Briefing', body: 'The target is the central server in Sector 4.', time: '09:15 AM', read: false }
+            ],
+            files: [
+                { id: 'f1', name: 'Bypass_Payload.bin', type: 'tool', size: '1.2MB' },
+                { id: 'f2', name: 'Sector_4_Map.jpg', type: 'image', size: '4.5MB' }
+            ],
+            music: [{ id: 's1', title: 'Neon Pulse', artist: 'SynthWave-X', duration: '3:45' }],
+            notifications: [{ id: 101, app: 'Chatter', title: 'Cipher', body: 'Check the vault logs.', time: '2m ago' }]
+        };
+
+        function init() {
+            lucide.createIcons();
+            updateClock();
+            setInterval(updateClock, 1000);
+            renderNotifications();
+        }
+
+        function setSkin(skin, btn) {
+            document.body.className = 'skin-' + skin;
+            sys.skin = skin;
+            document.querySelectorAll('.dev-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+        }
+
+        function togglePower() {
+            sys.power = !sys.power;
+            const screen = document.getElementById('main-screen');
+            if (!sys.power) {
+                screen.classList.add('power-off');
+            } else {
+                screen.classList.remove('power-off');
+                sys.locked = true;
+                sys.passcode = [];
+                updateLockUI();
+                showLayer('lock-screen');
+            }
+        }
+
+        function changeVolume(amt) {
+            sys.volume = Math.max(0, Math.min(100, sys.volume + amt));
+            const toast = document.getElementById('volume-toast');
+            const bar = document.getElementById('vol-bar');
+            bar.style.width = sys.volume + '%';
+            toast.classList.add('active');
+            clearTimeout(window.volTimeout);
+            window.volTimeout = setTimeout(() => toast.classList.remove('active'), 2000);
+        }
+
+        function inputPass(num) {
+            if (num === -1) sys.passcode.pop();
+            else if (sys.passcode.length < 4) sys.passcode.push(num);
+            updateLockUI();
+            if (sys.passcode.length === 4) {
+                setTimeout(() => {
+                    if (sys.passcode.join('') === sys.correctPass) unlock();
+                    else { sys.passcode = []; updateLockUI(); }
+                }, 200);
+            }
+        }
+
+        function updateLockUI() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((d, i) => d.style.background = i < sys.passcode.length ? 'white' : 'transparent');
+        }
+
+        function unlock() { sys.locked = false; showLayer('home-screen'); }
+
+        function showLayer(id) {
+            document.querySelectorAll('.layer').forEach(l => l.classList.add('hidden-layer'));
+            document.getElementById(id).classList.remove('hidden-layer');
+        }
+
+        function goHome() { if (!sys.locked) { sys.activeApp = null; showLayer('home-screen'); } }
+
+        function toggleShade() {
+            if (!sys.power) return;
+            document.getElementById('notification-shade').classList.toggle('active');
+            document.getElementById('shade-overlay').classList.toggle('active');
+        }
+
+        function toggleQS(key) {
+            if (key === 'wifi') { sys.wifi = !sys.wifi; document.querySelectorAll('.qs-tile')[0].classList.toggle('active'); }
+            if (key === 'bt') { sys.bt = !sys.bt; document.querySelectorAll('.qs-tile')[1].classList.toggle('active'); document.getElementById('icon-bt').classList.toggle('hidden'); }
+        }
+
+        function openApp(name, icon, color) {
+            sys.activeApp = name;
+            const layer = document.getElementById('app-layer');
+            let content = '';
+            const renderers = {
+                'Chatter': renderChatter, 'Comlink': renderComlink, 'Control': renderControl, 'WebNet': renderWebNet,
+                'Postman': renderPostman, 'Directory': renderDirectory, 'Archive': renderArchive, 'Sound': renderSound,
+                'Planner': renderPlanner, 'Ticker': renderTicker, 'Nexus': renderNexus, 'Lens': renderLens, 'Gallery': renderGallery
+            };
+            content = renderers[name] ? renderers[name]() : `<div class="flex-grow p-6 flex flex-col items-center justify-center opacity-50"><i data-lucide="${icon}" class="w-16 h-16 mb-4"></i><p>Accessing ${name} module...</p></div>`;
+            layer.innerHTML = `<div class="app-header" style="background: ${color || 'rgba(20,20,20,0.95)'}"><button onclick="goHome()" class="mr-3 p-1 hover:bg-white/10 rounded-full"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><span class="font-bold flex-grow text-white">${name}</span><i data-lucide="more-vertical" class="w-4 h-4 opacity-50"></i></div><div class="flex-grow flex flex-col overflow-hidden bg-black/20">${content}</div>`;
+            showLayer('app-layer');
+            lucide.createIcons();
+        }
+
+        function renderChatter() {
+            return `<div class="flex-grow overflow-y-auto scroll-hide">${sys.contacts.map(c => `<div class="flex items-center p-4 border-b border-white/5 hover:bg-white/5 cursor-pointer" onclick="openChat('${c.id}')"><div class="w-12 h-12 rounded-full ${c.color} flex items-center justify-center text-xl font-bold mr-4 text-white">${c.name[0]}</div><div class="flex-grow"><div class="flex justify-between items-center mb-1"><span class="font-bold text-white">${c.name}</span></div><div class="text-xs opacity-60">No messages</div></div></div>`).join('')}</div>`;
+        }
+
+        function openChat(contactId) {
+            const contact = sys.contacts.find(c => c.id === contactId);
+            document.getElementById('app-layer').innerHTML = `<div class="app-header bg-blue-600"><button onclick="openApp('Chatter', 'message-square', '#3b82f6')" class="mr-3 p-1 hover:bg-white/10 rounded-full"><i data-lucide="chevron-left" class="w-5 h-5 text-white"></i></button><span class="font-bold flex-grow text-white">${contact.name}</span></div><div class="flex-grow p-4 bg-black/40 flex flex-col"></div>`;
+            lucide.createIcons();
+        }
+
+        function renderComlink() {
+            const keys = [1,2,3,4,5,6,7,8,9,'*',0,'#'];
+            return `<div class="flex-grow flex flex-col p-6"><div class="text-center mt-4 mb-8 text-4xl font-light text-white h-10"></div><div class="grid grid-cols-3 gap-6 justify-items-center mb-8">${keys.map(k => `<button class="w-16 h-16 rounded-full bg-white/5 text-2xl text-white hover:bg-white/10 active:scale-95 transition-all">${k}</button>`).join('')}</div><div class="flex justify-center"><button class="w-16 h-16 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg active:scale-90 transition-all"><i data-lucide="phone"></i></button></div></div>`;
+        }
+
+        function renderControl() { return `<div class="flex-grow overflow-y-auto scroll-hide p-4"><div class="mb-6"><div class="text-[10px] uppercase opacity-40 font-bold mb-2 ml-2 tracking-widest">Personalization</div><div class="bg-white/5 rounded-2xl overflow-hidden border border-white/5"><div class="p-4 flex justify-between items-center border-b border-white/5"><span>Skin</span><span class="text-xs text-blue-400 font-bold">${sys.skin.toUpperCase()}</span></div><div class="p-4 flex justify-between items-center" onclick="changeVolume(10)"><span>Volume</span><span class="text-xs opacity-50">${sys.volume}%</span></div></div></div></div>`; }
+
+        function renderPostman() { return `<div class="flex-grow overflow-y-auto scroll-hide">${sys.emails.map(e => `<div class="p-4 border-b border-white/5"><div class="font-bold text-white">${e.from}</div><div class="text-xs text-blue-400">${e.subject}</div></div>`).join('')}</div>`; }
+        function renderDirectory() { return `<div class="flex-grow overflow-y-auto scroll-hide">${sys.contacts.map(c => `<div class="flex items-center p-4 border-b border-white/5"><div class="w-10 h-10 rounded-full ${c.color} mr-4"></div><div class="font-bold text-white">${c.name}</div></div>`).join('')}</div>`; }
+        function renderArchive() { return `<div class="flex-grow overflow-y-auto scroll-hide">${sys.files.map(f => `<div class="flex items-center p-4 border-b border-white/5"><div class="text-sm font-bold text-white">${f.name}</div></div>`).join('')}</div>`; }
+        function renderWebNet() { return `<div class="flex-grow p-6 flex flex-col gap-4 overflow-y-auto scroll-hide"><div class="p-4 bg-white/5 border-l-2 border-blue-500 rounded-r-lg hover:bg-white/10 cursor-pointer transition-colors"><div class="text-blue-400 text-[10px] font-bold mb-1 tracking-widest">NODE NEWS</div><div class="text-xs text-white">Central Authority announces new data sovereignty laws.</div></div></div>`; }
+        function renderSound() { return `<div class="flex-grow flex flex-col items-center justify-center p-8"><div class="w-48 h-48 bg-pink-500 rounded-3xl mb-6"></div><h3 class="text-xl font-bold">Neon Pulse</h3><p class="text-sm opacity-50">SynthWave-X</p></div>`; }
+        function renderPlanner() { return `<div class="p-4 flex-grow"><div class="grid grid-cols-7 gap-1 text-center">${Array.from({length:31},(_,i)=>`<div class="h-8 flex items-center justify-center text-xs">${i+1}</div>`).join('')}</div></div>`; }
+        function renderTicker() { return `<div class="flex-grow flex flex-col items-center justify-center"><div class="text-6xl font-thin mb-8">00:00:00</div></div>`; }
+        function renderNexus() { return `<div class="p-4 flex-grow"><div class="bg-white/5 p-6 rounded-3xl text-center"><h3 class="font-bold mb-1">Decrypter Pro</h3><button class="w-full py-3 bg-emerald-500 text-black rounded-xl text-xs font-bold uppercase mt-4">Install</button></div></div>`; }
+        function renderLens() { return `<div class="flex-grow bg-black relative"><div class="absolute bottom-10 left-0 right-0 flex justify-center"><div class="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center"><div class="w-12 h-12 rounded-full bg-white"></div></div></div></div>`; }
+        function renderGallery() { return `<div class="p-4 grid grid-cols-3 gap-2">${Array.from({length:9},(_,i)=>`<div class="aspect-square bg-white/5 rounded-lg"></div>`).join('')}</div>`; }
+
+        function updateClock() {
+            const now = new Date();
+            const hrs = now.getHours().toString().padStart(2,'0');
+            const mins = now.getMinutes().toString().padStart(2,'0');
+            const secs = now.getSeconds().toString().padStart(2,'0');
+            const time = hrs + ":" + mins;
+            const timeWithSecs = time + ":" + secs;
+            
+            const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            const dateStr = days[now.getDay()] + ", " + months[now.getMonth()] + " " + now.getDate();
+            const dateShort = (now.getDate().toString().padStart(2,'0')) + "-" + ((now.getMonth() + 1).toString().padStart(2,'0')) + "-" + now.getFullYear();
+
+            ['sb-time', 'home-time', 'lock-time', 'shade-time'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).innerText = time; });
+            if(document.getElementById('lock-date')) document.getElementById('lock-date').innerText = dateStr;
+            
+            // Sync Neon Screensaver
+            if(document.getElementById('ss-time')) document.getElementById('ss-time').innerText = timeWithSecs;
+            if(document.getElementById('ss-date')) document.getElementById('ss-date').innerText = dateShort;
+        }
+
+        function renderNotifications() {
+            const list = document.getElementById('notif-list');
+            if(list) list.innerHTML = sys.notifications.map(n => `<div class="bg-white/10 p-4 rounded-xl border border-white/5 mb-2"><div class="text-sm font-bold text-white">${n.title}</div><div class="text-xs text-gray-400">${n.body}</div></div>`).join('');
+        }
+
+        init();
+    </script>
+</body>
+</html>

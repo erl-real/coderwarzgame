@@ -1,0 +1,26 @@
+[
+  {
+    "title": "OS Fundamentals",
+    "content": "This PC operates like any other:\n• **Double-click** icons to launch.\n• **Drag** title bars to move; use the **bottom-left icon** if top is off-screen.\n• **Right-click** Desktop or Taskbar for window management and Resets.\n• **Start Menu** houses all apps and quick search."
+  },
+  {
+    "title": "Settings & User Profile",
+    "content": "Manage your identity in the **Control Panel > User Profile**:\n• **Sync:** Changes to Name or Icon here update your Login Screen and Saves instantly.\n• **Assets:** View live links to your Bank, Wallets, and Property.\n• **Email:** Open the **Mail Client** to register unique addresses with providers like yoboo.com or eye.com."
+  },
+  {
+    "title": "APP Store>Wallet APP>BANK",
+    "content": "Manage wealth across two core apps:\n• **Universal Wallet:** A dashboard for ALL your Government and Crypto holdings. Purchase **Upgrades** here to link more wallet IDs.\n• **OffChainBank:** Use the **Vault** to keep cash safe from theft. Use **Exchange** to swap Gov currencies based on live market rates."
+  },
+  {
+    "title": "Upgrade Hardware & End Processes",
+    "content": "Monitor performance in the **Process Manager** (Right-click Start):\n• **System Limits:** View your real CPU, GPU, RAM, and WiFi limits.\n• **Live Load:** See how much CPU/RAM each app uses. Use **End Task** to kill processes.\n• **Storage:** Dynamically synced with your local file count and size."
+  },
+  {
+    "title": "Find new Media & Sell your Files",
+    "content": "Your data is stored in the **Explorer**:\n• **My Music:** Reorganized into real folders. Double-click songs to play.\n• **Media Player:** Plays playlists sequentially. If a folder contains 'art1.jpg', it will display the artwork while you listen. Use Skip/Back to navigate."
+  },
+  {
+    "title": "Getting Started - you have a email waiting",
+    "content": "Your first assignment:\n1. Open the **App Store**.\n2. Download and Install the **Mail Client**.\n3. Open it and create your first encrypted account.\n\nGood luck, operative."
+  }
+]
