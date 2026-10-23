@@ -1,0 +1,115 @@
+/* ============================================================
+   ERA SKIN: 2024 — AI ERA
+   Player PC only. Scoped under .pc-shell.era-skin-2024
+   ============================================================ */
+
+.pc-shell.era-skin-2024 {
+    background: radial-gradient(circle at center, #24134f, #07030f 70%) !important;
+    font-family: "Sora", "Segoe UI", system-ui, sans-serif !important;
+}
+
+/* Desktop icons */
+.pc-shell.era-skin-2024 .os-desktopicon > div:first-child {
+    background: rgba(20,10,40,0.85) !important;
+    border: 1px solid rgba(180,130,255,0.35) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 0 40px rgba(150,80,255,0.25) !important;
+    backdrop-filter: blur(6px) !important;
+}
+.pc-shell.era-skin-2024 .os-desktopicon svg { color: #d9c4ff !important; }
+.pc-shell.era-skin-2024 .os-desktopicon .label,
+.pc-shell.era-skin-2024 .os-desktopicon {
+    color: #e9deff !important;
+    text-shadow: 0 0 8px rgba(150,80,255,0.5) !important;
+}
+
+.pc-shell.era-skin-2024 .os-window {
+    border: 1px solid rgba(180,130,255,0.35) !important;
+    border-radius: 18px !important;
+    background: rgba(20,10,40,0.85) !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 0 60px rgba(150,80,255,0.25) !important;
+}
+
+.pc-shell.era-skin-2024 .os-titlebar {
+    background: linear-gradient(135deg, rgba(120,70,220,0.6), rgba(40,20,80,0.6)) !important;
+    color: #ffffff !important;
+    border-bottom: 1px solid rgba(180,130,255,0.3) !important;
+    border-radius: 18px 18px 0 0 !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.pc-shell.era-skin-2024 .os-titlebtn {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(180,130,255,0.3) !important;
+    border-radius: 12px !important;
+    color: #e9deff !important;
+    box-shadow: none !important;
+}
+.pc-shell.era-skin-2024 .os-titlebtn:hover {
+    background: rgba(180,130,255,0.25) !important;
+}
+
+.pc-shell.era-skin-2024 .os-menubar {
+    background: rgba(20,10,40,0.85) !important;
+    border-bottom: 1px solid rgba(180,130,255,0.25) !important;
+    color: #e9deff !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.pc-shell.era-skin-2024 .os-taskbar {
+    background: rgba(12,6,28,0.85) !important;
+    border-top: 1px solid rgba(180,130,255,0.3) !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: none !important;
+}
+
+.pc-shell.era-skin-2024 .os-startbtn {
+    background: linear-gradient(135deg, #9650ff, #5b2bd6) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: 0 0 30px rgba(150,80,255,0.4) !important;
+}
+
+.pc-shell.era-skin-2024 .os-startmenu {
+    background: rgba(20,10,40,0.9) !important;
+    border: 1px solid rgba(180,130,255,0.35) !important;
+    border-radius: 20px !important;
+    color: #e9deff !important;
+    backdrop-filter: blur(14px) !important;
+    box-shadow: 0 0 60px rgba(150,80,255,0.3) !important;
+}
+
+.pc-shell.era-skin-2024 .os-contextmenu {
+    background: rgba(20,10,40,0.9) !important;
+    border: 1px solid rgba(180,130,255,0.35) !important;
+    border-radius: 16px !important;
+    color: #e9deff !important;
+    backdrop-filter: blur(14px) !important;
+}
+
+.pc-shell.era-skin-2024 .os-widget {
+    border: 1px solid rgba(180,130,255,0.35) !important;
+    border-radius: 20px !important;
+    background: rgba(20,10,40,0.85) !important;
+    color: #e9deff !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+/* ---- BARE WIDGETS ------------------------------------------------
+   Clippy is a character sitting on the desktop, not a panel. The
+   .os-widget rule above paints a box on every widget; this opts him
+   out of it. Extra class on the selector so it outranks that rule
+   ((0,4,0) vs (0,3,0)) and wins on order inside this file as well.
+   Resets the box only - the sprite and its bubble carry their own
+   background and text colour, so nothing inside depends on it. */
+.pc-shell.era-skin-2024 .os-widget.os-widget--bare {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+}

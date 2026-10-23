@@ -1,0 +1,162 @@
+/* ============================================================
+   ERA SKIN: 1990 — THE NOTEPAD / WIN 3.1 ERA
+   Player PC only. Scoped under .pc-shell.era-skin-1990
+   ============================================================ */
+
+.pc-shell.era-skin-1990 {
+    background: #008080 !important; /* classic teal desktop */
+    font-family: "Times New Roman", "Liberation Serif", serif !important;
+}
+
+/* Desktop icons */
+.pc-shell.era-skin-1990 .os-desktopicon > div:first-child {
+    background: #c0c0c0 !important;
+    border: 2px outset #ffffff !important;
+    border-radius: 0 !important;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.5) !important;
+}
+.pc-shell.era-skin-1990 .os-desktopicon svg { color: #000000 !important; }
+.pc-shell.era-skin-1990 .os-desktopicon .label,
+.pc-shell.era-skin-1990 .os-desktopicon {
+    color: #ffffff !important;
+    text-shadow: 1px 1px 0 #000080 !important;
+    font-family: "Times New Roman", serif !important;
+}
+
+/* Windows */
+.pc-shell.era-skin-1990 .os-window {
+    border: 3px outset #c0c0c0 !important;
+    border-radius: 0 !important;
+    background: #c0c0c0 !important;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.5) !important;
+}
+
+/* Title bar — navy Win3.1 */
+.pc-shell.era-skin-1990 .os-titlebar {
+    background: linear-gradient(to right, #000080, #1084d0) !important;
+    color: #ffffff !important;
+    border-radius: 0 !important;
+    font-family: Arial, sans-serif !important;
+    font-weight: bold;
+}
+
+/* Title buttons */
+.pc-shell.era-skin-1990 .os-titlebtn {
+    background: #c0c0c0 !important;
+    border: 2px outset #ffffff !important;
+    border-radius: 0 !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+}
+.pc-shell.era-skin-1990 .os-titlebtn:hover {
+    background: #d4d4d4 !important;
+}
+
+/* Menu bar */
+.pc-shell.era-skin-1990 .os-menubar {
+    background: #c0c0c0 !important;
+    border-bottom: 1px solid #808080 !important;
+    color: #000000 !important;
+    font-family: Arial, sans-serif !important;
+}
+
+/* Taskbar — gray beveled */
+.pc-shell.era-skin-1990 .os-taskbar {
+    background: #c0c0c0 !important;
+    border-top: 2px outset #ffffff !important;
+    box-shadow: none !important;
+}
+
+/* Start button */
+.pc-shell.era-skin-1990 .os-startbtn {
+    background: #c0c0c0 !important;
+    border: 2px outset #ffffff !important;
+    border-radius: 0 !important;
+    color: #000000 !important;
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* Start menu */
+.pc-shell.era-skin-1990 .os-startmenu {
+    background: #c0c0c0 !important;
+    border: 2px outset #ffffff !important;
+    border-radius: 0 !important;
+    color: #000000 !important;
+    font-family: Arial, sans-serif !important;
+}
+
+/* Context menu */
+.pc-shell.era-skin-1990 .os-contextmenu {
+    background: #c0c0c0 !important;
+    border: 2px outset #ffffff !important;
+    border-radius: 0 !important;
+    color: #000000 !important;
+    font-family: Arial, sans-serif !important;
+}
+
+/* Widgets */
+.pc-shell.era-skin-1990 .os-widget {
+    border: 2px outset #c0c0c0 !important;
+    border-radius: 0 !important;
+    background: #c0c0c0 !important;
+    color: #000000 !important;
+    font-family: Arial, sans-serif !important;
+}
+
+/* ---- TEXT CONTRAST ------------------------------------------------
+   The title bar is navy, so its white text is correct and stays. The menu bar
+   and task bar are #c0c0c0 - light - and their children carry Tailwind
+   text-white/* classes that beat an inherited `color`, so both went black on
+   black. Forced to black here, taskbar included. */
+.pc-shell.era-skin-1990 .os-menubar,
+.pc-shell.era-skin-1990 .os-menubar button,
+.pc-shell.era-skin-1990 .os-menubar span { color: #000000 !important; }
+
+.pc-shell.era-skin-1990 .os-taskbar,
+.pc-shell.era-skin-1990 .os-taskbar div,
+.pc-shell.era-skin-1990 .os-taskbar button,
+.pc-shell.era-skin-1990 .os-taskbar span,
+.pc-shell.era-skin-1990 .os-taskbar svg { color: #000000 !important; }
+
+.pc-shell.era-skin-1990 .os-taskbar input { color: #000000 !important; }
+.pc-shell.era-skin-1990 .os-taskbar input::placeholder { color: #555555 !important; }
+.pc-shell.era-skin-1990 .os-taskbar input:focus { background: #ffffff !important; }
+/* ---- APP CONTENT --------------------------------------------------
+   Internet, Advanced Settings, My Computer, File Explorer, Notes, Bin and
+   App Store all render dark surfaces (bg-slate-900 / bg-black) with
+   text-white/* labels. On this light skin that is light-on-light, so the
+   surfaces and the text are remapped. Dark skins need nothing - the apps
+   already match them.
+
+   The [class*=...] selectors look blunt but they are precise: text-white/*
+   are all body-text opacities, and the slate scale below 400 is near-white.
+   Mid and dark slates already read on #c0c0c0 and are left alone, which keeps
+   the apps' own hierarchy. Accent colours (emerald/sky/rose) are untouched. */
+.pc-shell.era-skin-1990 .os-appview { background: #c0c0c0 !important; color: #000000 !important; }
+.pc-shell.era-skin-1990 .os-appview [class*="text-white"] { color: #000000 !important; }
+.pc-shell.era-skin-1990 .os-appview [class*="text-slate-100"],
+.pc-shell.era-skin-1990 .os-appview [class*="text-slate-200"],
+.pc-shell.era-skin-1990 .os-appview [class*="text-slate-300"] { color: #000000 !important; }
+.pc-shell.era-skin-1990 .os-appview [class*="bg-white/"] { background-color: rgba(0,0,0,0.07) !important; }
+.pc-shell.era-skin-1990 .os-appview [class*="border-white/"] { border-color: #808080 !important; }
+.pc-shell.era-skin-1990 .os-appview input,
+.pc-shell.era-skin-1990 .os-appview textarea { color: #000000 !important; }
+.pc-shell.era-skin-1990 .os-appview input::placeholder,
+.pc-shell.era-skin-1990 .os-appview textarea::placeholder { color: #555555 !important; }
+
+/* ---- BARE WIDGETS ------------------------------------------------
+   Clippy is a character sitting on the desktop, not a panel. The
+   .os-widget rule above paints a box on every widget; this opts him
+   out of it. Extra class on the selector so it outranks that rule
+   ((0,4,0) vs (0,3,0)) and wins on order inside this file as well.
+   Resets the box only - the sprite and its bubble carry their own
+   background and text colour, so nothing inside depends on it. */
+.pc-shell.era-skin-1990 .os-widget.os-widget--bare {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+}

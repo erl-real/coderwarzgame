@@ -1,0 +1,112 @@
+/* ============================================================
+   ERA SKIN: 2020 — JAVASCRIPT MACHINE
+   Player PC only. Scoped under .pc-shell.era-skin-2020
+   ============================================================ */
+
+.pc-shell.era-skin-2020 {
+    background: #0a0a0a !important;
+    font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace !important;
+}
+
+/* Desktop icons */
+.pc-shell.era-skin-2020 .os-desktopicon > div:first-child {
+    background: #111111 !important;
+    border: 1px solid #444444 !important;
+    border-radius: 0 !important;
+    box-shadow: 0 0 0 1px #000 !important;
+}
+.pc-shell.era-skin-2020 .os-desktopicon svg { color: #e5e5e5 !important; }
+.pc-shell.era-skin-2020 .os-desktopicon .label,
+.pc-shell.era-skin-2020 .os-desktopicon {
+    color: #e5e5e5 !important;
+    text-shadow: 0 0 4px rgba(255,255,255,0.15) !important;
+    font-family: "JetBrains Mono", monospace !important;
+}
+
+.pc-shell.era-skin-2020 .os-window {
+    border: 1px solid #444444 !important;
+    border-radius: 0 !important;
+    background: #111111 !important;
+    box-shadow: 0 0 0 1px #000, 0 20px 50px rgba(0,0,0,0.6) !important;
+}
+
+.pc-shell.era-skin-2020 .os-titlebar {
+    background: #111111 !important;
+    color: #fafafa !important;
+    border-bottom: 1px solid #444444 !important;
+    border-radius: 0 !important;
+    font-family: "JetBrains Mono", monospace !important;
+}
+
+.pc-shell.era-skin-2020 .os-titlebtn {
+    background: #111111 !important;
+    border: 1px solid #444444 !important;
+    border-radius: 0 !important;
+    color: #fafafa !important;
+    box-shadow: none !important;
+}
+.pc-shell.era-skin-2020 .os-titlebtn:hover {
+    background: #222222 !important;
+    transform: translateX(2px);
+}
+
+.pc-shell.era-skin-2020 .os-menubar {
+    background: #111111 !important;
+    border-bottom: 1px solid #333333 !important;
+    color: #e5e5e5 !important;
+    font-family: "JetBrains Mono", monospace !important;
+}
+
+.pc-shell.era-skin-2020 .os-taskbar {
+    background: #0a0a0a !important;
+    border-top: 1px solid #444444 !important;
+    box-shadow: none !important;
+}
+
+.pc-shell.era-skin-2020 .os-startbtn {
+    background: #111111 !important;
+    border: 1px solid #444444 !important;
+    border-radius: 0 !important;
+    color: #fafafa !important;
+    font-family: "JetBrains Mono", monospace !important;
+}
+
+.pc-shell.era-skin-2020 .os-startmenu {
+    background: #111111 !important;
+    border: 1px solid #444444 !important;
+    border-radius: 0 !important;
+    color: #e5e5e5 !important;
+    font-family: "JetBrains Mono", monospace !important;
+}
+
+.pc-shell.era-skin-2020 .os-contextmenu {
+    background: #111111 !important;
+    border: 1px solid #444444 !important;
+    border-radius: 0 !important;
+    color: #e5e5e5 !important;
+    font-family: "JetBrains Mono", monospace !important;
+}
+
+.pc-shell.era-skin-2020 .os-widget {
+    border: 1px solid #444444 !important;
+    border-radius: 0 !important;
+    background: #111111 !important;
+    color: #e5e5e5 !important;
+    font-family: "JetBrains Mono", monospace !important;
+}
+
+/* ---- BARE WIDGETS ------------------------------------------------
+   Clippy is a character sitting on the desktop, not a panel. The
+   .os-widget rule above paints a box on every widget; this opts him
+   out of it. Extra class on the selector so it outranks that rule
+   ((0,4,0) vs (0,3,0)) and wins on order inside this file as well.
+   Resets the box only - the sprite and its bubble carry their own
+   background and text colour, so nothing inside depends on it. */
+.pc-shell.era-skin-2020 .os-widget.os-widget--bare {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+}

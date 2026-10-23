@@ -1,0 +1,150 @@
+/* ============================================================
+   ERA SKIN: 2012 — FLAT DESIGN
+   Player PC only. Scoped under .pc-shell.era-skin-2012
+   ============================================================ */
+
+.pc-shell.era-skin-2012 {
+    background: #f2f2f2 !important;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+}
+
+/* Desktop icons */
+.pc-shell.era-skin-2012 .os-desktopicon > div:first-child {
+    background: #ffffff !important;
+    border: 1px solid #dddddd !important;
+    border-radius: 2px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
+}
+.pc-shell.era-skin-2012 .os-desktopicon svg { color: #1ba1e2 !important; }
+.pc-shell.era-skin-2012 .os-desktopicon .label,
+.pc-shell.era-skin-2012 .os-desktopicon {
+    color: #111111 !important;
+    text-shadow: none !important;
+}
+
+.pc-shell.era-skin-2012 .os-window {
+    border: 1px solid #dddddd !important;
+    border-radius: 2px !important;
+    background: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
+}
+
+.pc-shell.era-skin-2012 .os-titlebar {
+    background: #ffffff !important;
+    color: #111111 !important;
+    border-bottom: 1px solid #dddddd !important;
+    border-radius: 0 !important;
+    font-weight: 600;
+}
+
+.pc-shell.era-skin-2012 .os-titlebtn {
+    background: #f4f4f4 !important;
+    border: 1px solid #dddddd !important;
+    border-radius: 2px !important;
+    color: #111111 !important;
+    box-shadow: none !important;
+}
+.pc-shell.era-skin-2012 .os-titlebtn:hover {
+    background: #e6e6e6 !important;
+}
+
+.pc-shell.era-skin-2012 .os-menubar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #eeeeee !important;
+    color: #111111 !important;
+}
+
+.pc-shell.era-skin-2012 .os-taskbar {
+    background: #ffffff !important;
+    border-top: 1px solid #dddddd !important;
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.08) !important;
+}
+
+.pc-shell.era-skin-2012 .os-startbtn {
+    background: #1ba1e2 !important;
+    border: none !important;
+    border-radius: 2px !important;
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.pc-shell.era-skin-2012 .os-startmenu {
+    background: #ffffff !important;
+    border: 1px solid #dddddd !important;
+    border-radius: 2px !important;
+    color: #111111 !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+}
+
+.pc-shell.era-skin-2012 .os-contextmenu {
+    background: #ffffff !important;
+    border: 1px solid #dddddd !important;
+    border-radius: 2px !important;
+    color: #111111 !important;
+}
+
+.pc-shell.era-skin-2012 .os-widget {
+    border: 1px solid #dddddd !important;
+    border-radius: 2px !important;
+    background: #ffffff !important;
+    color: #111111 !important;
+}
+
+/* ---- TEXT CONTRAST ------------------------------------------------
+   Every bar is pure white. The children carry Tailwind text-white/* classes
+   which beat an inherited `color`, so they were invisible. Forced dark here. */
+.pc-shell.era-skin-2012 .os-titlebar,
+.pc-shell.era-skin-2012 .os-titlebar div,
+.pc-shell.era-skin-2012 .os-titlebar span,
+.pc-shell.era-skin-2012 .os-titlebar svg { color: #111111 !important; }
+
+.pc-shell.era-skin-2012 .os-titlebar div { text-shadow: none !important; }
+
+.pc-shell.era-skin-2012 .os-titlebtn { background: #eeeeee !important; border: 1px solid #dddddd !important; }
+.pc-shell.era-skin-2012 .os-titlebtn:hover { background: #d8d8d8 !important; }
+.pc-shell.era-skin-2012 .os-titlebtn:hover svg { color: #111111 !important; }
+
+.pc-shell.era-skin-2012 .os-menubar,
+.pc-shell.era-skin-2012 .os-menubar button,
+.pc-shell.era-skin-2012 .os-menubar span { color: #111111 !important; }
+
+.pc-shell.era-skin-2012 .os-taskbar,
+.pc-shell.era-skin-2012 .os-taskbar div,
+.pc-shell.era-skin-2012 .os-taskbar button,
+.pc-shell.era-skin-2012 .os-taskbar span,
+.pc-shell.era-skin-2012 .os-taskbar svg { color: #111111 !important; }
+
+.pc-shell.era-skin-2012 .os-taskbar input { color: #111111 !important; }
+.pc-shell.era-skin-2012 .os-taskbar input::placeholder { color: #777777 !important; }
+.pc-shell.era-skin-2012 .os-taskbar input:focus { background: #ffffff !important; }
+/* ---- APP CONTENT --------------------------------------------------
+   Internet, Advanced Settings, My Computer, File Explorer, Notes, Bin and
+   App Store all render dark surfaces with text-white/* labels. On this light
+   skin that is light-on-light. Dark skins need nothing. */
+.pc-shell.era-skin-2012 .os-appview { background: #ffffff !important; color: #111111 !important; }
+.pc-shell.era-skin-2012 .os-appview [class*="text-white"] { color: #111111 !important; }
+.pc-shell.era-skin-2012 .os-appview [class*="text-slate-100"],
+.pc-shell.era-skin-2012 .os-appview [class*="text-slate-200"],
+.pc-shell.era-skin-2012 .os-appview [class*="text-slate-300"] { color: #111111 !important; }
+.pc-shell.era-skin-2012 .os-appview [class*="bg-white/"] { background-color: rgba(0,0,0,0.05) !important; }
+.pc-shell.era-skin-2012 .os-appview [class*="border-white/"] { border-color: #dddddd !important; }
+.pc-shell.era-skin-2012 .os-appview input,
+.pc-shell.era-skin-2012 .os-appview textarea { color: #111111 !important; }
+.pc-shell.era-skin-2012 .os-appview input::placeholder,
+.pc-shell.era-skin-2012 .os-appview textarea::placeholder { color: #777777 !important; }
+
+/* ---- BARE WIDGETS ------------------------------------------------
+   Clippy is a character sitting on the desktop, not a panel. The
+   .os-widget rule above paints a box on every widget; this opts him
+   out of it. Extra class on the selector so it outranks that rule
+   ((0,4,0) vs (0,3,0)) and wins on order inside this file as well.
+   Resets the box only - the sprite and its bubble carry their own
+   background and text colour, so nothing inside depends on it. */
+.pc-shell.era-skin-2012 .os-widget.os-widget--bare {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+}

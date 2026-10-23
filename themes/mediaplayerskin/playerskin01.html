@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Windows Media Player 6 for Windows ME/XP/2000/98SE</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css'><style>
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+body {
+  overflow: hidden;
+  font-family: "Microsoft Sans Serif", sans-serif;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #00867d;
+}
+
+.wmp {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 80%;
+  height: 80%;
+  min-width: 500px;
+  background-color: #c0c0c0;
+  border-top: 3px solid #efefef;
+  border-left: 3px solid #efefef;
+  border-right: 3px solid black;
+  border-bottom: 3px solid black;
+  padding: 5px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  max-width: 100%;
+  height: 30px;
+  background: navy;
+  background: linear-gradient(90deg, navy 0%, #1084d0 100%);
+  padding: 5px;
+}
+.top-bar .title {
+  display: flex;
+  align-items: center;
+}
+.top-bar .title h1 {
+  margin: 0;
+  margin-left: 5px;
+  font-weight: bold;
+  color: white;
+}
+.top-bar .buttons {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.top-bar .button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 25px;
+  background-color: #c0c0c0;
+  border-top: 3px solid #efefef;
+  border-left: 3px solid #efefef;
+  border-right: 3px solid black;
+  border-bottom: 3px solid black;
+  cursor: pointer;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 3px, 15px 100%;
+  z-index: 1;
+  animation: flicker 100ms infinite;
+}
+
+.video-overlay:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  opacity: 0.6;
+  z-index: 2;
+}
+
+video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  object-fit: cover;
+}
+
+.bottom-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 30px;
+  margin-top: 5px;
+}
+.bottom-bar .progress-bar {
+  position: relative;
+  width: 100%;
+  height: 15px;
+  border: 3px solid #efefef;
+  border-top: 3px solid black;
+}
+.bottom-bar .progress-perc {
+  position: absolute;
+  top: -7px;
+  left: 15px;
+  width: 10px;
+  height: 22px;
+  background-color: #c0c0c0;
+  border-bottom: 3px solid black;
+  border-right: 3px solid black;
+  border-top: 3px solid #efefef;
+  border-left: 3px solid #efefef;
+  cursor: pointer;
+}
+.bottom-bar .buttons {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-right: 15px;
+}
+.bottom-bar .button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 98%;
+  cursor: pointer;
+  color: #808080;
+}
+.bottom-bar .audio {
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+  cursor: pointer;
+}
+.bottom-bar .slider {
+  position: relative;
+  border-bottom: 2px solid #efefef;
+  border-right: 2px solid #efefef;
+  margin-left: 5px;
+  width: 70px;
+  height: 25px;
+  background: linear-gradient(to bottom right, transparent 0%, transparent 50%, #adadad 50%, #c0c0c0 100%);
+}
+.bottom-bar .audio-perc {
+  position: absolute;
+  top: 0;
+  left: 15px;
+  width: 10px;
+  height: 110%;
+  background-color: #c0c0c0;
+  border-bottom: 3px solid black;
+  border-right: 3px solid black;
+  border-top: 3px solid #efefef;
+  border-left: 3px solid #efefef;
+  cursor: pointer;
+}
+</style>
+
+  </head>
+    
+  <body>
+  <div class="container">
+  <div class="wmp">
+    <div class="top-bar">
+      <div class="title">
+        <img src="https://win98icons.alexmeub.com/icons/png/media_player-0.png" />
+        <h1>Windows Media Player</h1>
+      </div>
+      <div class="buttons">
+        <div class="button">
+          <i class="fa-regular fa-window-minimize"></i>
+        </div>
+        <div class="button">
+          <i class="fa-regular fa-window-maximize"></i>
+        </div>
+        <div class="button">
+          <i class="fa-solid fa-xmark"></i>
+        </div>
+      </div>
+    </div>
+    <div class="video-container">
+      <div class="video-overlay">
+      </div>
+      <video autoplay playsinline muted loop preload>
+        <source src="https://matteoperonidev.github.io/hosted-assets/retrowave-background.mp4" />
+      </video>
+    </div>
+    <div class="bottom-bar">
+      <div class="buttons">
+        <div class="button">
+          <i class="fa-solid fa-play"></i>
+        </div>
+        <div class="button">
+          <i class="fa-solid fa-pause"></i>
+        </div>
+        <div class="button">
+          <i class="fa-solid fa-stop"></i>
+        </div>
+        <div class="button">
+          <i class="fa-solid fa-backward-fast"></i>
+        </div>
+        <div class="button">
+          <i class="fa-solid fa-backward"></i>
+        </div>
+        <div class="button">
+          <i class="fa-solid fa-forward"></i>
+        </div>
+        <div class="button">
+          <i class="fa-solid fa-forward-fast"></i>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-perc"></div>
+      </div>
+      <div class="audio">
+        <img src="https://win98icons.alexmeub.com/icons/png/loudspeaker_rays-0.png" />
+        <div class="slider">
+          <div class="audio-perc"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+  </body>
+  
+</html>
+

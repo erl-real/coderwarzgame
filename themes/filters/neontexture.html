@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>𝔸𝕦𝕣𝕒 𝕋𝕣𝕒𝕟𝕤𝕚𝕥𝕚𝕠𝕟 (𝕎𝕖𝕓𝔾𝕃 𝕊𝕙𝕒𝕕𝕖𝕣 𝔸𝕣𝕥)</title>
+    <style>
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Open Sans", sans-serif;
+}
+
+.webgl {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  inset: 0;
+  outline: none;
+  z-index: 0;
+}
+
+.loader {
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+}
+
+.loader p {
+  font-size: 18px;
+}
+
+.underlay {
+  color: #fff;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  padding: 40px 40px;
+  z-index: 1;
+  text-align: right;
+  pointer-events: none;
+}
+
+.underlay a {
+  pointer-events: auto;
+}
+
+h1 {
+  font-size: 25px;
+  padding: 8px 0px;
+}
+
+p {
+  margin-bottom: 2px;
+  font-weight: 300;
+  font-size: 14px;
+}
+
+.hint {
+  opacity: 0.85;
+}
+
+a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-position: below;
+  text-underline-offset: 3px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+a:hover {
+  color: #d991ff;
+}
+</style>
+
+  </head>
+    
+  <body>
+  <div class="loader">
+  <p>Loading...!</p>
+</div>
+
+<div class="underlay">
+  <div>
+    <h1>Aura Transition</h1>
+    <p>
+      Made by
+      <a target="_blank" rel="noreferrer" href="https://github.com/xXBricksquadXx">xXBricksquadXx</a>
+    </p>
+    <p class="hint">Use the GUI (top-right) to change Pattern + Transition.</p>
+  </div>
+</div>
+
+<canvas class="webgl"></canvas>
+    <script src='https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/lil-gui@0.19/dist/lil-gui.min.js'></script><script>
+(() => {
+  if (!window.THREE) throw new Error("THREE not found. Add three.min.js as an external script.");
+
+  // ------------------------------------------------------------
+  // TEXTURES
+  // ------------------------------------------------------------
+  const TEX_1    = "https://raw.githubusercontent.com/xXBricksquadXx/Assets/24c81b65ee8b9487b79a5f6aec35870ffcfb4d50/TEX_1.png";
+  const TEX_2    = "https://raw.githubusercontent.com/xXBricksquadXx/Assets/refs/heads/main/TEX_2.png";
+  const TEX_1_SM = "https://raw.githubusercontent.com/xXBricksquadXx/Assets/refs/heads/main/TEX_1_SM.jpg";
+  const TEX_2_SM = "https://raw.githubusercontent.com/xXBricksquadXx/Assets/refs/heads/main/TEX_2_SM.jpg";
+
+  // ------------------------------------------------------------
+  // SHADERS
+  // ------------------------------------------------------------
+  const VERTEX_SHADER = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+
+  const FRAGMENT_SHADER = `
+uniform sampler2D uTexture1;
+uniform sampler2D uTexture2;
+uniform vec2 uResolution;
+uniform float uTime;
+uniform float uTransition;
+uniform float uPattern;
+
+// NEW
+uniform float uAura;     // 0..2   (strength)
+uniform float uEdge;     // 0..3   (edge sensitivity)
+uniform float uWarp;     // 0..1   (extra procedural warp)
+
+varying vec2 vUv;
+
+/* Helpers */
+vec3 gammaCorrect(vec3 color, float gamma) { return pow(color, vec3(1.0 / gamma)); }
+vec4 sround(vec4 s) { return floor(s + 0.5); }
+vec2 scaleUvs(vec2 uv, vec2 aspectCorrection) { return (uv - 0.5) * aspectCorrection + 0.5; }
+
+vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec3 permute(vec3 x) { return mod289(((x * 34.0) + 1.0) * x); }
+
+float simplexNoise(vec2 v) {
+  const vec4 C = vec4(
+    0.211324865405187, 0.366025403784439,
+    -0.577350269189626, 0.024390243902439
+  );
+  vec2 i = floor(v + dot(v, C.yy));
+  vec2 x0 = v - i + dot(i, C.xx);
+
+  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+  vec4 x12 = x0.xyxy + C.xxzz;
+  x12.xy -= i1;
+
+  i = mod289(i);
+  vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+
+  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+  m = m * m; m = m * m;
+
+  vec3 x = 2.0 * fract(p * C.www) - 1.0;
+  vec3 h = abs(x) - 0.5;
+  vec3 ox = floor(x + 0.5);
+  vec3 a0 = x - ox;
+
+  m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+
+  vec3 g;
+  g.x = a0.x * x0.x + h.x * x0.y;
+  g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+
+  return 130.0 * dot(m, g);
+}
+
+float remap(float value, float a, float b, float c, float d) {
+  return c + (value - a) * (d - c) / (b - a);
+}
+
+/* Grid generators */
+float squareDistance(vec2 uv) { vec2 p = abs(uv); return max(p.x, p.y); }
+
+float hexagonDistance(vec2 uv) {
+  vec2 s = vec2(1.0, 1.73205);
+  vec2 p = abs(uv);
+  return max(dot(p, s * 0.5), p.x);
+}
+
+float circleDistance(vec2 uv) {
+  float dist = length(uv);
+  float outerRadius = 0.49;
+  float innerRadius = 0.45;
+  return smoothstep(innerRadius - 0.02, innerRadius, dist)
+       - smoothstep(outerRadius, outerRadius + 0.02, dist);
+}
+
+vec4 squareCoordinates(vec2 uv) {
+  vec2 c = floor(uv) + 0.5;
+  vec2 o = uv - c;
+  return vec4(o, c);
+}
+
+vec4 hexCoordinates(vec2 uv) {
+  vec2 s = vec2(1.0, 1.73205);
+  vec4 hexCenter = sround(vec4(uv, uv - vec2(0.5, 1.0)) / s.xyxy);
+  vec4 offset = vec4(uv - (hexCenter.xy * s), uv - ((hexCenter.zw + 0.5) * s));
+  float dot1 = dot(offset.xy, offset.xy);
+  float dot2 = dot(offset.zw, offset.zw);
+  vec4 final1 = vec4(offset.xy, hexCenter.xy);
+  vec4 final2 = vec4(offset.zw, hexCenter.zw);
+  return mix(final1, final2, step(0.0, dot1 - dot2));
+}
+
+vec4 circleCoordinates(vec2 uv) {
+  vec2 c = floor(uv) + 0.5;
+  vec2 o = uv - c;
+  return vec4(o, c);
+}
+
+/* NEW: Sobel edge + ridged multifractal */
+float luma(vec3 c) { return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
+
+float sobelEdge(sampler2D tex, vec2 uv, vec2 px) {
+  float tl = luma(texture2D(tex, uv + px * vec2(-1.0,  1.0)).rgb);
+  float  t = luma(texture2D(tex, uv + px * vec2( 0.0,  1.0)).rgb);
+  float tr = luma(texture2D(tex, uv + px * vec2( 1.0,  1.0)).rgb);
+
+  float  l = luma(texture2D(tex, uv + px * vec2(-1.0,  0.0)).rgb);
+  float  r = luma(texture2D(tex, uv + px * vec2( 1.0,  0.0)).rgb);
+
+  float bl = luma(texture2D(tex, uv + px * vec2(-1.0, -1.0)).rgb);
+  float  b = luma(texture2D(tex, uv + px * vec2( 0.0, -1.0)).rgb);
+  float br = luma(texture2D(tex, uv + px * vec2( 1.0, -1.0)).rgb);
+
+  float gx = -tl - 2.0*l - bl + tr + 2.0*r + br;
+  float gy = -bl - 2.0*b - br + tl + 2.0*t + tr;
+  return sqrt(gx*gx + gy*gy);
+}
+
+float ridgedMF(vec2 p) {
+  float sum = 0.0;
+  float amp = 0.55;
+  float freq = 1.0;
+  float prev = 1.0;
+  for (int i = 0; i < 5; i++) {
+    float n = simplexNoise(p * freq);
+    n = 1.0 - abs(n);  // ridged
+    n = n * n;
+    sum += n * amp * prev;
+    prev = n;
+    freq *= 2.0;
+    amp *= 0.5;
+  }
+  return clamp(sum, 0.0, 1.0);
+}
+
+void main() {
+  vec2 correctedUvs = vUv;
+
+  // Barrel distortion
+  vec2 barrelUvs = scaleUvs(correctedUvs, vec2(1.0 + length(vUv - 0.5)));
+
+  float gridSize = 20.0;
+
+  // Square
+  vec2 squareUv = barrelUvs * gridSize;
+  vec4 squareCoords = squareCoordinates(squareUv);
+  float squareDist = squareDistance(squareCoords.xy);
+  float squareBorder = smoothstep(0.42, 0.5, squareDist);
+
+  // Hex
+  vec2 hexUv = barrelUvs * gridSize;
+  vec4 hexCoords = hexCoordinates(hexUv);
+  float hexDist = hexagonDistance(hexCoords.xy);
+  float hexBorder = smoothstep(0.42, 0.50, hexDist);
+
+  // Circle
+  vec2 circleUv = barrelUvs * gridSize;
+  vec4 circleCoords = circleCoordinates(circleUv);
+  float cDist = circleDistance(circleCoords.xy);
+  float circleBorder = smoothstep(0.47, 0.48, cDist);
+
+  // Blend patterns (uPattern: 0..2)
+  float patternFract = fract(uPattern);
+  float patternBase = floor(uPattern);
+
+  float currentPattern;
+  vec2 blendedCoords;
+  float patternDist;
+
+  if (patternBase == 0.0) {
+    currentPattern = mix(squareBorder, hexBorder, patternFract);
+    blendedCoords = mix(squareCoords.zw, hexCoords.zw, patternFract);
+    patternDist = mix(squareDist, hexDist, patternFract);
+  } else if (patternBase == 1.0) {
+    currentPattern = mix(hexBorder, circleBorder, patternFract);
+    blendedCoords = mix(hexCoords.zw, circleCoords.zw, patternFract);
+    patternDist = mix(hexDist, cDist, patternFract);
+  } else {
+    currentPattern = mix(circleBorder, squareBorder, patternFract);
+    blendedCoords = mix(circleCoords.zw, squareCoords.zw, patternFract);
+    patternDist = mix(cDist, squareDist, patternFract);
+  }
+
+  // Noise + “edge” energy
+  float z = simplexNoise(blendedCoords * 0.5);
+  float y = pow(1.0 - max(0.0, 0.5 - patternDist), 20.0);
+
+  // Transition shaping
+  float offset = 0.2;
+  float bounce = 1.0 - smoothstep(0.0, 0.5, abs(uTransition - 0.5));
+
+  float blendCut = smoothstep(
+    vUv.y - offset,
+    vUv.y + offset,
+    remap(uTransition + z * 0.08 * bounce, 0.0, 1.0, -offset, 1.0 + offset)
+  );
+
+  float merge = 1.0 - smoothstep(0.0, 0.5, abs(blendCut - 0.5));
+  float cut = step(vUv.y, uTransition + (((y + z) * 0.15) * bounce));
+
+  // Base UV wobble (existing)
+  vec2 textureUV = correctedUvs + (y * sin(vUv.y * 15.0 - uTime) * merge * 0.025);
+
+  // NEW: ridged multifractal warp (subtle, "premium" shimmer)
+  float warpN = ridgedMF(blendedCoords * 0.08 + vec2(0.0, uTime * 0.08));
+  textureUV += (warpN - 0.5) * 0.04 * uWarp * (0.25 + 0.75 * merge);
+
+  vec2 fromUV = textureUV;
+  vec2 toUV   = textureUV;
+
+  float colorBlend = merge * currentPattern * bounce;
+
+  fromUV = scaleUvs(fromUV, vec2(1.0 + z * 0.2 * merge));
+  toUV   = scaleUvs(toUV,   vec2(1.0 + z * 0.2 * blendCut));
+
+  vec4 texA = texture2D(uTexture1, toUV);
+  vec4 texB = texture2D(uTexture2, fromUV);
+
+  vec3 topColor = gammaCorrect(vec3(0.55, 0.5, 0.27), 1.2);
+  vec3 bottomColor = gammaCorrect(vec3(0.32, 0.14, 0.8), 1.2);
+
+  vec4 finalColor =
+    mix(texA, texB, cut) +
+    vec4(mix(topColor, bottomColor, 0.5), 1.0) * colorBlend * 2.0;
+
+  finalColor.rgb += (sin(uTime * 2.0) * 0.1) * colorBlend * 2.0;
+
+  // ------------------------------------------------------------
+  // NEW: contour aura (Sobel edge + ridged multifractal)
+  // ------------------------------------------------------------
+  vec2 px = 1.0 / max(uResolution, vec2(1.0)); // avoid div0
+
+  float eA = sobelEdge(uTexture1, toUV,   px);
+  float eB = sobelEdge(uTexture2, fromUV, px);
+
+  // Visible selection follows cut (0 => texA, 1 => texB)
+  float visA = 1.0 - cut;
+  float visB = cut;
+
+  // Normalize/smooth edge
+  float edge = (eA * visA + eB * visB) * uEdge;
+  edge = smoothstep(0.10, 0.45, edge);
+
+  // Ridged noise that "crawls" on the contour
+  float auraNoise = ridgedMF(vUv * 3.0 + vec2(uTime * 0.10, -uTime * 0.08) + z * 0.25);
+
+  float auraMask = edge * (0.35 + 0.65 * auraNoise);
+  auraMask = pow(auraMask, 1.15);
+
+  // Colors: Tanjiro water->fire vs Nezuko pink glow
+  vec3 water = vec3(0.18, 0.72, 1.00);
+  vec3 fire  = vec3(1.00, 0.28, 0.06);
+  vec3 tanAura = mix(water, fire, smoothstep(0.35, 0.75, vUv.x));
+
+  vec3 nezAura = vec3(1.00, 0.30, 0.85);
+
+  vec3 auraCol = tanAura * visA + nezAura * visB;
+
+  // Additive glow (kept restrained by uAura)
+  finalColor.rgb += auraCol * auraMask * uAura;
+
+  gl_FragColor = finalColor;
+}
+`;
+
+  // ------------------------------------------------------------
+  // GUI (lil-gui if present, otherwise a simple fallback UI)
+  // ------------------------------------------------------------
+  function createFallbackGUI(params, onChange) {
+    const root = document.createElement("div");
+    root.style.cssText = [
+      "position:fixed",
+      "top:10px",
+      "right:10px",
+      "z-index:9999",
+      "background:rgba(0,0,0,0.65)",
+      "border:1px solid rgba(255,255,255,0.15)",
+      "border-radius:10px",
+      "padding:10px",
+      "color:#fff",
+      "font:12px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial",
+      "min-width:190px",
+      "backdrop-filter:blur(6px)"
+    ].join(";");
+
+    const mkRow = (label) => {
+      const r = document.createElement("div");
+      r.style.cssText =
+        "display:grid;grid-template-columns:72px 1fr;gap:8px;align-items:center;margin-bottom:8px";
+      const l = document.createElement("div");
+      l.textContent = label;
+      l.style.opacity = "0.9";
+      r.appendChild(l);
+      return r;
+    };
+
+    const addRange = (label, key, min, max, step) => {
+      const r = mkRow(label);
+      const inp = document.createElement("input");
+      inp.type = "range"; inp.min = String(min); inp.max = String(max); inp.step = String(step);
+      inp.value = String(params[key]);
+      inp.addEventListener("input", () => { params[key] = Number(inp.value); onChange(key, params[key]); });
+      r.appendChild(inp);
+      root.appendChild(r);
+    };
+
+    // existing
+    addRange("Transition", "transition", 0, 1, 0.001);
+
+    const r2 = mkRow("Pattern");
+    const s = document.createElement("select");
+    s.innerHTML = `<option value="0">Square</option><option value="1">Hexagon</option><option value="2">Circle</option>`;
+    s.value = String(params.pattern);
+    s.style.width = "100%";
+    s.addEventListener("change", () => { params.pattern = Number(s.value); onChange("pattern", params.pattern); });
+    r2.appendChild(s);
+    root.appendChild(r2);
+
+    // NEW
+    addRange("Aura", "aura", 0, 2, 0.01);
+    addRange("Edge", "edge", 0, 3, 0.01);
+    addRange("Warp", "warp", 0, 1, 0.01);
+
+    document.body.appendChild(root);
+    return { domElement: root, destroy() { root.remove(); } };
+  }
+
+  function createGUI(params, onChange) {
+    const GUICtor =
+      (window.lil && window.lil.GUI) ? window.lil.GUI :
+      (window.GUI) ? window.GUI :
+      null;
+
+    if (!GUICtor) return createFallbackGUI(params, onChange);
+
+    const gui = new GUICtor();
+    const el = gui.domElement || gui._domElement;
+    if (el && el.style) el.style.cssText += ";position:fixed;top:10px;right:10px;z-index:9999";
+
+    gui.add(params, "transition", 0, 1, 0.001).name("Transition")
+      .onChange((v) => onChange("transition", v));
+    gui.add(params, "pattern", { Square: 0, Hexagon: 1, Circle: 2 }).name("Pattern")
+      .onChange((v) => onChange("pattern", Number(v)));
+
+    // NEW
+    gui.add(params, "aura", 0, 2, 0.01).name("Aura")
+      .onChange((v) => onChange("aura", v));
+    gui.add(params, "edge", 0, 3, 0.01).name("Edge")
+      .onChange((v) => onChange("edge", v));
+    gui.add(params, "warp", 0, 1, 0.01).name("Warp")
+      .onChange((v) => onChange("warp", v));
+
+    return gui;
+  }
+
+  // ------------------------------------------------------------
+  // APP
+  // ------------------------------------------------------------
+  class ShaderTransitionApp {
+    constructor() {
+      this.canvas = document.querySelector("canvas.webgl");
+      this.loaderEl = document.querySelector(".loader");
+
+      this.scene = new THREE.Scene();
+      this.clock = new THREE.Clock();
+
+      this.sizes = { width: window.innerWidth, height: window.innerHeight };
+      this.isMobile = this.sizes.width < 500;
+
+      // NEW params
+      this.params = {
+        transition: 0.5,
+        pattern: 0,
+        aura: 0.9,  // start subtle
+        edge: 1.3,
+        warp: 0.35,
+      };
+
+      this.camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0.01, 10);
+      this.camera.position.set(0, 0, 2);
+      this.scene.add(this.camera);
+
+      this.renderer = new THREE.WebGLRenderer({
+        canvas: this.canvas,
+        antialias: true,
+        powerPreference: "high-performance",
+      });
+      this.renderer.setClearColor(0x000000, 1);
+
+      this.material = null;
+
+      this.gui = createGUI(this.params, (key, value) => {
+        if (!this.material) return;
+        if (key === "transition") this.material.uniforms.uTransition.value = value;
+        if (key === "pattern")     this.material.uniforms.uPattern.value = value;
+        if (key === "aura")        this.material.uniforms.uAura.value = value;
+        if (key === "edge")        this.material.uniforms.uEdge.value = value;
+        if (key === "warp")        this.material.uniforms.uWarp.value = value;
+      });
+
+      window.addEventListener("resize", () => this.onResize());
+      this.onResize();
+
+      this.initMesh(); // async
+      this.animate();
+    }
+
+    loadTexture(url, fallbackLabel) {
+      const makeFallback = () => {
+        const c = document.createElement("canvas");
+        c.width = 512; c.height = 512;
+        const g = c.getContext("2d");
+        const grad = g.createLinearGradient(0, 0, 512, 512);
+        grad.addColorStop(0, "#2a0a3d");
+        grad.addColorStop(1, "#b58cff");
+        g.fillStyle = grad;
+        g.fillRect(0, 0, 512, 512);
+        g.fillStyle = "rgba(255,255,255,0.85)";
+        g.font = "700 42px system-ui, sans-serif";
+        g.fillText(fallbackLabel, 24, 72);
+        const tex = new THREE.CanvasTexture(c);
+        tex.needsUpdate = true;
+        return tex;
+      };
+
+      return new Promise((resolve) => {
+        const loader = new THREE.TextureLoader();
+        loader.crossOrigin = "anonymous";
+        loader.load(url, (tex) => resolve(tex), undefined, () => resolve(makeFallback()));
+      });
+    }
+
+    async initMesh() {
+      const url1 = this.isMobile ? TEX_1_SM : TEX_1;
+      const url2 = this.isMobile ? TEX_2_SM : TEX_2;
+
+      const [tex1, tex2] = await Promise.all([
+        this.loadTexture(url1, "T1"),
+        this.loadTexture(url2, "T2"),
+      ]);
+
+      if ("colorSpace" in tex1) tex1.colorSpace = THREE.SRGBColorSpace;
+      if ("colorSpace" in tex2) tex2.colorSpace = THREE.SRGBColorSpace;
+
+      tex1.wrapS = tex1.wrapT = THREE.ClampToEdgeWrapping;
+      tex2.wrapS = tex2.wrapT = THREE.ClampToEdgeWrapping;
+
+      this.material = new THREE.ShaderMaterial({
+        vertexShader: VERTEX_SHADER,
+        fragmentShader: FRAGMENT_SHADER,
+        uniforms: {
+          uTexture1:    { value: tex1 },
+          uTexture2:    { value: tex2 },
+          uResolution:  { value: new THREE.Vector2(1, 1) },
+          uTime:        { value: 0 },
+          uTransition:  { value: this.params.transition },
+          uPattern:     { value: this.params.pattern },
+          // NEW
+          uAura:        { value: this.params.aura },
+          uEdge:        { value: this.params.edge },
+          uWarp:        { value: this.params.warp },
+        },
+        side: THREE.DoubleSide,
+      });
+
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1, 1), this.material);
+      this.scene.add(mesh);
+
+      if (this.loaderEl) this.loaderEl.style.display = "none";
+      this.onResize();
+    }
+
+    onResize() {
+      this.sizes.width = window.innerWidth;
+      this.sizes.height = window.innerHeight;
+
+      const pr = Math.min(window.devicePixelRatio || 1, 2);
+      this.renderer.setPixelRatio(pr);
+      this.renderer.setSize(this.sizes.width, this.sizes.height);
+
+      if (this.material) {
+        this.material.uniforms.uResolution.value.set(this.sizes.width * pr, this.sizes.height * pr);
+      }
+    }
+
+    animate = () => {
+      if (this.material) this.material.uniforms.uTime.value = this.clock.getElapsedTime();
+      this.renderer.render(this.scene, this.camera);
+      requestAnimationFrame(this.animate);
+    };
+  }
+
+  window.addEventListener("load", () => new ShaderTransitionApp());
+})();
+</script>
+
+  </body>
+  
+</html>
+

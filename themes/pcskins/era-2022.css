@@ -1,0 +1,114 @@
+/* ============================================================
+   ERA SKIN: 2022 — CSS PLAYGROUND
+   Player PC only. Scoped under .pc-shell.era-skin-2022
+   ============================================================ */
+
+.pc-shell.era-skin-2022 {
+    background: #050505 !important;
+    font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif !important;
+}
+
+/* Desktop icons */
+.pc-shell.era-skin-2022 .os-desktopicon > div:first-child {
+    background: linear-gradient(135deg, #ff0080, #7928ca, #00c6ff) !important;
+    border: 1px solid #000000 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 0 24px rgba(255,0,128,0.3) !important;
+}
+.pc-shell.era-skin-2022 .os-desktopicon svg { color: #ffffff !important; }
+.pc-shell.era-skin-2022 .os-desktopicon .label,
+.pc-shell.era-skin-2022 .os-desktopicon {
+    color: #ededed !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
+}
+
+.pc-shell.era-skin-2022 .os-window {
+    border: 1px solid #444444 !important;
+    border-radius: 16px !important;
+    background: #0d0d0d !important;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7) !important;
+}
+
+.pc-shell.era-skin-2022 .os-titlebar {
+    background: linear-gradient(90deg, #ff0080, #7928ca, #00c6ff) !important;
+    color: #ffffff !important;
+    border-bottom: 1px solid #000 !important;
+    border-radius: 16px 16px 0 0 !important;
+    background-size: 200% 100% !important;
+    animation: era2022-shift 6s linear infinite !important;
+}
+
+@keyframes era2022-shift {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+.pc-shell.era-skin-2022 .os-titlebtn {
+    background: rgba(255,255,255,0.14) !important;
+    border: 1px solid rgba(255,255,255,0.25) !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+.pc-shell.era-skin-2022 .os-titlebtn:hover {
+    background: rgba(255,255,255,0.28) !important;
+    transform: translateY(-2px);
+}
+
+.pc-shell.era-skin-2022 .os-menubar {
+    background: #0d0d0d !important;
+    border-bottom: 1px solid #333333 !important;
+    color: #ededed !important;
+}
+
+.pc-shell.era-skin-2022 .os-taskbar {
+    background: #050505 !important;
+    border-top: 1px solid #444444 !important;
+    box-shadow: none !important;
+}
+
+.pc-shell.era-skin-2022 .os-startbtn {
+    background: linear-gradient(90deg, #ff0080, #7928ca) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+.pc-shell.era-skin-2022 .os-startmenu {
+    background: #0d0d0d !important;
+    border: 1px solid #444444 !important;
+    border-radius: 18px !important;
+    color: #ededed !important;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7) !important;
+}
+
+.pc-shell.era-skin-2022 .os-contextmenu {
+    background: #0d0d0d !important;
+    border: 1px solid #444444 !important;
+    border-radius: 16px !important;
+    color: #ededed !important;
+}
+
+.pc-shell.era-skin-2022 .os-widget {
+    border: 1px solid #444444 !important;
+    border-radius: 18px !important;
+    background: #0d0d0d !important;
+    color: #ededed !important;
+}
+
+/* ---- BARE WIDGETS ------------------------------------------------
+   Clippy is a character sitting on the desktop, not a panel. The
+   .os-widget rule above paints a box on every widget; this opts him
+   out of it. Extra class on the selector so it outranks that rule
+   ((0,4,0) vs (0,3,0)) and wins on order inside this file as well.
+   Resets the box only - the sprite and its bubble carry their own
+   background and text colour, so nothing inside depends on it. */
+.pc-shell.era-skin-2022 .os-widget.os-widget--bare {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+}

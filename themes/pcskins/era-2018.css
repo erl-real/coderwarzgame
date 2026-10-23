@@ -1,0 +1,106 @@
+/* ============================================================
+   ERA SKIN: 2018 — MODERN CSS
+   Player PC only. Scoped under .pc-shell.era-skin-2018
+   ============================================================ */
+
+.pc-shell.era-skin-2018 {
+    background: #18181b !important;
+    font-family: "Inter", system-ui, -apple-system, sans-serif !important;
+}
+
+/* Desktop icons */
+.pc-shell.era-skin-2018 .os-desktopicon > div:first-child {
+    background: #27272a !important;
+    border: 1px solid #3f3f46 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5) !important;
+}
+.pc-shell.era-skin-2018 .os-desktopicon svg { color: #f4f4f5 !important; }
+.pc-shell.era-skin-2018 .os-desktopicon .label,
+.pc-shell.era-skin-2018 .os-desktopicon {
+    color: #f4f4f5 !important;
+    text-shadow: 0 1px 2px #000 !important;
+}
+
+.pc-shell.era-skin-2018 .os-window {
+    border: 1px solid #3f3f46 !important;
+    border-radius: 12px !important;
+    background: #27272a !important;
+    box-shadow: 0 22px 60px rgba(0,0,0,0.55) !important;
+}
+
+.pc-shell.era-skin-2018 .os-titlebar {
+    background: linear-gradient(to bottom, #3f3f46, #27272a) !important;
+    color: #fafafa !important;
+    border-bottom: 1px solid #18181b !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.pc-shell.era-skin-2018 .os-titlebtn {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 8px !important;
+    color: #fafafa !important;
+    box-shadow: none !important;
+}
+.pc-shell.era-skin-2018 .os-titlebtn:hover {
+    background: rgba(255,255,255,0.16) !important;
+}
+
+.pc-shell.era-skin-2018 .os-menubar {
+    background: #27272a !important;
+    border-bottom: 1px solid #3f3f46 !important;
+    color: #f4f4f5 !important;
+}
+
+.pc-shell.era-skin-2018 .os-taskbar {
+    background: #18181b !important;
+    border-top: 1px solid #3f3f46 !important;
+    box-shadow: none !important;
+}
+
+.pc-shell.era-skin-2018 .os-startbtn {
+    background: linear-gradient(to bottom, #52525b, #3f3f46) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: #fafafa !important;
+    font-weight: 600;
+}
+
+.pc-shell.era-skin-2018 .os-startmenu {
+    background: #27272a !important;
+    border: 1px solid #3f3f46 !important;
+    border-radius: 14px !important;
+    color: #f4f4f5 !important;
+    box-shadow: 0 22px 60px rgba(0,0,0,0.55) !important;
+}
+
+.pc-shell.era-skin-2018 .os-contextmenu {
+    background: #27272a !important;
+    border: 1px solid #3f3f46 !important;
+    border-radius: 12px !important;
+    color: #f4f4f5 !important;
+}
+
+.pc-shell.era-skin-2018 .os-widget {
+    border: 1px solid #3f3f46 !important;
+    border-radius: 14px !important;
+    background: #27272a !important;
+    color: #f4f4f5 !important;
+}
+
+/* ---- BARE WIDGETS ------------------------------------------------
+   Clippy is a character sitting on the desktop, not a panel. The
+   .os-widget rule above paints a box on every widget; this opts him
+   out of it. Extra class on the selector so it outranks that rule
+   ((0,4,0) vs (0,3,0)) and wins on order inside this file as well.
+   Resets the box only - the sprite and its bubble carry their own
+   background and text colour, so nothing inside depends on it. */
+.pc-shell.era-skin-2018 .os-widget.os-widget--bare {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+}

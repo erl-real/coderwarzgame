@@ -1,0 +1,156 @@
+/* ============================================================
+   ERA SKIN: 1993 — TABLES ERA
+   Player PC only. Scoped under .pc-shell.era-skin-1993
+   ============================================================ */
+
+.pc-shell.era-skin-1993 {
+    background:
+        repeating-linear-gradient(0deg, #fafafa, #fafafa 2px, #f2f2f2 2px, #f2f2f2 4px) !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+}
+
+/* Desktop icons */
+.pc-shell.era-skin-1993 .os-desktopicon > div:first-child {
+    background: #ffffff !important;
+    border: 1px solid #888888 !important;
+    border-radius: 0 !important;
+    box-shadow: 2px 2px 0 #cccccc !important;
+}
+.pc-shell.era-skin-1993 .os-desktopicon svg { color: #222222 !important; }
+.pc-shell.era-skin-1993 .os-desktopicon .label,
+.pc-shell.era-skin-1993 .os-desktopicon {
+    color: #222222 !important;
+    text-shadow: none !important;
+}
+
+.pc-shell.era-skin-1993 .os-window {
+    border: 1px solid #888888 !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    box-shadow: 3px 3px 0 #cccccc !important;
+}
+
+.pc-shell.era-skin-1993 .os-titlebar {
+    background: #dddddd !important;
+    color: #222222 !important;
+    border-bottom: 1px solid #888888 !important;
+    border-radius: 0 !important;
+    font-weight: bold;
+}
+
+.pc-shell.era-skin-1993 .os-titlebtn {
+    background: #eeeeee !important;
+    border: 1px solid #888888 !important;
+    border-radius: 0 !important;
+    color: #222222 !important;
+    box-shadow: none !important;
+}
+.pc-shell.era-skin-1993 .os-titlebtn:hover {
+    background: #ffffff !important;
+}
+
+.pc-shell.era-skin-1993 .os-menubar {
+    background: #f4f4f4 !important;
+    border-bottom: 1px solid #cccccc !important;
+    color: #222222 !important;
+}
+
+.pc-shell.era-skin-1993 .os-taskbar {
+    background: #dddddd !important;
+    border-top: 1px solid #888888 !important;
+    box-shadow: none !important;
+}
+
+.pc-shell.era-skin-1993 .os-startbtn {
+    background: #cccccc !important;
+    border: 1px solid #888888 !important;
+    border-radius: 0 !important;
+    color: #222222 !important;
+    font-weight: bold;
+}
+
+.pc-shell.era-skin-1993 .os-startmenu {
+    background: #ffffff !important;
+    border: 1px solid #888888 !important;
+    border-radius: 0 !important;
+    color: #222222 !important;
+}
+
+.pc-shell.era-skin-1993 .os-contextmenu {
+    background: #ffffff !important;
+    border: 1px solid #888888 !important;
+    border-radius: 0 !important;
+    color: #222222 !important;
+}
+
+.pc-shell.era-skin-1993 .os-widget {
+    border: 1px solid #888888 !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    color: #222222 !important;
+}
+
+/* ---- TEXT CONTRAST ------------------------------------------------
+   The bars above are painted light, but their children carry Tailwind
+   text-white/95, text-white/60, text-white/40 classes. Those are separate
+   declarations on the child, so they win over an inherited `color` and the
+   text vanished on the white surfaces. Forced down here, scoped to the bars
+   only. Icons are SVG so they need it as well as the text nodes. */
+.pc-shell.era-skin-1993 .os-titlebar,
+.pc-shell.era-skin-1993 .os-titlebar div,
+.pc-shell.era-skin-1993 .os-titlebar span,
+.pc-shell.era-skin-1993 .os-titlebar svg { color: #1a1a1a !important; }
+
+/* The title has a baked-in dark text-shadow for dark chrome; drop it. */
+.pc-shell.era-skin-1993 .os-titlebar div { text-shadow: none !important; }
+
+/* Title buttons keep their own hover colour, so only the resting icon moves. */
+.pc-shell.era-skin-1993 .os-titlebtn { background: #ffffff !important; border: 1px outset #ffffff !important; }
+.pc-shell.era-skin-1993 .os-titlebtn:hover { background: #000080 !important; border: 1px outset #ffffff !important; }
+.pc-shell.era-skin-1993 .os-titlebtn:hover svg { color: #ffffff !important; }
+
+.pc-shell.era-skin-1993 .os-menubar,
+.pc-shell.era-skin-1993 .os-menubar button,
+.pc-shell.era-skin-1993 .os-menubar span { color: #1a1a1a !important; }
+
+.pc-shell.era-skin-1993 .os-taskbar,
+.pc-shell.era-skin-1993 .os-taskbar div,
+.pc-shell.era-skin-1993 .os-taskbar button,
+.pc-shell.era-skin-1993 .os-taskbar span,
+.pc-shell.era-skin-1993 .os-taskbar svg { color: #1a1a1a !important; }
+
+/* The search field and its placeholder are white-on-white too. */
+.pc-shell.era-skin-1993 .os-taskbar input { color: #1a1a1a !important; }
+.pc-shell.era-skin-1993 .os-taskbar input::placeholder { color: #6a6a6a !important; }
+.pc-shell.era-skin-1993 .os-taskbar input:focus { background: #ffffff !important; }
+/* ---- APP CONTENT --------------------------------------------------
+   Internet, Advanced Settings, My Computer, File Explorer, Notes, Bin and
+   App Store all render dark surfaces with text-white/* labels. On this light
+   skin that is light-on-light. Dark skins need nothing. */
+.pc-shell.era-skin-1993 .os-appview { background: #ffffff !important; color: #1a1a1a !important; }
+.pc-shell.era-skin-1993 .os-appview [class*="text-white"] { color: #1a1a1a !important; }
+.pc-shell.era-skin-1993 .os-appview [class*="text-slate-100"],
+.pc-shell.era-skin-1993 .os-appview [class*="text-slate-200"],
+.pc-shell.era-skin-1993 .os-appview [class*="text-slate-300"] { color: #1a1a1a !important; }
+.pc-shell.era-skin-1993 .os-appview [class*="bg-white/"] { background-color: rgba(0,0,0,0.06) !important; }
+.pc-shell.era-skin-1993 .os-appview [class*="border-white/"] { border-color: #cccccc !important; }
+.pc-shell.era-skin-1993 .os-appview input,
+.pc-shell.era-skin-1993 .os-appview textarea { color: #1a1a1a !important; }
+.pc-shell.era-skin-1993 .os-appview input::placeholder,
+.pc-shell.era-skin-1993 .os-appview textarea::placeholder { color: #6a6a6a !important; }
+
+/* ---- BARE WIDGETS ------------------------------------------------
+   Clippy is a character sitting on the desktop, not a panel. The
+   .os-widget rule above paints a box on every widget; this opts him
+   out of it. Extra class on the selector so it outranks that rule
+   ((0,4,0) vs (0,3,0)) and wins on order inside this file as well.
+   Resets the box only - the sprite and its bubble carry their own
+   background and text colour, so nothing inside depends on it. */
+.pc-shell.era-skin-1993 .os-widget.os-widget--bare {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+}
