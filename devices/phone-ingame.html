@@ -1,0 +1,3161 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --ios-bg:#ffffff;
+  --ios-bg-2:#f2f2f7;
+  --ios-ink:#000000;
+  --ios-ink-2:#8a8a8e;
+  --ios-line:#d4d4d9;
+  --ios-accent:#007aff;
+  --ios-accent-ink:#ffffff;
+
+  --bg:var(--ios-bg);
+  --bg2:var(--ios-bg-2);
+  --ink:var(--ios-ink);
+  --ink2:var(--ios-ink-2);
+  --line:var(--ios-line);
+  --accent:var(--ios-accent);
+  --accent-ink:var(--ios-accent-ink);
+  --glow:0 0 0 rgba(0,0,0,0);
+
+  --sys:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Helvetica,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --display:"Pirata One",serif;
+
+  --spring:cubic-bezier(.19,1.42,.38,1);
+  --ease:cubic-bezier(.32,.72,0,1);
+}
+
+/* the crypt takeover */
+.screen.spooked{
+  --bg:#06090a;
+  --bg2:#0c1412;
+  --ink:#e8ffe4;
+  --ink2:#5f8a6d;
+  --line:#173226;
+  --accent:#7cff4f;
+  --accent-ink:#04150a;
+  --glow:0 0 22px rgba(124,255,79,.35);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+
+/* MODULE: transparent page so the phone composites inside the main game
+   as the smaller player's device (embed via iframe). No backdrop, no grain. */
+body{
+  font-family:var(--sys);
+  background:transparent;
+  display:grid;
+  place-items:center;
+  padding:0;
+  margin:0;
+  overflow:hidden;
+}
+
+/* ── bat exodus (fired at the end) ──────────────────────── */
+.burst-layer{position:fixed;inset:0;z-index:150;pointer-events:none;overflow:hidden}
+.burstbat{
+  position:fixed;width:34px;margin-left:-17px;margin-top:-12px;
+  color:#0d0a12;filter:drop-shadow(0 0 10px rgba(124,255,79,.6));
+  will-change:transform,opacity;
+}
+.burstbat svg{display:block;animation:flap .18s ease-in-out infinite alternate}
+
+/* ── ambient bats (only after corruption) ───────────────── */
+.bats{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity 1.2s ease}
+body.haunted .bats{opacity:.5}
+.bat{position:absolute;width:26px;color:#2a1b3d;animation:flit linear infinite;will-change:transform}
+.bat svg{display:block;animation:flap .32s ease-in-out infinite alternate}
+@keyframes flap{from{transform:scaleY(.55) scaleX(1.05)}to{transform:scaleY(1.15) scaleX(.9)}}
+@keyframes flit{
+  0%{transform:translate(-12vw,18vh) rotate(-6deg)}
+  50%{transform:translate(52vw,-14vh) rotate(8deg)}
+  100%{transform:translate(114vw,26vh) rotate(-4deg)}
+}
+
+/* ── stage / phone shell ────────────────────────────────── */
+.stage{
+  position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:34px;
+  perspective:1700px;perspective-origin:50% 42%;
+}
+
+/* the 15° left / 10° up rig — quake stays on .phone so the tilt survives */
+.tilt3d{
+  --tiltY:-15deg;--tiltX:10deg;
+  transform-style:preserve-3d;
+  transform:rotateX(var(--tiltX)) rotateY(var(--tiltY));
+  transition:transform 1.1s var(--ease);
+  animation:hover3d 9s ease-in-out infinite;
+  filter:drop-shadow(-38px 46px 46px rgba(0,0,0,.62));
+}
+@keyframes hover3d{
+  0%,100%{transform:rotateX(var(--tiltX)) rotateY(var(--tiltY)) translateY(0)}
+  50%{transform:rotateX(calc(var(--tiltX) - 1.6deg)) rotateY(calc(var(--tiltY) + 2deg)) translateY(-9px)}
+}
+body.haunted .tilt3d{--tiltY:-17deg;--tiltX:12deg}
+
+.phone{
+  position:relative;width:392px;height:812px;border-radius:58px;
+  padding:11px;
+  background:linear-gradient(160deg,#4a4a52,#17171b 30%,#2c2c33 55%,#0e0e11 78%,#3d3d45);
+  box-shadow:
+    0 2px 0 rgba(255,255,255,.14) inset,
+    0 50px 90px -30px rgba(0,0,0,.9),
+    0 0 0 1px #000;
+  transition:box-shadow .9s ease, transform .5s var(--ease);
+}
+body.haunted .phone{
+  box-shadow:
+    0 2px 0 rgba(255,255,255,.1) inset,
+    0 50px 90px -28px rgba(0,0,0,.95),
+    0 0 0 1px #000,
+    0 0 90px -10px rgba(124,255,79,.35);
+}
+.phone.quake{animation:quake .5s ease}
+@keyframes quake{
+  0%,100%{transform:translate(0,0) rotate(0)}
+  20%{transform:translate(-4px,2px) rotate(-.35deg)}
+  40%{transform:translate(5px,-3px) rotate(.4deg)}
+  60%{transform:translate(-3px,-1px) rotate(-.25deg)}
+  80%{transform:translate(3px,2px) rotate(.15deg)}
+}
+
+.screen{
+  position:relative;width:100%;height:100%;border-radius:48px;overflow:hidden;
+  background:var(--bg);color:var(--ink);
+  display:flex;flex-direction:column;
+  transition:background .8s var(--ease), color .8s var(--ease);
+}
+.screen::after{ /* glass glare */
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:60;
+  background:linear-gradient(118deg,rgba(255,255,255,.11) 0 18%,transparent 34%);
+  mix-blend-mode:screen;
+}
+.screen.spooked::before{ /* vignette + fog */
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:55;
+  background:
+    radial-gradient(120% 70% at 50% 0%,rgba(124,255,79,.10),transparent 55%),
+    radial-gradient(100% 60% at 50% 100%,rgba(177,75,255,.14),transparent 60%),
+    radial-gradient(140% 100% at 50% 50%,transparent 45%,rgba(0,0,0,.85));
+  animation:fogIn 1.4s var(--ease) both;
+}
+@keyframes fogIn{from{opacity:0}to{opacity:1}}
+
+.island{
+  position:absolute;top:22px;left:50%;transform:translateX(-50%);
+  width:118px;height:33px;border-radius:20px;background:#000;z-index:70;
+  transition:width .5s var(--spring), background .6s ease;
+}
+.phone.alarmed .island{width:172px;background:#000;box-shadow:0 0 26px rgba(124,255,79,.5)}
+
+/* ── status bar ─────────────────────────────────────────── */
+.statusbar{
+  height:56px;flex:0 0 56px;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 30px 0;font-size:15px;font-weight:600;letter-spacing:.2px;position:relative;z-index:40;
+}
+.statusbar .icons{display:flex;align-items:center;gap:6px}
+.bars{display:flex;align-items:flex-end;gap:2px;height:11px}
+.bars i{width:3px;background:currentColor;border-radius:1px;display:block}
+.bars i:nth-child(1){height:4px}.bars i:nth-child(2){height:6px}
+.bars i:nth-child(3){height:8px}.bars i:nth-child(4){height:11px}
+.batt{width:25px;height:12px;border:1.6px solid currentColor;border-radius:4px;position:relative;opacity:.9}
+.batt::after{content:"";position:absolute;right:-4px;top:3.4px;width:2px;height:5px;background:currentColor;border-radius:0 2px 2px 0}
+.batt i{position:absolute;inset:1.6px;width:70%;background:currentColor;border-radius:2px;transition:width .6s ease,background .6s ease}
+.screen.spooked .batt i{width:13%;background:#ff4d4d;animation:battFlick 1.1s steps(2) infinite}
+@keyframes battFlick{50%{opacity:.35}}
+.screen.spooked .statusbar{text-shadow:var(--glow);animation:flicker 4.2s infinite}
+@keyframes flicker{
+  0%,96%,100%{opacity:1}
+  97%{opacity:.35}98%{opacity:.9}99%{opacity:.5}
+}
+
+/* ── nav bar ────────────────────────────────────────────── */
+.nav{
+  position:relative;z-index:40;flex:0 0 auto;
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  padding:6px 18px 12px;border-bottom:.5px solid var(--line);
+  background:color-mix(in srgb,var(--bg) 82%,transparent);
+  backdrop-filter:blur(18px);
+  transition:border-color .8s ease,background .8s ease;
+}
+.nav .title{font-size:16px;font-weight:600;letter-spacing:-.2px;white-space:nowrap}
+.screen.spooked .nav .title{font-family:var(--display);font-size:24px;font-weight:400;letter-spacing:.6px;text-shadow:var(--glow)}
+.nav .left{font-size:16px;color:var(--accent);justify-self:start}
+.nav .right{justify-self:end}
+
+.sendbtn{
+  position:relative;border:0;cursor:pointer;border-radius:999px;
+  padding:8px 20px 9px;font-family:var(--sys);font-size:15.5px;font-weight:600;letter-spacing:-.1px;
+  background:var(--accent);color:var(--accent-ink);
+  display:inline-flex;align-items:center;gap:7px;
+  animation:breathe 2.6s ease-in-out infinite;
+  transition:background .5s ease;
+}
+.sendbtn svg{width:14px;height:14px;transform:translateY(-.5px)}
+.sendbtn::after{ /* breathing halo */
+  content:"";position:absolute;inset:-3px;border-radius:999px;pointer-events:none;
+  border:1.5px solid var(--accent);opacity:0;
+  animation:halo 2.6s ease-out infinite;
+}
+@keyframes breathe{
+  0%,100%{transform:scale(1);box-shadow:0 4px 14px -6px color-mix(in srgb,var(--accent) 80%,transparent)}
+  50%{transform:scale(1.065);box-shadow:0 8px 26px -6px color-mix(in srgb,var(--accent) 95%,transparent)}
+}
+@keyframes halo{
+  0%{opacity:.55;transform:scale(1)}
+  70%{opacity:0;transform:scale(1.35)}
+  100%{opacity:0;transform:scale(1.35)}
+}
+.sendbtn:hover{filter:brightness(1.08)}
+.sendbtn:active{animation:none;transform:scale(.92)}
+.sendbtn[disabled]{opacity:.32;pointer-events:none;animation:none}
+.sendbtn[disabled]::after{display:none}
+
+/* ── compose view ───────────────────────────────────────── */
+.view{position:absolute;inset:56px 0 0;display:flex;flex-direction:column;z-index:30}
+.view.hidden{pointer-events:none}
+
+.fields{padding:0 18px;flex:0 0 auto}
+.row{
+  display:flex;gap:8px;align-items:flex-start;padding:11px 0;
+  border-bottom:.5px solid var(--line);font-size:15px;flex-wrap:wrap;
+  transition:border-color .8s ease;
+}
+.row .lbl{color:var(--ink2);flex:0 0 auto;transition:color .8s ease}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  background:color-mix(in srgb,var(--accent) 15%,transparent);
+  color:var(--accent);border-radius:11px;padding:2px 9px;font-size:13.5px;font-weight:500;
+  transition:background .6s ease,color .6s ease,transform .3s var(--spring);
+}
+.chip.more{background:transparent;color:var(--ink2)}
+.subject{font-weight:600}
+
+.body{
+  padding:18px;font-size:15.5px;line-height:1.52;overflow-y:auto;flex:1 1 auto;
+  -webkit-mask-image:linear-gradient(180deg,#000 92%,transparent);
+}
+.body p{margin-bottom:13px}
+.body .sig{color:var(--ink2);font-size:13.5px;line-height:1.45;border-top:.5px solid var(--line);padding-top:11px;margin-top:4px}
+.body .pumpkin{font-size:17px}
+
+/* send lift-off */
+.view.launch{animation:launch .72s var(--ease) forwards}
+@keyframes launch{
+  0%{transform:translateY(0) scale(1);opacity:1;filter:blur(0)}
+  35%{transform:translateY(-14px) scale(.985)}
+  100%{transform:translateY(-120%) scale(.72);opacity:0;filter:blur(7px)}
+}
+
+/* ── sending state ──────────────────────────────────────── */
+.progress{
+  position:absolute;top:0;left:0;height:2.5px;width:0;z-index:45;
+  background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 45%,#fff));
+  box-shadow:0 0 12px color-mix(in srgb,var(--accent) 70%,transparent);
+}
+.progress.run{animation:fill 5s linear forwards}
+@keyframes fill{to{width:100%}}
+
+.sending{
+  position:absolute;inset:56px 0 0;z-index:20;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:20px;text-align:center;padding:0 44px;
+  opacity:0;pointer-events:none;transition:opacity .5s ease;
+}
+.sending.on{opacity:1}
+.ring{width:74px;height:74px;position:relative}
+.ring svg{transform:rotate(-90deg);overflow:visible}
+.ring circle{fill:none;stroke-width:3.5;stroke-linecap:round}
+.ring .track{stroke:var(--line)}
+.ring .fill{stroke:var(--accent);stroke-dasharray:207;stroke-dashoffset:207;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--accent) 60%,transparent))}
+.ring.run .fill{animation:sweep 5s linear forwards}
+@keyframes sweep{to{stroke-dashoffset:0}}
+.ring .count{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-family:var(--mono);font-size:19px;font-weight:600;
+}
+.sending h3{font-size:17px;font-weight:600;letter-spacing:-.2px}
+.sending p{font-size:13.5px;color:var(--ink2);line-height:1.5;font-family:var(--mono)}
+.dots::after{content:"";animation:dots 1.3s steps(4,end) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+
+/* ── daemon inbox list ──────────────────────────────────── */
+.inbox{
+  position:absolute;inset:56px 0 0;z-index:15;overflow:hidden;
+  display:flex;flex-direction:column;opacity:0;transition:opacity .6s ease;
+}
+.inbox.on{opacity:1}
+.inbox .scroll{overflow:hidden;flex:1 1 auto;padding-top:6px}
+.mailrow{
+  display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:start;
+  padding:12px 18px;border-bottom:.5px solid var(--line);
+  animation:rowIn .55s var(--spring) both;
+}
+@keyframes rowIn{
+  from{opacity:0;transform:translateX(-26px) scale(.97)}
+  to{opacity:1;transform:none}
+}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--accent);margin-top:6px;box-shadow:var(--glow)}
+.mailrow .from{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px}
+.mailrow .subj{font-size:13.5px;margin-top:2px;color:var(--ink);opacity:.92}
+.mailrow .prev{font-size:12.5px;color:var(--ink2);margin-top:2px;font-family:var(--mono);line-height:1.35}
+.mailrow .time{font-size:12px;color:var(--ink2);white-space:nowrap;font-family:var(--mono)}
+
+/* ── TOASTS — the main event ────────────────────────────── */
+.toasts{
+  position:absolute;top:64px;left:0;right:0;z-index:50;
+  padding:0 12px;display:flex;flex-direction:column;gap:9px;pointer-events:none;
+  perspective:900px;
+}
+.toast{
+  --tint:#ff4d4d;
+  position:relative;transform-origin:50% 0%;
+  background:rgba(26,26,30,.74);
+  backdrop-filter:blur(26px) saturate(180%);
+  border:.5px solid rgba(255,255,255,.13);
+  border-radius:20px;padding:11px 13px 12px;
+  color:#fff;
+  box-shadow:0 18px 40px -18px rgba(0,0,0,.95), 0 0 0 .5px rgba(0,0,0,.4);
+  display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:start;
+  animation:toastIn .78s var(--spring) both;
+  will-change:transform,opacity;
+}
+@keyframes toastIn{
+  0%{opacity:0;transform:translateY(-118%) scale(.74) rotateX(-38deg)}
+  55%{opacity:1}
+  70%{transform:translateY(5px) scale(1.02) rotateX(2deg)}
+  100%{opacity:1;transform:translateY(0) scale(1) rotateX(0)}
+}
+/* toast delivered by the slap sequence: no entrance anim, just a settle */
+.toast.noanim{animation:none}
+.toast.settle{animation:settle .5s var(--spring) both}
+@keyframes settle{
+  0%{transform:scale(1.06) rotate(-1.2deg);filter:blur(1.4px)}
+  100%{transform:scale(1) rotate(0);filter:blur(0)}
+}
+
+/* ── SLAP LAYER — toast hits YOUR monitor first ─────────── */
+.slap-layer{position:fixed;inset:0;z-index:200;pointer-events:none;perspective:1400px}
+.slapper{
+  position:fixed;left:50%;top:44%;margin:0;
+  width:min(520px,86vw);
+  transform:translate(-50%,-50%);
+  transform-origin:50% 50%;
+  will-change:transform,opacity,filter;
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.95), 0 0 0 .5px rgba(0,0,0,.5);
+}
+.slapper .ico{width:44px;height:44px;font-size:23px;border-radius:12px}
+.slapper{grid-template-columns:44px 1fr auto;padding:15px 17px 16px;border-radius:24px}
+.slapper .head{font-size:12.5px}
+.slapper .code{font-size:13px}
+.slapper .msg{font-size:17.5px}
+.slapper.absurd .msg{font-size:26px}
+.slapper .addr{font-size:12.5px}
+
+/* ── red flash across the backdrop, once per bounce ─────── */
+.redflash{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;mix-blend-mode:screen;
+  background:
+    radial-gradient(58% 52% at 50% 44%, rgba(255,46,46,.66), rgba(150,0,0,.30) 46%, transparent 74%),
+    linear-gradient(180deg, rgba(190,10,10,.22), transparent 42%, rgba(190,10,10,.22));
+}
+.redflash.on{animation:redpulse .62s cubic-bezier(.1,.9,.3,1)}
+@keyframes redpulse{
+  0%{opacity:0}
+  9%{opacity:1}
+  30%{opacity:.38}
+  44%{opacity:.82}
+  100%{opacity:0}
+}
+body.impact{animation:impact .34s ease}
+@keyframes impact{
+  0%,100%{transform:translate(0,0)}
+  25%{transform:translate(6px,-5px)}
+  55%{transform:translate(-5px,4px)}
+  80%{transform:translate(3px,-2px)}
+}
+
+.toast.out{animation:toastOut .42s var(--ease) forwards}
+@keyframes toastOut{to{opacity:0;transform:translateY(-40px) scale(.9);filter:blur(4px)}}
+
+.toast .ico{
+  width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:18px;
+  background:linear-gradient(160deg,var(--tint),color-mix(in srgb,var(--tint) 45%,#000));
+  box-shadow:0 5px 14px -6px var(--tint);
+  animation:icoPulse 2.2s ease-in-out infinite;
+}
+@keyframes icoPulse{50%{transform:scale(1.06) rotate(-3deg)}}
+.toast .head{
+  font-size:11.5px;font-weight:700;letter-spacing:.85px;text-transform:uppercase;
+  color:rgba(255,255,255,.62);display:flex;align-items:center;gap:6px;
+}
+.toast .code{
+  font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.3px;
+  color:var(--tint);margin-top:3px;
+}
+.toast .msg{font-size:13.8px;line-height:1.38;margin-top:3px;letter-spacing:-.1px}
+.toast .addr{
+  font-family:var(--mono);font-size:11.5px;color:rgba(255,255,255,.48);
+  margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.toast .ago{font-size:11.5px;color:rgba(255,255,255,.42);font-family:var(--mono)}
+.toast.absurd{border-color:color-mix(in srgb,var(--tint) 40%,transparent)}
+.toast.absurd .msg{font-family:var(--display);font-size:19px;line-height:1.22;letter-spacing:.4px}
+.toast.peak{animation:jitter 2.6s ease-in-out infinite}
+@keyframes jitter{
+  0%,92%,100%{transform:translate(0,0) rotate(0)}
+  94%{transform:translate(-2px,1px) rotate(-.5deg)}
+  96%{transform:translate(2px,-1px) rotate(.6deg)}
+  98%{transform:translate(-1px,0) rotate(-.3deg)}
+}
+/* stacked depth for older toasts */
+.toast[data-depth="1"]{transform:scale(.965) translateY(-3px);opacity:.86}
+.toast[data-depth="2"]{transform:scale(.93) translateY(-6px);opacity:.6}
+.toast[data-depth="3"]{transform:scale(.895) translateY(-9px);opacity:.32}
+
+/* ── failure verdict card ───────────────────────────────── */
+.verdict{
+  position:absolute;left:16px;right:16px;bottom:34px;z-index:52;
+  background:rgba(10,14,11,.82);backdrop-filter:blur(26px) saturate(160%);
+  border:.5px solid color-mix(in srgb,var(--accent) 34%,transparent);
+  border-radius:26px;padding:20px 20px 17px;text-align:center;
+  box-shadow:0 26px 60px -24px #000, 0 0 60px -22px var(--accent);
+  transform:translateY(140%);opacity:0;
+  transition:transform .78s var(--spring),opacity .5s ease;
+}
+.verdict.on{transform:translateY(0);opacity:1}
+.verdict h2{font-family:var(--display);font-size:33px;font-weight:400;line-height:1;letter-spacing:.8px;color:var(--accent);text-shadow:var(--glow)}
+.verdict .tally{font-family:var(--mono);font-size:12.5px;color:var(--ink2);margin-top:9px;letter-spacing:.4px}
+.verdict .tally b{color:var(--ink)}
+.reset{
+  margin-top:15px;width:100%;border:0;cursor:pointer;border-radius:15px;padding:13px;
+  font-family:var(--sys);font-size:15.5px;font-weight:600;letter-spacing:-.2px;
+  background:var(--accent);color:var(--accent-ink);
+  transition:transform .2s var(--spring),filter .2s ease;
+}
+.reset:hover{filter:brightness(1.12)}
+.reset:active{transform:scale(.96)}
+
+/* ── home bar ───────────────────────────────────────────── */
+.homebar{
+  position:absolute;bottom:9px;left:50%;transform:translateX(-50%);
+  width:138px;height:5px;border-radius:3px;background:var(--ink);opacity:.28;z-index:58;
+  transition:background .8s ease;
+}
+
+/* ── caption under phone ────────────────────────────────── */
+.caption{
+  text-align:center;color:#6f6a80;font-family:var(--mono);font-size:11.5px;
+  letter-spacing:1.4px;text-transform:uppercase;max-width:392px;line-height:1.7;
+}
+.caption b{color:#7cff4f;font-weight:500}
+
+@media (max-height:960px){
+  .stage{transform:scale(.84);transform-origin:top center;margin-bottom:-150px}
+}
+@media (max-width:520px){
+  .stage{transform:scale(.74);transform-origin:top center;margin-bottom:-230px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+
+/* ══ DOPE WARS · iOS reskin (uses phone vars) ══ */
+#app{
+  position:absolute;inset:56px 0 0;z-index:30;
+  overflow-y:auto;overflow-x:hidden;
+  padding:0 14px 40px;margin:0;max-width:none;left:0;right:0;
+  transform:none;background:var(--bg);color:var(--ink);
+  font-family:var(--sys);font-size:14px;line-height:1.45;
+  transition:background .8s ease,color .8s ease;
+}
+#app::-webkit-scrollbar{width:0}
+#eventOverlay{
+  position:absolute!important;inset:56px 0 0!important;width:auto!important;height:auto!important;
+  background:rgba(0,0,0,.35)!important;backdrop-filter:blur(8px);
+  display:none;justify-content:center;align-items:flex-end;z-index:65!important;
+  padding:14px;
+}
+#eventOverlay > div{
+  background:color-mix(in srgb,var(--bg) 88%,transparent)!important;
+  backdrop-filter:blur(26px) saturate(180%);
+  border:.5px solid var(--line)!important;border-radius:22px!important;
+  padding:18px!important;max-width:100%!important;width:100%;
+  color:var(--ink)!important;text-align:center!important;
+  box-shadow:0 24px 60px -20px rgba(0,0,0,.5);
+  animation:settle .5s var(--spring) both;
+}
+.game .header{background:transparent;border:0;padding:0;margin:0 0 8px}
+.game .header h1{font-size:22px;font-weight:700;letter-spacing:-.4px;text-align:left}
+.tabs{
+  display:flex;gap:2px;margin:8px 0 10px;padding:2px;border:0;border-bottom:none;
+  background:color-mix(in srgb,var(--ink) 7%,transparent);border-radius:11px;
+}
+.tab{
+  flex:1;padding:7px 2px;background:transparent;color:var(--ink2);
+  border:0;border-bottom:none;font-family:var(--sys);font-size:11px;font-weight:600;
+  cursor:pointer;text-align:center;letter-spacing:.2px;border-radius:8px;white-space:nowrap;
+}
+.tab.active{background:var(--bg);color:var(--ink);font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.tab.locked{opacity:.35}
+.tab:hover{color:var(--ink)}
+.stats-bar{
+  display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11.5px;margin:0;
+  border:1px solid var(--line);border-radius:14px;padding:9px 12px;background:color-mix(in srgb,var(--bg) 82%,transparent);
+  font-family:var(--mono);color:var(--ink2);
+}
+.stats-bar span{white-space:nowrap}
+.stats-bar .warn{color:#ff3b30;font-weight:700}
+.title{
+  font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:var(--ink2);margin:14px 2px 6px;border:0;padding:0;font-family:var(--sys);
+}
+.menu-btn{
+  display:block;width:100%;padding:11px 14px;margin:5px 0;
+  background:var(--accent);color:var(--accent-ink);
+  border:0;border-radius:13px;font-family:var(--sys);font-size:14.5px;font-weight:600;
+  cursor:pointer;text-align:center;letter-spacing:-.1px;
+}
+.menu-btn:hover{filter:brightness(1.08)}
+.menu-btn:active{transform:scale(.97)}
+.menu-btn:disabled{opacity:.35}
+#content .menu-btn:not([style*="background"]){background:color-mix(in srgb,var(--accent) 13%,transparent);color:var(--accent)}
+.menu-btn.mini{padding:4px 8px;font-size:11px;border-radius:8px}
+.drug-row,.file-row,.upgrade-row,.city-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;margin:0;background:color-mix(in srgb,var(--bg) 82%,transparent);
+  border:0;border-bottom:.5px solid var(--line);font-size:13px;color:var(--ink);
+}
+.drug-row:first-of-type,.file-row:first-of-type{border-top-left-radius:13px;border-top-right-radius:13px}
+.drug-row:last-of-type,.file-row:last-of-type{border-bottom:0;border-bottom-left-radius:13px;border-bottom-right-radius:13px}
+.drug-row,.file-row,.upgrade-row{border-left:.5px solid var(--line);border-right:.5px solid var(--line)}
+.drug-row:first-of-type,.file-row:first-of-type,.upgrade-row:first-of-type{border-top:.5px solid var(--line)}
+.drug-row:last-of-type,.file-row:last-of-type,.upgrade-row:last-of-type{border-bottom:.5px solid var(--line);margin-bottom:6px}
+.upgrade-row{border-radius:13px;margin:6px 0;border:.5px solid var(--line)}
+.drug-name{font-weight:600;flex:1}
+.drug-price{font-family:var(--mono);font-size:12px}
+.drug-owned{font-family:var(--mono);color:var(--accent);font-size:12px;min-width:44px;text-align:right}
+.drug-input{
+  width:52px;background:color-mix(in srgb,var(--ink) 6%,transparent);border:0;color:var(--ink);
+  padding:6px 4px;font-family:var(--mono);font-size:13px;text-align:center;border-radius:8px;
+}
+.city-btn{border:.5px solid var(--line);border-radius:13px;margin:5px 0;width:100%;text-align:left;font-family:var(--sys)}
+.city-btn.current{border-color:var(--accent);color:var(--accent);font-weight:700}
+.city-distance{margin-left:auto;color:var(--ink2);font-size:11px;font-family:var(--mono)}
+.log{border:.5px solid var(--line);border-radius:13px;padding:10px;margin-top:8px;max-height:170px;overflow-y:auto;font-size:12px;background:color-mix(in srgb,var(--bg) 82%,transparent);font-family:var(--sys)}
+.log .event-good{color:#248a3d}.log .event-bad{color:#ff3b30}.log .event-neutral{color:var(--ink2)}
+.info-box{
+  border:.5px solid var(--line);border-radius:14px;padding:11px 13px;margin:8px 0;font-size:12.5px;
+  background:color-mix(in srgb,var(--bg) 82%,transparent);line-height:1.55;color:var(--ink);font-family:var(--sys);
+}
+.bank-row{display:flex;gap:6px;margin:6px 0;align-items:center;font-size:12px}
+.bank-row input{flex:1}
+.hack-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
+.hack-stat,.virus-stat{background:color-mix(in srgb,var(--bg) 82%,transparent);border:.5px solid var(--line);border-radius:13px;padding:9px 11px;font-size:11.5px;color:var(--ink2)}
+.hack-stat .val{color:var(--ink);font-weight:700;font-family:var(--mono)}
+.scan-bar{width:100%;height:6px;background:color-mix(in srgb,var(--ink) 8%,transparent);border:0;border-radius:4px;margin-top:4px;overflow:hidden}
+.scan-bar-fill{height:100%;background:var(--accent);border-radius:4px}
+.file-type{font-weight:700;min-width:44px;font-size:11px}
+.file-type.text{color:var(--accent)}.file-type.image{color:#af52de}.file-type.sound{color:#ff9f0a}.file-type.video{color:#ff3b30}
+.file-stat{color:var(--ink2);font-family:var(--mono);font-size:11px}
+.file-value{color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700}
+.virus-window{border:.5px solid var(--line);background:#020202;padding:10px;margin-bottom:8px;text-align:center;border-radius:16px;overflow:hidden}
+.virus-canvas{display:block;width:100%;max-width:360px;height:230px;margin:0 auto;background:#020202;border:0;border-radius:12px}
+.virus-status{margin-top:6px;font-size:11px;font-family:var(--mono)}
+.virus-status.weak{color:#ff9f0a}.virus-status.dead{color:#ff3b30}
+.virus-food{display:flex;gap:6px;align-items:stretch;margin:6px 0}
+.virus-food-count{flex:1;border:.5px solid var(--line);background:color-mix(in srgb,var(--bg) 82%,transparent);padding:9px;border-radius:13px;font-size:11px}
+.virus-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
+.virus-stat .level{color:var(--accent);float:right;font-weight:700;font-family:var(--mono)}
+.virus-stat .xp{color:var(--ink2);display:block;margin-top:2px;font-family:var(--mono);font-size:10px}
+.market-ticker{overflow:hidden;border:.5px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--bg) 82%,transparent);margin:8px 0;white-space:nowrap}
+.market-ticker-track{display:inline-flex;min-width:max-content;animation:marketTicker 22s linear infinite}
+.ticker-item{display:inline-block;padding:6px 12px;border-right:.5px solid var(--line);font-size:10px;font-family:var(--mono)}
+.ticker-item.up,.up{color:#248a3d}.ticker-item.down,.down{color:#ff3b30}.ticker-item.event,.event-row{color:#ff9f0a}.flat{color:var(--ink2)}
+.market-row{display:grid;grid-template-columns:44px 1fr 64px;gap:4px;align-items:center;padding:9px 10px;border:.5px solid var(--line);border-bottom:0;background:color-mix(in srgb,var(--bg) 82%,transparent);margin:0;font-size:11px;cursor:pointer;font-family:var(--sys)}
+.market-row:first-of-type{border-top-left-radius:13px;border-top-right-radius:13px}
+.market-row:last-of-type{border-bottom:.5px solid var(--line);border-bottom-left-radius:13px;border-bottom-right-radius:13px;margin-bottom:6px}
+.market-row .ticker{font-weight:700;font-family:var(--mono)}
+.market-detail{border:.5px solid var(--line);background:color-mix(in srgb,var(--bg) 82%,transparent);padding:10px;margin-top:8px;border-radius:14px}
+.market-detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:6px}
+.market-detail-grid > div{border:.5px solid var(--line);padding:5px;font-size:8px;color:var(--ink2);border-radius:8px}
+.market-detail-grid strong{display:block;color:var(--ink);font-size:10px;margin-top:2px;font-family:var(--mono)}
+.market-chart{color:var(--ink2);font-size:10px;padding:3px 0;font-family:var(--mono)}
+.market-portfolio{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.market-portfolio span{border:.5px solid var(--line);background:color-mix(in srgb,var(--bg) 82%,transparent);padding:6px 8px;font-size:10px;border-radius:9px;font-family:var(--mono)}
+.market-sector-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:6px 0}
+.market-sector{display:flex;justify-content:space-between;border:.5px solid var(--line);background:color-mix(in srgb,var(--bg) 82%,transparent);padding:7px 8px;font-size:10px;border-radius:10px;font-family:var(--mono)}
+.market-title-row{display:flex;justify-content:space-between;padding:12px 2px 5px;color:var(--ink2);font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+.sleep-btn{
+  position:absolute;top:64px;left:12px;background:color-mix(in srgb,var(--bg) 80%,transparent);
+  backdrop-filter:blur(12px);color:var(--accent);border:.5px solid var(--line);
+  font-family:var(--sys);font-size:12px;font-weight:700;padding:6px 12px;cursor:pointer;z-index:64;border-radius:999px;
+}
+.toast-notif{display:none}
+/* ══ notification center dropdown (top-right) ══ */
+#notiBtn{cursor:pointer;position:relative}
+.ncbadge{
+  position:absolute;top:-7px;right:-6px;min-width:16px;height:16px;border-radius:9px;
+  background:#ff3b30;color:#fff;font-size:10px;font-weight:700;line-height:16px;text-align:center;
+  padding:0 4px;font-family:var(--sys);z-index:2;
+}
+.noticenter{
+  position:absolute;top:60px;left:10px;right:10px;z-index:64;
+  background:rgba(26,26,30,.82);backdrop-filter:blur(26px) saturate(180%);
+  border:.5px solid rgba(255,255,255,.13);border-radius:22px;color:#fff;
+  box-shadow:0 24px 60px -20px rgba(0,0,0,.7);
+  transform-origin:50% 0%;transform:scaleY(.6) translateY(-12px);opacity:0;pointer-events:none;
+  transition:transform .38s var(--spring),opacity .25s ease;
+  max-height:70%;display:flex;flex-direction:column;overflow:hidden;
+}
+.noticenter.on{transform:none;opacity:1;pointer-events:auto}
+.nc-head{display:flex;justify-content:space-between;align-items:center;padding:12px 15px 8px;font-size:13px;font-weight:700}
+.nc-head button{border:0;background:none;color:#0a84ff;font-family:var(--sys);font-size:12.5px;font-weight:600;cursor:pointer}
+.nc-list{overflow-y:auto;padding:0 10px 12px;display:flex;flex-direction:column;gap:8px}
+.nc-list::-webkit-scrollbar{width:0}
+.nc-item{display:grid;grid-template-columns:30px 1fr;gap:9px;background:rgba(255,255,255,.07);border-radius:15px;padding:9px 11px;align-items:start}
+.nc-item .ico{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:16px;background:linear-gradient(160deg,var(--tint),color-mix(in srgb,var(--tint) 45%,#000))}
+.nc-item .nhead{font-size:10.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.nc-item .nmsg{font-size:12.5px;line-height:1.35;margin-top:2px}
+.nc-item .nwhen{font-size:10px;color:rgba(255,255,255,.42);font-family:var(--mono);margin-top:3px}
+.nc-empty{font-size:12.5px;color:rgba(255,255,255,.55);text-align:center;padding:18px 10px}
+.back-btn{margin-top:10px}
+.pipeline{display:flex;gap:5px;margin:6px 0;flex-wrap:wrap}
+.pipe-stage{flex:1;min-width:80px;border:.5px solid var(--line);padding:6px;background:color-mix(in srgb,var(--bg) 82%,transparent);font-size:10px;text-align:center;border-radius:10px}
+
+</style>
+
+<div class="bats" id="bats"></div>
+
+<div class="redflash" id="redflash"></div>
+<div class="burst-layer" id="burstLayer"></div>
+<div class="slap-layer" id="slapLayer"></div>
+
+<div class="stage">
+  <div class="tilt3d" id="tilt">
+  <div class="phone" id="phone">
+    <div class="island"></div>
+    <div class="screen" id="screen">
+
+      <div class="progress" id="progress"></div>
+
+      <!-- status bar -->
+      <div class="statusbar">
+        <span id="gamedate">—</span>
+        <span class="icons" id="notiBtn" title="Notifications">
+          <span class="ncbadge" id="ncBadge" style="display:none">0</span>
+          <span class="bars"><i></i><i></i><i></i><i></i></span>
+          <span style="font-size:13px;font-weight:700">5G</span>
+          <span class="batt"><i></i></span>
+        </span>
+      </div>
+
+      <div class="game" id="app"><div id="content"></div></div>
+
+      <!-- ══ NOTIFICATION CENTER ══ -->
+      <div class="noticenter" id="noticenter">
+        <div class="nc-head"><span>Notifications</span><button id="ncClear">Clear</button></div>
+        <div class="nc-list" id="ncList"></div>
+      </div>
+      <div id="eventOverlay" style="display:none;position:absolute;justify-content:center;align-items:center;z-index:65"></div>
+
+      <!-- ══ TOASTS ══ -->
+      <div class="toasts" id="toasts"></div>
+
+      <div class="homebar"></div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<script>
+
+const $ = id => document.getElementById(id);
+const phone=$("phone"), screen=$("screen"), toasts=$("toasts"),
+      slapLayer=$("slapLayer"), redflash=$("redflash"), burstLayer=$("burstLayer"),
+      notiBtn=$("notiBtn"), noticenter=$("noticenter"), ncList=$("ncList"),
+      ncBadge=$("ncBadge"), ncClear=$("ncClear");
+let timers=[];
+const wait=(fn,ms)=>timers.push(setTimeout(fn,ms));
+
+const BAT_SVG=`<svg viewBox="0 0 64 28" fill="currentColor"><path d="M32 6c3-5 9-6 13-3 3 2 4 6 9 4 4-2 8-6 10-7-3 6-4 12-9 15-6 4-13 2-17 7-1 1-2 4-6 4s-5-3-6-4c-4-5-11-3-17-7C4 12 3 6 0 0c2 1 6 5 10 7 5 2 6-2 9-4 4-3 10-2 13 3z"/></svg>`;
+(function makeBats(){
+  const wrap=$("bats");
+  for(let i=0;i<7;i++){
+    const b=document.createElement("div");
+    b.className="bat"; b.innerHTML=BAT_SVG;
+    b.style.top=(Math.random()*80)+"%";
+    b.style.animationDuration=(16+Math.random()*16)+"s";
+    b.style.animationDelay=(-Math.random()*20)+"s";
+    b.style.width=(16+Math.random()*26)+"px";
+    b.style.color=["#2a1b3d","#1d2b22","#3a2450"][i%3];
+    wrap.appendChild(b);
+  }
+})();
+/* status bar shows the IN-GAME date, updated on every render + interval */
+window.phoneDate=function(){
+  const el=$("gamedate");
+  if(!el) return;
+  if(window.G && window.G.month){
+    const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    el.textContent=M[window.G.month-1]+" "+window.G.mday+", "+String(window.G.year).slice(-2);
+  }else{
+    el.textContent=new Date().toLocaleDateString([],{month:"short",day:"numeric"});
+  }
+};
+window.phoneDate(); setInterval(window.phoneDate,5000);
+
+function buildToast(b){
+  const el=document.createElement("div");
+  el.className="toast"+(b.absurd?" absurd":"");
+  el.style.setProperty("--tint",b.tint);
+  el.innerHTML=`
+    <div class="ico">${b.ico}</div>
+    <div>
+      <div class="head">${b.head||"Dope Wars"}</div>
+      <div class="code">${b.code||""}</div>
+      <div class="msg">${b.msg}</div>
+      <div class="addr">${b.addr||""}</div>
+    </div>
+    <div class="ago">${b.ago||"now"}</div>`;
+  return el;
+}
+function pushToast(b){
+  /* feed notification center history */
+  window._notis.unshift({ico:b.ico,tint:b.tint,head:b.head||"Dope Wars",msg:b.msg,when:ncTime()});
+  if(window._notis.length>10) window._notis.length=10;
+  window._ncUnread=(window._ncUnread||0)+1; ncUpdateBadge();
+  if(noticenter.classList.contains("on")) ncRender();
+  const slot=buildToast(b);
+  slot.classList.add("noanim");
+  slot.style.visibility="hidden";
+  toasts.prepend(slot);
+  restack();
+  const target=slot.getBoundingClientRect();
+  const flyer=buildToast(b);
+  flyer.classList.add("slapper","noanim");
+  slapLayer.appendChild(flyer);
+  const from=flyer.getBoundingClientRect();
+  const base="translate(-50%,-50%) ";
+  const s=target.width/from.width;
+  const dx=(target.left+target.width/2)-(from.left+from.width/2);
+  const dy=(target.top+target.height/2)-(from.top+from.height/2);
+  const anim=flyer.animate([
+    {offset:0,    opacity:0, filter:"blur(16px)", transform:base+"scale(2.35) rotate(-7deg) translateZ(340px)"},
+    {offset:.14,  opacity:1, filter:"blur(0px)",  transform:base+"scale(1.05) rotate(1.6deg)"},
+    {offset:.20,             transform:base+"scale(.955) rotate(-.9deg) skewX(3deg)"},
+    {offset:.27,             transform:base+"scale(1.01) rotate(.3deg)"},
+    {offset:.34,             transform:base+"scale(1) rotate(0)"},
+    {offset:.52,             transform:base+`translate(${dx*.22}px,${dy*.22}px) scale(${1-(1-s)*.22}) skewX(11deg) skewY(-3deg) rotateY(-26deg)`},
+    {offset:.68,             transform:base+`translate(${dx*.52}px,${dy*.52}px) scale(${1-(1-s)*.55}) skewX(-8deg) skewY(4deg) rotateY(18deg) rotateX(-12deg)`},
+    {offset:.84,             transform:base+`translate(${dx*.82}px,${dy*.82}px) scale(${1-(1-s)*.86}) skewX(5deg) rotateY(-22deg) rotateX(14deg)`},
+    {offset:1,    opacity:1, transform:base+`translate(${dx}px,${dy}px) scale(${s}) rotateY(-15deg) rotateX(10deg)`}
+  ],{duration:1150,easing:"cubic-bezier(.22,1,.3,1)",fill:"forwards"});
+  if(b.flash){
+    wait(()=>{
+      redflash.classList.remove("on");
+      void redflash.offsetWidth;
+      redflash.classList.add("on");
+      document.body.classList.add("impact");
+      setTimeout(()=>document.body.classList.remove("impact"),340);
+    },160);
+  }
+  if(navigator.vibrate) navigator.vibrate(b.flash?[45,60,45]:22);
+  anim.finished.then(()=>{
+    flyer.remove();
+    slot.style.visibility="";
+    slot.classList.add("settle");
+  }).catch(()=>{ flyer.remove(); slot.style.visibility=""; });
+  wait(()=>{ slot.classList.add("out"); setTimeout(()=>slot.remove(),420); }, 4200);
+}
+function restack(){
+  [...toasts.children].forEach((t,i)=>{
+    if(i>3){ t.classList.add("out"); setTimeout(()=>t.remove(),420); }
+    else t.dataset.depth = i>1 ? Math.min(i-1,3) : "";
+  });
+}
+/* ── notification center (top-right dropdown) ── */
+window._notis=[]; window._ncUnread=0;
+function ncTime(){ return new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}); }
+function ncRender(){
+  if(!ncList) return;
+  if(!window._notis.length){ ncList.innerHTML=`<div class="nc-empty">No notifications yet.</div>`; return; }
+  ncList.innerHTML=window._notis.map(n=>`
+    <div class="nc-item" style="--tint:${n.tint}">
+      <div class="ico">${n.ico}</div>
+      <div><div class="nhead">${n.head}</div><div class="nmsg">${n.msg}</div><div class="nwhen">${n.when}</div></div>
+    </div>`).join("");
+}
+function ncUpdateBadge(){
+  if(!ncBadge) return;
+  const u=window._ncUnread||0;
+  ncBadge.style.display=u>0?"block":"none";
+  ncBadge.textContent=u>9?"9+":u;
+}
+function ncOpen(){ ncRender(); noticenter.classList.add("on"); window._ncUnread=0; ncUpdateBadge(); }
+function ncClose(){ if(noticenter) noticenter.classList.remove("on"); }
+if(notiBtn) notiBtn.addEventListener("click",e=>{ e.stopPropagation(); noticenter.classList.contains("on")?ncClose():ncOpen(); });
+if(ncClear) ncClear.addEventListener("click",e=>{ e.stopPropagation(); window._notis=[]; ncRender(); });
+screen.addEventListener("click",()=>{ if(noticenter.classList.contains("on")) ncClose(); });
+/* game log -> phone notification */
+window.pushGameLog=function(msg,type){
+  const map={good:{ico:"✅",tint:"#34c759",head:"Dope Wars"},bad:{ico:"🚨",tint:"#ff3b30",head:"Dope Wars"},neutral:{ico:"💬",tint:"#007aff",head:"Dope Wars"}};
+  const m=map[type]||map.neutral;
+  pushToast({ico:m.ico,tint:m.tint,head:m.head,code:type?String(type).toUpperCase():"LOG",msg:msg,addr:"",ago:"now",flash:type==="bad"});
+};
+
+const DRUGS = [
+  { name: "Weed",      base: 60,   min: 30,   max: 180  },
+  { name: "Shrooms",   base: 100,  min: 50,   max: 300  },
+  { name: "Speed",     base: 250,  min: 120,  max: 750  },
+  { name: "Ecstasy",   base: 120,  min: 60,   max: 360  },
+  { name: "Heroin",    base: 400,  min: 200,  max: 1200 },
+  { name: "Cocaine",   base: 2000, min: 1000, max: 6000 },
+  { name: "Acid",      base: 250,  min: 120,  max: 750  }
+];
+
+const CITIES = [
+  { name: "New York",    x: 850, y: 450 },
+  { name: "Los Angeles", x: 150, y: 480 },
+  { name: "Chicago",     x: 550, y: 350 },
+  { name: "Miami",       x: 780, y: 720 },
+  { name: "Detroit",     x: 620, y: 320 },
+  { name: "Houston",     x: 530, y: 680 },
+  { name: "Denver",      x: 350, y: 420 }
+];
+
+const TRAVEL_DAYS = {};
+function distKey(a, b) { return a < b ? a + "," + b : b + "," + a; }
+function calcDist(c1, c2) {
+  return Math.sqrt(Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2));
+}
+for (let i = 0; i < CITIES.length; i++) {
+  for (let j = i + 1; j < CITIES.length; j++) {
+    const d = calcDist(CITIES[i], CITIES[j]);
+    const days = Math.max(1, Math.round(d / 200));
+    TRAVEL_DAYS[distKey(i, j)] = days;
+  }
+}
+
+const EVENTS = [];
+
+var G = {};
+
+function initGame() {
+  G = {
+    cash: 420,
+    debt: 5500,
+    bank: 5500,
+    city: 0,
+    day: 1,
+    maxDays: 999,
+    year: 1994,
+    month: 3,
+    mday: 14,
+    inventory: new Array(DRUGS.length).fill(0),
+    maxCapacity: 100,
+    hp: 100,
+    maxHp: 100,
+    armor: 0,
+    maxArmor: 0,
+    firstaidXp: 0,
+    healing: 0,
+    stats: {
+      fitness: 0,
+      strength: 0,
+      firstaid: 0,
+      aiming: 0,
+      reloading: 0,
+      driving: 0,
+      hacking: 0
+    },
+    homeCity: 0,
+    prices: [],
+    log: [],
+    gear: [],
+    guns: [],
+    bag: null,
+    trunkStock: {},
+    devices: [],
+    crew: [],
+    crewGear: {},
+    playerCar: null,
+    lotStock: {},
+    hqCrates: 0,
+    hq: "",
+    hqInventory: new Array(DRUGS.length).fill(0),
+    boughtToday: new Array(DRUGS.length).fill(false),
+    cityDrugLocks: {},
+    unsellable: [],
+    eventDiscounts: {},
+    over: false,
+    tab: "safehouse",
+    police: { active: false, phase: "menu", turn: 0, copHp: 30, maxCopHp: 30, log: [] },
+    hack: {
+      files: [],
+      research: 0,
+      dlSpeed: 1,
+      cpuSpeed: 1,
+      enhancerLv: 0,
+      compressorLv: 0,
+      scannerLv: 0,
+      quarantineLv: 0,
+      totalFiles: 0,
+      totalEarned: 0,
+      totalResearch: 0,
+      downloading: false,
+      scanQueue: 0,
+      dlProgress: 0,
+      dlDuration: 0,
+      dlCount: 0
+    },
+    virus: {
+      alive: true,
+      bornDay: 1,
+      lastFedDay: 1,
+      weakened: false,
+      totalFed: 0,
+      stats: {
+        speed: { xp: 0 },
+        strength: { xp: 0 },
+        reach: { xp: 0 },
+        lifespan: { xp: 0 }
+      }
+    },
+    market: {
+      stocks: [],
+      crypto: [],
+      portfolio: { stocks: {}, crypto: {} },
+      cash: 0,
+      history: []
+    }
+  };
+  randomizePrices();
+  initMarket();
+  G.homeCity = Math.floor(Math.random() * CITIES.length);
+  rollTrunkStock();
+  rollLotStock();
+  addLog("You hit the streets with $420 cash and a loan of $5,500 in the bank.", "neutral");
+  addLog("Date: March 14, 1994", "neutral");
+  addLog("You owe $5,500 to the loan shark. Go to the bank first.", "neutral");
+  addLog("Game ends in 30 days. Good luck.", "neutral");
+}
+
+function randomizePrices() {
+  G.prices = DRUGS.map(d => {
+    let variance = 0.4 + Math.random() * 1.2;
+    let price = Math.round(d.base * variance);
+    return Math.max(d.min, Math.min(d.max, price));
+  });
+  // sometimes a drug becomes unavailable
+  if (Math.random() < 0.15) {
+    let idx = Math.floor(Math.random() * DRUGS.length);
+    G.prices[idx] = 0;
+  }
+}
+
+function advanceDate(days) {
+  for (let i = 0; i < days; i++) {
+    G.mday++;
+    const daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
+    if (G.mday > daysInMonth[G.month - 1]) {
+      G.mday = 1;
+      G.month++;
+      if (G.month > 12) { G.month = 1; G.year++; }
+    }
+    G.day++;
+  }
+}
+
+function addLog(msg, type) {
+  G.log.unshift({ msg, type });
+  if (G.log.length > 50) G.log.pop();
+  // Push to phone toast notifications
+  if (window.pushGameLog) {
+    window.pushGameLog(msg, type);
+  }
+}
+
+function getDateString() {
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return months[G.month - 1] + " " + G.mday + ", " + G.year;
+}
+
+function totalDrugs() {
+  return G.inventory.reduce((a, b) => a + b, 0);
+}
+
+function netWorth() {
+  let invValue = G.inventory.reduce((sum, qty, i) => sum + qty * G.prices[i], 0);
+  return G.cash + G.bank + invValue - G.debt;
+}
+
+function render() {
+  const app = document.getElementById("app");
+  if (G.over) { renderGameOver(app); return; }
+
+  const statsHtml = `
+    ${G.tab !== 'safehouse' ? `<button class="sleep-btn" onclick="endDay()" title="End Day (sleep)">Zzz</button>` : ''}
+    <div class="header">
+      <div class="tabs">
+        <button class="tab ${G.tab === 'safehouse' ? 'active' : ''}" onclick="switchTab('safehouse')">SAFEHOUSE</button>
+        <button class="tab ${G.tab === 'trap' ? 'active' : ''}" onclick="switchTab('trap')">TRAP</button>
+        <button class="tab ${G.tab === 'market' ? 'active' : ''}" onclick="switchTab('market')">MARKET</button>
+        <button class="tab ${G.tab === 'hack' ? 'active' : ''}" onclick="switchTab('hack')" ${hasHackDevice() ? '' : 'disabled title="Buy a phone or PC at the TRAP to unlock HACK"'}>HACK${hasHackDevice() ? '' : ' 🔒'}</button>
+        <button class="tab ${G.tab === 'crew' ? 'active' : ''}" onclick="switchTab('crew')" ${G.debt > 0 ? 'title="Pay off your loan to unlock crew." disabled' : ''}>${G.debt > 0 ? 'CREW 🔒' : 'CREW'}</button>
+        <button class="tab ${G.tab === 'virus' ? 'active' : ''}" onclick="switchTab('virus')" ${hasPcDevice() ? '' : 'title="Buy a PC at the TRAP to unlock VIRUS" disabled'}>${hasPcDevice() ? 'VIRUS' : 'VIRUS 🔒'}</button>
+      </div>
+      <div class="stats-bar">
+        <span>${getDateString()}</span>
+        <span>Day ${String(G.day).padStart(2, "0")}</span>
+        <span>📍 ${CITIES[G.city].name}</span>
+        <span>$${G.cash.toLocaleString()}</span>
+        ${G.debt > 0 ? `<span class="warn">DEBT: $${G.debt.toLocaleString()}</span>` : ""}
+        ${G.bank > 0 ? `<span>Bank: $${G.bank.toLocaleString()}</span>` : ""}
+        <span>Pockets: ${totalDrugs()}/${G.maxCapacity}</span>
+        <span>HP: ${G.hp}/${G.maxHp}${G.armor > 0 ? ` | Armor: ${G.armor}` : ""}</span>
+      </div>
+    </div>`;
+
+  app.innerHTML = statsHtml + `<div id="content"></div>`;
+  if (G.tab === "safehouse") renderSafehouse();
+  if (G.tab === "trap") renderTrap();
+  if (G.tab === "hack") renderHack();
+  if (G.tab === "market") renderMarket();
+  if (G.tab === "crew") renderCrew();
+  if (G.tab === "virus") renderVirus();
+  if (window.phoneDate) window.phoneDate();
+}
+
+function switchTab(tab) {
+  if (tab === "hack" && !hasHackDevice()) {
+    addLog("Buy a phone or PC at the TRAP to unlock HACK.", "bad");
+    G.tab = "trap";
+    render();
+    return;
+  }
+  if (tab === "virus" && !hasPcDevice()) {
+    addLog("Buy a PC at the TRAP to unlock VIRUS.", "bad");
+    G.tab = "trap";
+    render();
+    return;
+  }
+  G.tab = tab;
+  render();
+}
+
+function renderSafehouse() {
+  const c = document.getElementById("content");
+  const recent = G.log.slice(0, 4).map(l => `<div class="toast-notif event-${l.type}" style="font-size:10px;margin:2px 0;animation:toastIn .5s ease">${l.msg}</div>`).join("");
+
+  c.innerHTML = `
+    <div class="title">SAFEHOUSE</div>
+    <div class="info-box">
+      <strong>${CITIES[G.city].name}</strong> — ${getDateString()} — Day ${String(G.day).padStart(2, "0")}<br>
+      Home: <strong>${CITIES[G.homeCity].name}</strong> (10% off drugs)<br>
+      Cash: $${G.cash.toLocaleString()} | Bank: $${G.bank.toLocaleString()} | Pockets: ${totalDrugs()}/${G.maxCapacity}<br>
+      HP: ${G.hp}/${G.maxHp}${G.armor > 0 ? ` | Armor: ${G.armor}` : ""} | Net Worth: $${netWorth().toLocaleString()}<br>
+      ${G.debt > 0 ? `<span class="warn">DEBT: $${G.debt.toLocaleString()}</span>` : "Debt paid off!"}
+    </div>
+    ${G.hp < G.maxHp ? `<button class="menu-btn" style="border-color:#00ff41" onclick="startHeal()">HEAL (${G.healing > 0 ? "healing..." : "start resting"})</button>` : ""}
+    <button class="menu-btn" onclick="endDay()">END DAY (sleep) +1 day</button>
+    <button class="menu-btn" onclick="renderTravelMenu()">TRAVEL TO ANOTHER CITY</button>
+    <button class="menu-btn" onclick="renderInventory()">INVENTORY (${totalDrugs()}/${G.maxCapacity})</button>
+    <div class="title" style="margin-top:8px">GEAR</div>
+    ${G.gear.length > 0
+      ? G.gear.map(g => `<div class="file-row"><span class="file-type text" style="font-weight:bold">${g.name}</span><span style="flex:1;color:#aaa;font-size:10px">${g.desc}</span></div>`).join("")
+      : '<div style="color:#888;font-size:11px;padding:6px">No gear yet.</div>'
+    }
+    <div class="info-box" style="margin-top:6px;padding:6px">
+      ${G.debt > 0 ? `Loan Shark debt grows 10% daily! Pay it off fast.` : "Debt is clear. Stack your cash."}
+    </div>
+    
+    <style>
+      @keyframes gameToastIn{from{opacity:0}to{opacity:1}}
+    </style>`;
+}
+
+function hqCrateCap() {
+  if (G.hq === "Small HQ") return 4;
+  if (G.hq === "Medium HQ") return 8;
+  if (G.hq === "Large HQ") return 15;
+  return 0;
+}
+
+function hqCapacity() {
+  const base = G.hq === "Small HQ" ? 100 : G.hq === "Medium HQ" ? 220 : G.hq === "Large HQ" ? 500 : G.maxCapacity;
+  return base + Math.min(G.hqCrates || 0, hqCrateCap()) * 10;
+}
+
+function bagCapacity() {
+  return 100 + (G.bag ? G.bag.slots : 0);
+}
+
+function rollTrunkStock() {
+  G.trunkStock = {};
+  const pool = TRUNK_GEAR.filter(g => !g.cities || g.requiresHQ || g.damage || g.armor || g.mask || g.crate || g.bagSlots || g.device);
+  const count = Math.floor(Math.random() * 5);
+  const available = pool.filter(g => !g.cities || g.cities.includes(G.city));
+  const picked = new Set();
+
+  // Devices use weighted stocking. The low-tech phone is deliberately common
+  // because a phone/PC is the entry point to HACK. Other items remain normal.
+  const weight = g => g.device === "phone" && g.tech === "low" ? 5 : (g.device ? 2 : 1);
+  while (picked.size < count && picked.size < available.length) {
+    const choices = available.filter(g => !picked.has(g.name));
+    const total = choices.reduce((sum, g) => sum + weight(g), 0);
+    let roll = Math.random() * total;
+    let chosen = choices[choices.length - 1];
+    for (const g of choices) {
+      roll -= weight(g);
+      if (roll <= 0) { chosen = g; break; }
+    }
+    picked.add(chosen.name);
+    G.trunkStock[chosen.name] = true;
+  }
+}
+
+function trunkAvailable(g) {
+  return G.trunkStock[g.name] === true && (!g.cities || g.cities.includes(G.city));
+}
+
+function hasHackDevice() {
+  return Array.isArray(G.devices) && G.devices.length > 0;
+}
+
+function hasPcDevice() {
+  return Array.isArray(G.devices) && G.devices.some(d => d.device === "pc");
+}
+
+function hackQueueMax() {
+  return 10 + (G.devices || []).reduce((sum, d) => sum + (d.queueBonus || 0), 0);
+}
+
+function rollLotStock() {
+  G.lotStock = {};
+  CARS.forEach((car, i) => { G.lotStock[i] = Math.random() >= car.emptyChance; });
+}
+
+function lotAvailable(i) {
+  if (G.lotStock[i] === undefined) rollLotStock();
+  return G.lotStock[i];
+}
+
+function gunLabel(g) {
+  return `${g.name} — ${g.status === "stolen" ? "STOLEN" : "NEW"}`;
+}
+
+function renderTrap() {
+  const c = document.getElementById("content");
+  const localGear = TRUNK_GEAR.filter(g => (!g.cities || g.cities.includes(G.city)) && trunkAvailable(g));
+  const trunkRows = localGear.length > 0
+    ? localGear.map(g => {
+        const idx = TRUNK_GEAR.indexOf(g);
+        const discount = G.eventDiscounts.trunk || 0;
+        const cost = Math.round(g.cost * (1 - discount));
+        const isGun = !!g.damage;
+        const isBag = !!g.bagSlots;
+        const isDevice = !!g.device;
+        const ownedDevice = isDevice && G.devices.some(d => d.name === g.name);
+        const owned = isBag ? (G.bag && G.bag.name === g.name) : (!isGun && !g.armor && !g.mask && !g.crate && G.gear.some(x => x.name === g.name));
+        const button = isGun
+          ? `<button class="menu-btn" style="width:auto;padding:2px 8px;margin:0;font-size:10px" onclick="buyGear(${idx})">BUY</button>`
+          : `<button class="menu-btn" style="width:auto;padding:2px 8px;margin:0;font-size:10px;${owned || ownedDevice ? 'opacity:0.3' : ''}" ${owned || ownedDevice ? 'disabled' : ''} onclick="buyGear(${idx})">${ownedDevice ? "OWNED" : owned ? "EQUIPPED" : (isBag && G.bag ? "UPGRADE" : "BUY")}</button>`;
+        return `<div class="file-row">
+          <span class="file-type text" style="min-width:110px;font-weight:bold">${g.name}</span>
+          <span style="flex:1;color:#aaa;font-size:10px">${g.desc}</span>
+          <span style="font-size:10px;color:#ffcc00;margin:0 6px">$${cost.toLocaleString()}${discount ? ' <span style="color:#00ff41;font-size:9px">SALE</span>' : ""}</span>
+          ${button}
+        </div>`;
+      }).join("")
+    : '<div style="color:#888;font-size:11px;padding:6px">Trunk is empty today.</div>';
+
+  const crateText = G.hq ? ` Crates: ${G.hqCrates || 0}/${hqCrateCap()} (+${Math.min(G.hqCrates || 0, hqCrateCap()) * 10} slots).` : "";
+  const lot = G.hq && G.crew.length > 0 ? `<div class="title" style="margin-top:8px">LOT</div>${renderLotRows()}` : "";
+
+  c.innerHTML = `
+    <div class="title">TRAP</div>
+    <button class="menu-btn" onclick="renderDrugMenu('buy')">BUY DRUGS</button>
+    <button class="menu-btn" onclick="renderDrugMenu('sell')">SELL DRUGS</button>
+    ${G.debt > 0 ? `<button class="menu-btn" onclick="renderLoanShark()">LOAN SHARK</button>` : ""}
+    <button class="menu-btn" onclick="doTrain()">TRAIN (-5hp, +fitness/str XP)</button>
+    <div class="title" style="margin-top:8px">TRUNK — GEAR</div>
+    <div class="info-box">${G.hq ? `HQ capacity: ${hqCapacity()} slots. ${crateText}` : "Get an HQ to unlock the expanded trunk."} ${G.bag ? `Bag: ${G.bag.name}` : "No bag equipped"}.</div>
+    ${trunkRows}
+    ${lot}`;
+}
+
+function buyGear(idx) {
+  const g = TRUNK_GEAR[idx];
+  if (!trunkAvailable(g)) { addLog("That item is not in the trunk today.", "bad"); renderTrap(); return; }
+  if (g.requiresHQ && !G.hq) { addLog("You need an HQ for that item.", "bad"); renderTrap(); return; }
+  const discount = G.eventDiscounts.trunk || 0;
+  const cost = Math.round(g.cost * (1 - discount));
+  if (G.cash < cost) { addLog("Not enough cash!", "bad"); renderTrap(); return; }
+
+  if (g.crate) {
+    if ((G.hqCrates || 0) >= hqCrateCap()) { addLog("Your HQ has reached its crate limit.", "bad"); renderTrap(); return; }
+    G.cash -= cost;
+    G.hqCrates = (G.hqCrates || 0) + 1;
+    G.maxCapacity = hqCapacity();
+    addLog(`Bought an HQ crate for $${cost.toLocaleString()}. Capacity is now ${G.maxCapacity}.`, "good");
+    refreshStats(); renderTrap(); return;
+  }
+
+  if (g.device) {
+    if (hasHackDevice()) { addLog("You already own a phone or PC.", "bad"); renderTrap(); return; }
+    G.cash -= cost;
+    G.devices.push({ name: g.name, type: g.device, tech: g.tech, queueBonus: g.queueBonus });
+    addLog(`Bought ${g.name} for $${cost.toLocaleString()}. HACK unlocked with +${g.queueBonus} scan queue slots.`, "good");
+    refreshStats(); renderTrap(); return;
+  }
+
+  if (g.bagSlots) {
+    if (G.bag && G.bag.name === g.name) { addLog("Already equipped!", "bad"); renderTrap(); return; }
+    const newCapacity = 100 + g.bagSlots;
+    if (newCapacity < totalDrugs()) { addLog("You have too much in your current bag to downgrade right now.", "bad"); renderTrap(); return; }
+    G.cash -= cost;
+    G.bag = { name: g.name, slots: g.bagSlots };
+    G.maxCapacity = newCapacity;
+    addLog(`Equipped ${g.name}. Capacity is now ${newCapacity} slots.`, "good");
+    refreshStats(); renderTrap(); return;
+  }
+
+  if (g.damage) {
+    G.cash -= cost;
+    const status = g.stolenOnly ? "stolen" : (Math.random() < 0.5 ? "stolen" : "new");
+    const gun = { name: g.name, desc: g.desc, damage: g.damage, status, assignedTo: null };
+    G.guns.push(gun);
+    addLog(`Bought ${gunLabel(gun)} for $${cost.toLocaleString()}.`, "good");
+    if (G.crew.length > 0) renderGunAssignment(G.guns.length - 1);
+    else { gun.assignedTo = "player"; syncGunGear(); addLog(`${gunLabel(gun)} assigned to you.`, "neutral"); refreshStats(); renderTrap(); }
+    return;
+  }
+
+  if (g.armor) {
+    G.cash -= cost;
+    G.gear = G.gear.filter(x => !x.armor);
+    G.gear.push({ name: g.name, desc: g.desc, armor: g.armor });
+    G.armor = g.armor; G.maxArmor = g.armor;
+    addLog(`Equipped ${g.name} for $${cost.toLocaleString()}.`, "good");
+    refreshStats(); renderTrap(); return;
+  }
+
+  if (g.mask) {
+    if (G.gear.some(x => x.mask)) { addLog("Already equipped a mask.", "bad"); renderTrap(); return; }
+    G.cash -= cost; G.gear.push({ name: g.name, desc: g.desc, mask: true, escapeBonus: g.escapeBonus });
+    addLog(`Equipped ${g.name} for $${cost.toLocaleString()}.`, "good"); refreshStats(); renderTrap(); return;
+  }
+
+  if (G.gear.some(x => x.name === g.name)) { addLog("Already owned!", "bad"); renderTrap(); return; }
+  G.cash -= cost; G.gear.push({ name: g.name, desc: g.desc });
+  addLog(`Bought ${g.name} for $${cost.toLocaleString()}${discount ? " (event discount)" : ""}.`, "good");
+  refreshStats(); renderTrap();
+}
+
+function renderLotRows() {
+  return CARS.map((car, i) => {
+    const owned = G.playerCar && G.playerCar.name === car.name;
+    const available = lotAvailable(i);
+    if (!available) return `<div class="file-row"><span style="color:#666">LOT #${i + 1}</span><span style="flex:1;color:#666">EMPTY</span></div>`;
+    return `<div class="file-row"><span class="file-type text" style="min-width:100px;font-weight:bold">${car.name}</span><span style="flex:1;color:#aaa;font-size:10px">${car.desc} | ${car.seats} seats | ${car.gearSlots} gear slots | -${Math.round(car.travelReduction * 100)}% travel</span><span style="font-size:10px;color:#ffcc00;margin:0 6px">$${car.cost.toLocaleString()}</span><button class="menu-btn" style="width:auto;padding:2px 7px;margin:0;font-size:9px" onclick="buyCar(${i})">${owned ? "SELECTED" : "BUY / ASSIGN"}</button></div>`;
+  }).join("") + `<div style="color:#888;font-size:10px;padding:6px">Crew members need a car for missions. You can assign cars to crew or keep one for yourself.</div>`;
+}
+
+function buyCar(idx) {
+  const car = CARS[idx];
+  if (!G.hq || G.crew.length < 1) { addLog("You need an HQ and at least one crew member to use the lot.", "bad"); renderTrap(); return; }
+  if (!lotAvailable(idx)) { addLog("That lot is empty today.", "bad"); renderTrap(); return; }
+  if (G.cash < car.cost) { addLog("Not enough cash!", "bad"); renderTrap(); return; }
+  const c = document.getElementById("content");
+  const choices = ["player", ...G.crew];
+  c.innerHTML = `<div class="title">BUY ${car.name}</div><div class="info-box">Choose who gets this car. Crew cars will be used for future missions; your car reduces your travel time.</div>${choices.map(target => { const q=target === "player" ? G.playerCar : getCrewGear(target).car; return `<button class="menu-btn" ${q ? "disabled style=\"opacity:0.35\"" : ""} onclick="confirmCarPurchase(${idx}, '${target.replace(/'/g,"\'")}')">${target === "player" ? "YOU" : target.toUpperCase()}${q ? ` — HAS ${q.name}` : ""}</button>`; }).join("")}<button class="menu-btn back-btn" onclick="renderTrap()">BACK</button>`;
+}
+
+function confirmCarPurchase(idx, target) {
+  const car = CARS[idx];
+  if (G.cash < car.cost) { addLog("Not enough cash!", "bad"); renderTrap(); return; }
+  if (target === "player" ? G.playerCar : getCrewGear(target).car) { addLog("That person already has a car.", "bad"); renderTrap(); return; }
+  G.cash -= car.cost;
+  const carObj = { ...car };
+  if (target === "player") G.playerCar = carObj;
+  else getCrewGear(target).car = carObj;
+  addLog(`${car.name} bought and assigned to ${target === "player" ? "you" : target}.`, "good");
+  refreshStats(); renderTrap();
+}
+
+function assignBagToCrew(name) {
+  if (!G.bag) { addLog("You do not have a bag to assign.", "bad"); renderCrewMembers(); return; }
+  const q = getCrewGear(name);
+  if (q.bag) { addLog(`${name} already has a bag.`, "bad"); renderCrewMembers(); return; }
+  q.bag = G.bag;
+  G.bag = null;
+  G.maxCapacity = 100;
+  addLog(`${q.bag.name} assigned to ${name}.`, "good");
+  refreshStats(); renderCrewMembers();
+}
+
+function assignArmorToCrew(name) {
+  const armor = G.gear.find(x => x.armor);
+  if (!armor) { addLog("You do not have body armor to assign.", "bad"); renderCrewMembers(); return; }
+  const q = getCrewGear(name);
+  if (q.armor) { addLog(`${name} already has body armor.`, "bad"); renderCrewMembers(); return; }
+  q.armor = { ...armor };
+  G.gear = G.gear.filter(x => !x.armor);
+  G.armor = 0; G.maxArmor = 0;
+  addLog(`${armor.name} assigned to ${name}.`, "good");
+  refreshStats(); renderCrewMembers();
+}
+
+function getCrewGear(name) {
+  if (!G.crewGear[name]) G.crewGear[name] = { gun: null, car: null, bag: null, armor: null };
+  return G.crewGear[name];
+}
+
+function renderGunAssignment(gunIdx) {
+  const c = document.getElementById("content");
+  const gun = G.guns[gunIdx];
+  if (!gun) { renderTrap(); return; }
+  const choices = ["player", ...G.crew];
+  c.innerHTML = `
+    <div class="title">ASSIGN ${gun.name}</div>
+    <div class="info-box">Choose who carries this gun. An unassigned gun is stored at HQ and uses 1 HQ slot.</div>
+    ${choices.map(target => `<button class="menu-btn" onclick="assignGun(${gunIdx}, '${target.replace(/'/g, "\'")}')">${target === "player" ? "YOU" : target.toUpperCase()}</button>`).join("")}
+    <button class="menu-btn" onclick="storeGunInHQ(${gunIdx})">STORE IN HQ</button>`;
+}
+
+function gunHQCount() {
+  return G.guns.filter(g => !g.assignedTo).length;
+}
+
+function assignGun(gunIdx, target) {
+  const gun = G.guns[gunIdx];
+  if (!gun) return;
+  if (target !== "player" && !G.crew.includes(target)) return;
+  gun.assignedTo = target;
+  if (target !== "player") getCrewGear(target).gun = gun;
+  syncGunGear();
+  addLog(`${gun.name} assigned to ${target === "player" ? "you" : target}.`, "good");
+  refreshStats();
+  renderTrap();
+}
+
+function storeGunInHQ(gunIdx) {
+  const gun = G.guns[gunIdx];
+  if (!gun) return;
+  if (!G.hq) { addLog("You need an HQ to store an unused gun.", "bad"); renderGunAssignment(gunIdx); return; }
+  if (totalHQDrugs() + gunHQCount() >= G.maxCapacity) { addLog("HQ is full!", "bad"); renderGunAssignment(gunIdx); return; }
+  gun.assignedTo = null;
+  syncGunGear();
+  addLog(`${gun.name} stored in HQ.`, "neutral");
+  refreshStats();
+  renderTrap();
+}
+
+function syncGunGear() {
+  G.gear = G.gear.filter(g => !g.gunId);
+  Object.keys(G.crewGear || {}).forEach(name => { if (G.crewGear[name]) G.crewGear[name].gun = null; });
+  G.guns.forEach((gun, i) => {
+    if (gun.assignedTo === "player") G.gear.push({ name: gunLabel(gun), desc: gun.desc, damage: gun.damage, gunId: i, status: gun.status });
+    else if (gun.assignedTo && gun.assignedTo !== "seized") getCrewGear(gun.assignedTo).gun = gun;
+  });
+}
+
+function doTrain() {
+  if (G.hp <= 5) { addLog("Too weak to train!", "bad"); renderTrap(); return; }
+  G.hp -= 5;
+  const stat = Math.random() < 0.5 ? "fitness" : "strength";
+  G.stats[stat] += 1;
+  addLog(`Trained hard. -5 HP. Gained +1 ${stat} XP. (${G.stats[stat]})`, "neutral");
+  refreshStats();
+  renderTrap();
+}
+
+// ===== CREW TAB =====
+const CREW_MEMBERS = [
+  { name: "Lookout", desc: "Watches your back. Reduces bust chance.", cost: 2000 },
+  { name: "Wheelman", desc: "Better driving. +2 driving skill.", cost: 3500 },
+  { name: "Goon", desc: "Extra muscle. +10 damage in fights.", cost: 5000 },
+  { name: "Hacker", desc: "Better hacks. +2 hacking skill.", cost: 4000 },
+  { name: "Medic", desc: "Heals 10 HP per day automatically.", cost: 3000 },
+  { name: "Snitch", desc: "Warns about cops. -20% bust chance.", cost: 2500 },
+];
+
+function renderCrew() {
+  const c = document.getElementById("content");
+  if (G.debt > 0) {
+    c.innerHTML = `<div class="title">CREW</div><div class="info-box">Pay off your loan to unlock crew.</div><button class="menu-btn back-btn" onclick="switchTab('safehouse')">BACK</button>`;
+    return;
+  }
+
+  c.innerHTML = `
+    <div class="title">CREW</div>
+    <button class="menu-btn" onclick="renderCrewMembers()">MEMBERS (${G.crew.length})</button>
+    <button class="menu-btn" onclick="renderCrewRivals()">RIVALS</button>
+    <button class="menu-btn" onclick="renderCrewJobs()">JOBS</button>
+    <button class="menu-btn" onclick="renderCrewHQ()">HQ</button>`;
+}
+
+function renderCrewMembers() {
+  const c = document.getElementById("content");
+  const crewRows = CREW_MEMBERS.map((m, i) => {
+    const owned = G.crew.includes(m.name);
+    return `<div class="file-row">
+      <span class="file-type text" style="min-width:50px;font-weight:bold">${m.name}</span>
+      <span style="flex:1;color:#aaa;font-size:10px">${m.desc}</span>
+      <span style="font-size:10px;color:#ffcc00;margin:0 6px">$${m.cost.toLocaleString()}</span>
+      <button class="menu-btn" style="width:auto;padding:2px 8px;margin:0;font-size:10px;${owned ? 'opacity:0.3' : ''}" ${owned ? 'disabled' : ''} onclick="hireCrew(${i})">HIRE</button>
+    </div>`;
+  }).join("");
+
+  c.innerHTML = `
+    <div class="title">MEMBERS</div>
+    ${G.crew.length > 0 ? `<div style="font-size:10px;color:#ffcc00;margin-bottom:6px">Active: ${G.crew.join(", ")}</div>` : ""}
+    ${G.crew.map(name => { const q=getCrewGear(name); return `<div class="info-box"><strong>${name}</strong><br>Gun: ${q.gun ? gunLabel(q.gun) : "none"} | Car: ${q.car ? q.car.name : "none"} | Bag: ${q.bag ? q.bag.name : "none"} | Armor: ${q.armor ? q.armor.name : "none"}<br><button class="menu-btn" style="width:auto;padding:2px 6px;font-size:9px" onclick="assignBagToCrew('${name.replace(/'/g,"\'")}')" ${(!G.bag || q.bag) ? "disabled" : ""}>GIVE BAG</button> <button class="menu-btn" style="width:auto;padding:2px 6px;font-size:9px" onclick="assignArmorToCrew('${name.replace(/'/g,"\'")}')" ${(!G.gear.some(x=>x.armor) || q.armor) ? "disabled" : ""}>GIVE ARMOR</button></div>`; }).join("")}
+    ${crewRows}
+    <button class="menu-btn back-btn" onclick="renderCrew()">BACK</button>`;
+}
+
+function renderCrewRivals() {
+  const c = document.getElementById("content");
+  c.innerHTML = `
+    <div class="title">RIVALS</div>
+    <div class="info-box">No rivals yet.</div>
+    <button class="menu-btn back-btn" onclick="renderCrew()">BACK</button>`;
+}
+
+function renderCrewJobs() {
+  const c = document.getElementById("content");
+  c.innerHTML = `
+    <div class="title">JOBS</div>
+    <div class="info-box">No jobs available.</div>
+    <button class="menu-btn back-btn" onclick="renderCrew()">BACK</button>`;
+}
+
+const HQ_OPTIONS = [
+  { name: "Small HQ", desc: "100 inventory slots", cost: 30000, slots: 100 },
+  { name: "Medium HQ", desc: "220 inventory slots", cost: 60000, slots: 220 },
+  { name: "Large HQ", desc: "500 inventory slots", cost: 120000, slots: 500 },
+];
+
+function renderCrewHQ() {
+  const c = document.getElementById("content");
+  const hqRows = HQ_OPTIONS.map((h, i) => {
+    const owned = G.hq === h.name;
+    const current = G.hq === h.name;
+    return `<div class="file-row">
+      <span class="file-type text" style="min-width:50px;font-weight:bold">${h.name}</span>
+      <span style="flex:1;color:#aaa;font-size:10px">${h.desc}</span>
+      <span style="font-size:10px;color:#ffcc00;margin:0 6px">$${h.cost.toLocaleString()}</span>
+      <button class="menu-btn" style="width:auto;padding:2px 8px;margin:0;font-size:10px;${current ? 'opacity:0.3' : ''}" ${current ? 'disabled' : ''} onclick="buyHQ(${i})">BUY</button>
+    </div>`;
+  }).join("");
+
+  c.innerHTML = `
+    <div class="title">HQ</div>
+    <div class="info-box">Current HQ: ${G.hq || "None"} — Capacity: ${G.maxCapacity}${G.hq ? ` — Used: ${totalHQDrugs() + gunHQCount()} — Crates: ${G.hqCrates || 0}/${hqCrateCap()}` : ""}</div>
+    ${hqRows}
+    ${G.hq ? `<div class="title" style="margin-top:8px">ARMORY</div>${gunHQCount() > 0 ? G.guns.map((gun, i) => !gun.assignedTo ? `<div class="file-row"><span class="file-type text" style="min-width:90px;font-weight:bold">${gun.name}</span><span style="flex:1;color:#aaa;font-size:10px">+${gun.damage} damage</span><button class="menu-btn" style="width:auto;padding:2px 8px;margin:0;font-size:10px" onclick="renderGunAssignment(${i})">ASSIGN</button></div>` : "").join("") : `<div style="color:#888;font-size:11px;padding:6px">No unused guns in HQ.</div>`}` : ""}
+    <button class="menu-btn back-btn" onclick="renderCrew()">BACK</button>`;
+}
+
+function buyHQ(idx) {
+  const h = HQ_OPTIONS[idx];
+  if (G.hq === h.name) return;
+  if (G.cash < h.cost) { addLog("Not enough cash!", "bad"); renderCrewHQ(); return; }
+  G.cash -= h.cost;
+  G.hq = h.name;
+  G.maxCapacity = hqCapacity();
+  addLog(`Bought ${h.name}. Max capacity now ${G.maxCapacity}. Existing HQ crates were kept.`, "good");
+  refreshStats();
+  renderCrewHQ();
+}
+
+function hireCrew(idx) {
+  const m = CREW_MEMBERS[idx];
+  if (G.crew.includes(m.name)) return;
+  if (G.cash < m.cost) { addLog("Not enough cash!", "bad"); renderCrew(); return; }
+  G.cash -= m.cost;
+  G.crew.push(m.name);
+  getCrewGear(m.name);
+  if (m.name === "Wheelman") G.stats.driving += 2;
+  if (m.name === "Hacker") G.stats.hacking += 2;
+  addLog(`Hired ${m.name} for $${m.cost.toLocaleString()}.`, "good");
+  refreshStats();
+  renderCrew();
+}
+
+function crewHas(name) {
+  return G.crew.includes(name);
+}
+
+// ===== HACK TAB =====
+const FILE_TYPES = [
+  { name: "text",  label: "TXT", baseSize: 20,  baseValue: 2,   color: "#4fc3f7" },
+  { name: "image", label: "IMG", baseSize: 80,  baseValue: 5,   color: "#ce93d8" },
+  { name: "sound", label: "SND", baseSize: 200, baseValue: 10,  color: "#ffb74d" },
+  { name: "video", label: "VID", baseSize: 500, baseValue: 200, color: "#ef5350" }
+];
+
+const HACK_UPGRADES = [
+  { key: "dlSpeed",       name: "Download Speed", desc: "Files per scan",  baseCost: 25,   costMult: 1.8 },
+  { key: "cpuSpeed",      name: "CPU Clock",       desc: "+1 enhance/compress/scan", baseCost: 40,   costMult: 2.0 },
+  { key: "enhancerLv",    name: "Enhancer",        desc: "+50% value/lv", baseCost: 60,   costMult: 2.5 },
+  { key: "compressorLv",  name: "Compressor",      desc: "Half size/lv",   baseCost: 50,   costMult: 2.2 },
+  { key: "scannerLv",     name: "Virus Scanner",   desc: "Detect viruses", baseCost: 100,  costMult: 3.0 },
+  { key: "quarantineLv",  name: "Quarantine Lab",  desc: "Fix infected files (research only, 2x RP)", baseCost: 200, costMult: 3.5 }
+];
+
+function hackState() { return G.hack; }
+
+function hackUpgradeCost(key) {
+  const u = HACK_UPGRADES.find(x => x.key === key);
+  const lv = G.hack[key];
+  return Math.round(u.baseCost * Math.pow(u.costMult, lv));
+}
+
+function buyHackUpgrade(key) {
+  const h = hackState();
+  const cost = hackUpgradeCost(key);
+  if (h.research < cost) return;
+  h.research -= cost;
+  h[key]++;
+  renderHack();
+}
+
+function processSpeed() {
+  return Math.max(1, 1 + hackState().cpuSpeed);
+}
+
+function updateHackQueueUI() {
+  const h = hackState();
+  const q = document.getElementById("hack-scan-queue");
+  const p = document.getElementById("hack-scan-progress");
+  const bar = document.getElementById("hack-scan-progress-bar");
+  if (q) q.textContent = `QUEUE: ${h.scanQueue}/${hackQueueMax()}${h.downloading ? ` · DOWNLOADING ${h.dlCount} FILE${h.dlCount > 1 ? "S" : ""}` : ""}`;
+  if (p && bar) {
+    const pct = h.downloading ? Math.min(100, Math.round((h.dlProgress / h.dlDuration) * 100)) : 0;
+    p.textContent = h.downloading ? `CURRENT ${pct}%` : "";
+    bar.style.width = pct + "%";
+    bar.parentElement.style.display = h.downloading ? "block" : "none";
+  }
+}
+
+function scanNetwork() {
+  const h = hackState();
+  // Do NOT re-render the HACK panel here. Replacing the button's DOM node
+  // during a click can swallow rapid follow-up clicks. Queue every click
+  // synchronously, up to the 10-scan cap, then update only the queue display.
+  if (h.scanQueue >= hackQueueMax()) return;
+  h.scanQueue++;
+  if (!h.downloading) startNextScan();
+  updateHackQueueUI();
+}
+
+function startNextScan() {
+  const h = hackState();
+  if (h.downloading || h.scanQueue <= 0) return;
+  h.scanQueue--;
+  const count = Math.max(1, h.dlSpeed);
+  h.downloading = true;
+  h.dlProgress = 0;
+  h.dlCount = count;
+  h.dlDuration = Math.max(500, count * 2400 / h.dlSpeed / processSpeed());
+}
+
+function finishDownload() {
+  const h = hackState();
+  const count = h.dlCount;
+  for (let i = 0; i < count; i++) {
+    const typeIdx = Math.floor(Math.random() * FILE_TYPES.length);
+    const t = FILE_TYPES[typeIdx];
+    const variance = 0.5 + Math.random();
+    h.files.push({
+      id: h.totalFiles++,
+      type: typeIdx,
+      size: Math.round(t.baseSize * variance),
+      baseValue: t.baseValue,
+      value: Math.round(t.baseValue * variance)
+    });
+  }
+  h.downloading = false;
+  h.dlProgress = 0;
+  h.dlCount = 0;
+  startNextScan();
+}
+
+function startFileProcess(f, action) {
+  const h = hackState();
+  if (f.processing) return;
+  f.processing = action;
+  f.processProgress = 0;
+
+  const speed = processSpeed();
+  if (action === "enhance") {
+    // Higher-value files take longer; CPU upgrades reduce the timer.
+    f.processDuration = Math.max(700, 900 + f.value * 45 / speed);
+  } else if (action === "compress") {
+    // Bigger files take longer to compress; CPU upgrades reduce the timer.
+    f.processDuration = Math.max(700, 700 + f.size * 10 / speed);
+  } else if (action === "sell" || action === "research") {
+    // Selling/researching simulates an upload before the file leaves the queue.
+    f.processDuration = Math.max(800, 900 + f.size * 5 / speed);
+  }
+}
+
+function finishFileProcess(f) {
+  const h = hackState();
+  const action = f.processing;
+  f.processing = null;
+  f.processProgress = 0;
+
+  if (action === "enhance") {
+    f.value = Math.round(f.value * (1 + h.enhancerLv * 0.5));
+    f.enhanced = true;
+  } else if (action === "compress") {
+    f.size = Math.max(1, Math.round(f.size * Math.pow(0.5, Math.max(1, h.compressorLv))));
+    f.compressed = true;
+  } else if (action === "sell") {
+    if (f.infected) return;
+    G.cash += f.value;
+    h.totalEarned += f.value;
+    h.files = h.files.filter(x => x.id !== f.id);
+  } else if (action === "research") {
+    if (f.infected) return;
+    const mult = f.fixed ? 2 : 1;
+    const rp = Math.max(1, Math.round(f.value * 0.15 * mult));
+    h.research += rp;
+    h.totalResearch += rp;
+    h.files = h.files.filter(x => x.id !== f.id);
+  }
+}
+
+function processFile(id, action) {
+  const h = hackState();
+  const f = h.files.find(x => x.id === id);
+  if (!f || f.processing) return;
+
+  if (action === "enhance") {
+    if (f.enhanced || h.enhancerLv <= 0) return;
+    startFileProcess(f, action);
+  } else if (action === "compress") {
+    if (f.compressed || h.compressorLv <= 0) return;
+    startFileProcess(f, action);
+  } else if (action === "scan") {
+    if (f.scanned || f.scanning || h.scannerLv <= 0) return;
+    f.scanning = true;
+    f.scanProgress = 0;
+    f.scanDuration = Math.max(500, f.size * 15 / processSpeed());
+  } else if (action === "fix") {
+    if (!f.infected || h.quarantineLv < 1) return;
+    f.infected = false;
+    f.fixed = true;
+  } else if (action === "sell") {
+    if (f.infected) return;
+    startFileProcess(f, action);
+  } else if (action === "research") {
+    if (f.infected) return;
+    startFileProcess(f, action);
+  } else if (action === "trash") {
+    h.files = h.files.filter(x => x.id !== id);
+  }
+  renderHack();
+}
+
+function finishScan(f) {
+  f.scanning = false;
+  f.scanned = true;
+  if (f.infected) {
+    // already infected
+  } else if (Math.random() < 0.3) {
+    f.infected = true;
+  } else {
+    f.value = Math.round(f.value * 1.5);
+    f.clean = true;
+  }
+}
+
+function updateHackFileProgressUI() {
+  const h = hackState();
+  h.files.forEach(f => {
+    const row = document.getElementById(`hack-file-${f.id}`);
+    if (!row) return;
+    const bar = row.querySelector('[data-file-progress]');
+    const label = row.querySelector('[data-file-progress-label]');
+    if (f.scanning || f.processing) {
+      const progress = f.scanning ? f.scanProgress : f.processProgress;
+      const duration = f.scanning ? f.scanDuration : f.processDuration;
+      const pct = Math.min(100, Math.round((progress / Math.max(1, duration)) * 100));
+      if (bar) bar.style.width = pct + '%';
+      if (label) label.textContent = `${f.scanning ? 'SCANNING' : String(f.processing).toUpperCase()} ${pct}%`;
+    }
+  });
+}
+
+// Background hack work runs independently of rendering. The timer only
+// advances game state and patches existing progress elements; the full HACK
+// panel is rebuilt only when a completed operation actually changes the file
+// list/state that needs new buttons or rows.
+let lastHackTick = performance.now();
+
+function scanTick(now = performance.now()) {
+  const h = hackState();
+  const elapsed = Math.min(250, Math.max(0, now - lastHackTick));
+  lastHackTick = now;
+  if (!elapsed) return;
+
+  let needsHackRender = false;
+
+  if (h.downloading) {
+    h.dlProgress += elapsed;
+    if (h.dlProgress >= h.dlDuration) {
+      finishDownload();
+      needsHackRender = true;
+    }
+  } else if (h.scanQueue > 0) {
+    startNextScan();
+    needsHackRender = true;
+  }
+
+  h.files.slice().forEach(f => {
+    if (f.scanning) {
+      f.scanProgress += elapsed;
+      if (f.scanProgress >= f.scanDuration) {
+        finishScan(f);
+        needsHackRender = true;
+      }
+    }
+    if (f.processing) {
+      f.processProgress += elapsed;
+      if (f.processProgress >= f.processDuration) {
+        finishFileProcess(f);
+        needsHackRender = true;
+      }
+    }
+  });
+
+  if (G.tab === "hack") {
+    if (needsHackRender) renderHack();
+    else {
+      updateHackQueueUI();
+      updateHackFileProgressUI();
+    }
+  }
+}
+
+function sellAllFiles() {
+  const h = hackState();
+  h.files.forEach(f => {
+    if (!f.infected && !f.processing) startFileProcess(f, "sell");
+  });
+  renderHack();
+}
+
+function researchAllFiles() {
+  const h = hackState();
+  h.files.forEach(f => {
+    if (!f.infected && !f.processing) startFileProcess(f, "research");
+  });
+  renderHack();
+}
+
+function renderHack() {
+  if (!hasHackDevice()) {
+    G.tab = "trap";
+    renderTrap();
+    return;
+  }
+  const h = hackState();
+  const c = document.getElementById("content");
+
+  const upgrades = HACK_UPGRADES.map(u => {
+    const cost = hackUpgradeCost(u.key);
+    const lv = G.hack[u.key];
+    const canBuy = h.research >= cost;
+    return `<div class="upgrade-row">
+      <div class="upgrade-info">
+        <div class="upgrade-name">${u.name}</div>
+        <div class="upgrade-desc">${u.desc}</div>
+      </div>
+      <span class="upgrade-lv">Lv.${lv}</span>
+      <button class="menu-btn" style="width:auto;padding:4px 10px;margin:0;${canBuy ? '' : 'opacity:0.3'}"
+        onclick="buyHackUpgrade('${u.key}')">RP ${cost.toLocaleString()}</button>
+    </div>`;
+  }).join("");
+
+  let fileList = "";
+  const showFiles = h.files.slice(0, 20);
+  if (showFiles.length > 0) {
+    fileList = showFiles.map(f => {
+      const t = FILE_TYPES[f.type];
+      let badges = [];
+      if (f.enhanced) badges.push("E");
+      if (f.compressed) badges.push("C");
+      if (f.scanned) badges.push(f.clean ? "CLEAN" : f.fixed ? "FIXED" : "SCN");
+      if (f.infected) badges.push("VIRUS");
+
+      let pipeline = "";
+      if (f.scanning || f.processing) {
+        const pct = f.scanning
+          ? Math.min(100, Math.round((f.scanProgress / f.scanDuration) * 100))
+          : Math.min(100, Math.round((f.processProgress / f.processDuration) * 100));
+        const label = f.scanning ? "SCANNING" : String(f.processing || "WORKING").toUpperCase();
+        pipeline = `<div style="flex:1;min-width:100px"><div data-file-progress-label style="font-size:10px;color:#ffcc00;margin-bottom:2px">${label} ${pct}%</div><div class="scan-bar"><div data-file-progress class="scan-bar-fill" style="width:${pct}%"></div></div></div>`;
+      } else {
+        if (!f.scanned && h.scannerLv > 0) pipeline += `<button class="menu-btn" style="width:auto;padding:2px 6px;margin:0;font-size:10px" onclick="processFile(${f.id},'scan')">SCAN</button>`;
+        if (!f.enhanced && h.enhancerLv > 0) pipeline += `<button class="menu-btn" style="width:auto;padding:2px 6px;margin:0;font-size:10px" onclick="processFile(${f.id},'enhance')">ENH</button>`;
+        if (!f.compressed && h.compressorLv > 0) pipeline += `<button class="menu-btn" style="width:auto;padding:2px 6px;margin:0;font-size:10px" onclick="processFile(${f.id},'compress')">CMP</button>`;
+        if (f.infected && h.quarantineLv > 0 && !f.fixed) pipeline += `<button class="menu-btn" style="width:auto;padding:2px 6px;margin:0;font-size:10px;border-color:#ff4444" onclick="processFile(${f.id},'fix')">FIX</button>`;
+      }
+
+      let trade = "";
+      if (f.scanning || f.processing) {
+        trade = `<span style="color:#888;font-size:10px">UPLOADING...</span>`;
+      } else if (f.infected && !f.fixed) {
+        trade = `<span style="color:#ff4444;font-size:10px">BLOCKED</span>`;
+      } else {
+        trade = `<button class="menu-btn" style="width:auto;padding:2px 6px;margin:0;font-size:10px" onclick="processFile(${f.id},'sell')">$</button>
+                 <button class="menu-btn" style="width:auto;padding:2px 6px;margin:0;font-size:10px" onclick="processFile(${f.id},'research')">RP</button>`;
+      }
+
+      return `<div id="hack-file-${f.id}" class="file-row" style="${f.infected ? 'border-color:#ff4444' : ''}">
+        <span class="file-type ${t.name}">${t.label}</span>
+        <span class="file-stat">${f.size}KB</span>
+        <span class="file-stat" style="color:#ffcc00">${badges.join(" ") || "NEW"}</span>
+        <span class="file-value">$${f.value}</span>
+        ${pipeline}
+        ${trade}
+        <button class="menu-btn" style="width:auto;padding:2px 4px;margin:0;font-size:9px;opacity:0.4" onclick="processFile(${f.id},'trash')">X</button>
+      </div>`;
+    }).join("");
+    if (h.files.length > 20) {
+      fileList += `<div style="color:#888;font-size:10px;padding:4px">...and ${h.files.length - 20} more</div>`;
+    }
+  }
+
+  c.innerHTML = `
+    <div class="title">FILE PROCESSING</div>
+    <div style="border:1px solid #00ff41;padding:6px;margin-bottom:4px;text-align:center">
+      <button class="menu-btn" onclick="scanNetwork()" style="text-align:center;margin:0">SCAN NETWORK +1</button>
+      <div id="hack-scan-queue" style="font-size:10px;color:#888;margin-top:4px">QUEUE: ${h.scanQueue}/${hackQueueMax()}${h.downloading ? ` · DOWNLOADING ${h.dlCount} FILE${h.dlCount > 1 ? 'S' : ''}` : ''}</div>
+      <div id="hack-scan-progress-wrap" style="${h.downloading ? '' : 'display:none;'}">
+        <div id="hack-scan-progress" style="font-size:10px;color:#ffcc00;margin:4px 0 2px">${h.downloading ? `CURRENT ${Math.min(100, Math.round((h.dlProgress / h.dlDuration) * 100))}%` : ''}</div>
+        <div class="scan-bar"><div id="hack-scan-progress-bar" class="scan-bar-fill" style="width:${h.downloading ? Math.min(100, Math.round((h.dlProgress / h.dlDuration) * 100)) : 0}%"></div></div>
+      </div>
+    </div>
+    <div class="hack-stats">
+      <div class="hack-stat">Research: <span class="val">${h.research.toLocaleString()} RP</span></div>
+      <div class="hack-stat">Earned: <span class="val">$${h.totalEarned.toLocaleString()}</span></div>
+      <div class="hack-stat">Files: <span class="val">${h.totalFiles}</span></div>
+      <div class="hack-stat">RP Total: <span class="val">${h.totalResearch.toLocaleString()}</span></div>
+    </div>
+    <div class="title">UPGRADES</div>
+    ${upgrades}
+    <div style="display:flex;gap:4px;margin-top:6px">
+      <button class="menu-btn" onclick="sellAllFiles()" style="flex:1;text-align:center">SELL ALL</button>
+      <button class="menu-btn" onclick="researchAllFiles()" style="flex:1;text-align:center">RESEARCH ALL</button>
+    </div>
+    <div class="title" style="margin-top:8px">FILES (${h.files.length})</div>
+    <div style="color:#888;font-size:10px;margin-bottom:4px">Queue scans like an RTS, switch tabs while they run. Sell/research upload over time; value slows enhance, size slows compression. CPU upgrades speed processing.</div>
+    ${fileList || '<div style="color:#888;font-size:11px;padding:6px">Click SCAN NETWORK to grab files.</div>'}
+  `;
+}
+
+// ===== VIRUS TAB =====
+const VIRUS_STATS = [
+  { key: "speed", name: "Speed" },
+  { key: "strength", name: "Strength" },
+  { key: "reach", name: "Reach" },
+  { key: "lifespan", name: "Lifespan" }
+];
+
+function virusLevel(xp) {
+  if (xp >= 200) return 5;
+  if (xp >= 100) return 4;
+  if (xp >= 50) return 3;
+  if (xp >= 20) return 2;
+  if (xp >= 5) return 1;
+  return 0;
+}
+
+function virusDaysSinceFed() {
+  return Math.max(0, G.day - G.virus.lastFedDay);
+}
+
+function updateVirusStatus() {
+  if (!G.virus.alive) return;
+  const days = virusDaysSinceFed();
+  G.virus.weakened = days >= 7;
+  if (days >= 14) {
+    G.virus.alive = false;
+    G.virus.weakened = false;
+    addLog("Your virus died after going unfed for 2 weeks. You need a new virus.", "bad");
+  }
+}
+
+function virusFoodCount() {
+  return G.hack.files.filter(f => f.infected && !f.fixed).length;
+}
+
+function feedVirus(amount) {
+  updateVirusStatus();
+  if (!G.virus.alive) { renderVirus(); return; }
+  const available = virusFoodCount();
+  if (available <= 0) { addLog("No viruses available to feed.", "bad"); renderVirus(); return; }
+  let count = amount === "all" ? available : Math.max(0, Math.min(available, Math.floor(amount)));
+  if (count <= 0) return;
+
+  const infected = G.hack.files.filter(f => f.infected && !f.fixed).slice(0, count);
+  if (infected.length) {
+    const fedIds = new Set(infected.map(f => f.id));
+    infected.forEach(f => {
+      const stat = VIRUS_STATS[Math.floor(Math.random() * VIRUS_STATS.length)];
+      G.virus.stats[stat.key].xp += 1;
+      G.virus.totalFed++;
+    });
+    G.hack.files = G.hack.files.filter(f => !fedIds.has(f.id));
+  }
+
+  G.virus.lastFedDay = G.day;
+  G.virus.weakened = false;
+  // XP changes are persisted directly above.
+  addLog(`Fed your virus ${infected.length} virus${infected.length === 1 ? "" : "es"}.`, "good");
+  renderVirus();
+}
+
+function createNewVirus() {
+  if (G.virus.alive) return;
+  G.virus = {
+    alive: true,
+    bornDay: G.day,
+    lastFedDay: G.day,
+    weakened: false,
+    totalFed: 0,
+    stats: {
+      speed: { xp: 0 },
+      strength: { xp: 0 },
+      reach: { xp: 0 },
+      lifespan: { xp: 0 }
+    }
+  };
+  addLog("A new blank virus has been created.", "good");
+  renderVirus();
+}
+
+function drawVirusOrb() {
+  const canvas = document.getElementById("virusOrb");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width = Math.max(280, Math.min(720, canvas.clientWidth * 2));
+  const h = canvas.height = 520;
+  ctx.clearRect(0, 0, w, h);
+
+  const cx = w / 2, cy = h / 2, r = Math.min(w, h) * 0.30;
+  ctx.fillStyle = "#020202";
+  ctx.fillRect(0, 0, w, h);
+
+  // Static 3D-style orb: no animation and no shaders.
+  const g = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.45, r * 0.08, cx, cy, r);
+  g.addColorStop(0, "#b8ffd0");
+  g.addColorStop(0.18, "#35ff75");
+  g.addColorStop(0.58, "#00a83c");
+  g.addColorStop(0.86, "#00451c");
+  g.addColorStop(1, "#001b0b");
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = g;
+  ctx.fill();
+  ctx.strokeStyle = "#00ff41";
+  ctx.lineWidth = Math.max(2, w / 300);
+  ctx.stroke();
+
+  ctx.globalAlpha = 0.18;
+  ctx.strokeStyle = "#9dffb7";
+  ctx.lineWidth = 2;
+  for (let i = -2; i <= 2; i++) {
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, r * (0.35 + Math.abs(i) * 0.13), r, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function renderVirus() {
+  const c = document.getElementById("content");
+  updateVirusStatus();
+  const v = G.virus;
+  const food = virusFoodCount();
+  const fedAgo = virusDaysSinceFed();
+
+  const statRows = VIRUS_STATS.map(s => {
+    const xp = v.stats[s.key].xp;
+    return `<div class="virus-stat">
+      <span class="name">${s.name}</span><span class="level">Lv.${virusLevel(xp)}</span>
+      <span class="xp">XP ${xp}</span>
+    </div>`;
+  }).join("");
+
+  let status = v.alive
+    ? (v.weakened ? `WEAKENED — unfed for ${fedAgo} day${fedAgo === 1 ? "" : "s"}` : `HEALTHY — last fed ${fedAgo} day${fedAgo === 1 ? "" : "s"} ago`)
+    : "DEAD — this virus cannot be fed";
+
+  c.innerHTML = `
+    <div class="title">VIRUS</div>
+    <div class="virus-window">
+      <canvas id="virusOrb" class="virus-canvas"></canvas>
+      <div class="virus-status ${v.alive ? (v.weakened ? "weak" : "") : "dead"}">${status}</div>
+    </div>
+
+    <div class="title">FEEDING</div>
+    <div class="virus-food">
+      <div class="virus-food-count">VIRUSES AVAILABLE: <strong style="color:#ff4444">${food}</strong><br><span style="color:#888;font-size:10px">Get infected viruses from the HACK tab.</span></div>
+      <button class="menu-btn" style="width:auto;padding:6px 9px;margin:0" ${!v.alive || food < 1 ? "disabled" : ""} onclick="feedVirus(1)">1</button>
+      <button class="menu-btn" style="width:auto;padding:6px 9px;margin:0" ${!v.alive || food < 1 ? "disabled" : ""} onclick="feedVirus(5)">5</button>
+      <button class="menu-btn" style="width:auto;padding:6px 9px;margin:0" ${!v.alive || food < 1 ? "disabled" : ""} onclick="feedVirus('all')">ALL</button>
+    </div>
+
+    <div class="info-box">
+      <strong>VIRUS STATUS</strong><br>
+      Born: Day ${v.bornDay}<br>
+      Last Fed: Day ${v.lastFedDay}<br>
+      Total Fed: ${v.totalFed}<br>
+      ${v.alive ? "7 days unfed = weakened. 14 days unfed = death." : "Create a new blank virus to start again."}
+    </div>
+
+    <div class="title">STATS</div>
+    <div class="virus-stat-grid">${statRows}</div>
+    ${!v.alive ? `<button class="menu-btn" onclick="createNewVirus()" style="text-align:center;border-color:#ffcc00;color:#ffcc00">CREATE NEW VIRUS</button>` : ""}
+  `;
+  drawVirusOrb();
+}
+
+// ===== MARKET TAB =====
+const TRUNK_GEAR = [
+  { name: "Scraped Gun", desc: "+5 damage", cost: 400, damage: 5, cities: [4, 5, 3] },
+  { name: "Low-Tech Phone", desc: "+2 scan queue slots — HACK device", cost: 200, device: "phone", tech: "low", queueBonus: 2 },
+  { name: "Mid-Tech Phone", desc: "+4 scan queue slots — HACK device", cost: 800, device: "phone", tech: "medium", queueBonus: 4 },
+  { name: "High-Tech Phone", desc: "+6 scan queue slots — HACK device", cost: 2500, device: "phone", tech: "high", queueBonus: 6 },
+  { name: "Low-Tech PC", desc: "+3 scan queue slots — HACK device", cost: 500, device: "pc", tech: "low", queueBonus: 3 },
+  { name: "Mid-Tech PC", desc: "+6 scan queue slots — HACK device", cost: 1500, device: "pc", tech: "medium", queueBonus: 6 },
+  { name: "High-Tech PC", desc: "+10 scan queue slots — HACK device", cost: 5000, device: "pc", tech: "high", queueBonus: 10 },
+  { name: "Glock", desc: "10 damage", cost: 1500, damage: 10, canStolen: true, requiresHQ: true },
+  { name: "Tech9", desc: "15 damage — stolen only", cost: 4000, damage: 15, stolenOnly: true, requiresHQ: true },
+  { name: "AR Pistol", desc: "21 damage", cost: 6000, damage: 21, canStolen: true, requiresHQ: true },
+  { name: "Sub AK", desc: "26 damage — stolen only", cost: 8000, damage: 26, stolenOnly: true, requiresHQ: true },
+  { name: "M16", desc: "40 damage — stolen only", cost: 1200, damage: 40, stolenOnly: true, requiresHQ: true },
+  { name: "Bulletproof Vest", desc: "+50 armor", cost: 1200, armor: 50, cities: [0] },
+  { name: "Reinforced Vest", desc: "+75 armor", cost: 2200, armor: 75, requiresHQ: true },
+  { name: "Triple Plated Vest", desc: "+100 armor", cost: 4000, armor: 100, requiresHQ: true },
+  { name: "SWAT Gear", desc: "+150 armor", cost: 7000, armor: 150, requiresHQ: true },
+  { name: "Escape Mask", desc: "+10% chance to escape cops", cost: 1800, mask: true, escapeBonus: 0.10, requiresHQ: true },
+  { name: "HQ Crate", desc: "+10 HQ slots", cost: 1500, crate: true, requiresHQ: true, rare: true, spawnChance: 0.35 },
+  { name: "Small Bag", desc: "+10 inventory slots", cost: 200, bagSlots: 10, rare: true, spawnChance: 0.24 },
+  { name: "Backpack", desc: "+25 inventory slots", cost: 500, bagSlots: 25, rare: true, spawnChance: 0.14 },
+  { name: "Duffle Bag", desc: "+50 inventory slots", cost: 1000, bagSlots: 50, rare: true, spawnChance: 0.07 },
+  { name: "Short Shotgun", desc: "+7 damage", cost: 1400, damage: 7, rare: true, spawnChance: 0.09 },
+];
+
+const CARS = [
+  { name: "Janky 2-Door", desc: "5-speed beater", cost: 4000, seats: 2, gearSlots: 4, travelReduction: 0.08, drive: 2, emptyChance: 0.08 },
+  { name: "Slow 4-Door", desc: "Reliable but slow", cost: 6500, seats: 4, gearSlots: 6, travelReduction: 0.10, drive: 1, emptyChance: 0.12 },
+  { name: "Lifted Truck", desc: "Big and capable", cost: 9000, seats: 4, gearSlots: 8, travelReduction: 0.14, drive: 3, emptyChance: 0.15 },
+  { name: "Panel Van", desc: "Room for crew and gear", cost: 11000, seats: 6, gearSlots: 12, travelReduction: 0.18, drive: 3, emptyChance: 0.18 },
+  { name: "Volt Print", desc: "Autodrive electric car", cost: 16000, seats: 5, gearSlots: 7, travelReduction: 0.24, drive: 5, emptyChance: 0.22 },
+  { name: "Rally Prostreet", desc: "Built for long runs", cost: 22000, seats: 2, gearSlots: 6, travelReduction: 0.30, drive: 7, emptyChance: 0.26 },
+  { name: "Donk", desc: "High ride, heavy cruise", cost: 14000, seats: 5, gearSlots: 8, travelReduction: 0.20, drive: 4, emptyChance: 0.20 },
+  { name: "Lowrider", desc: "Smooth street cruiser", cost: 18000, seats: 4, gearSlots: 7, travelReduction: 0.26, drive: 6, emptyChance: 0.24 },
+  { name: "Redline", desc: "Top-tier sports car", cost: 30000, seats: 2, gearSlots: 6, travelReduction: 0.40, drive: 10, emptyChance: 0.32 },
+];
+
+const STOCKS = [
+  { ticker: "NODX", name: "Nodex Systems",    base: 450,   vol: 0.08, sector: "Tech",        cap: 82e9,  volume: 18e6 },
+  { ticker: "CYBR", name: "CyberShield Inc",   base: 820,   vol: 0.10, sector: "Tech",        cap: 61e9,  volume: 11e6 },
+  { ticker: "QNTM", name: "Quantum Dynamics",  base: 12500, vol: 0.15, sector: "AI",          cap: 44e9,  volume: 4e6 },
+  { ticker: "VOLT", name: "Volt Motors",       base: 1200,  vol: 0.12, sector: "Consumer",    cap: 38e9,  volume: 9e6 },
+  { ticker: "AERO", name: "AeroDrone",         base: 2400,  vol: 0.11, sector: "Industrials", cap: 29e9,  volume: 6e6 },
+  { ticker: "BIOT", name: "BioCore Labs",      base: 3100,  vol: 0.09, sector: "Consumer",    cap: 25e9,  volume: 3e6 },
+  { ticker: "STRR", name: "StarRelay",         base: 15000, vol: 0.14, sector: "Energy",      cap: 52e9,  volume: 2e6 },
+  { ticker: "NNLK", name: "NanoLink",          base: 650,   vol: 0.07, sector: "Industrials", cap: 19e9,  volume: 8e6 },
+  { ticker: "VDSF", name: "Void Software",     base: 150,   vol: 0.13, sector: "Tech",        cap: 17e9,  volume: 13e6 }
+];
+
+const CRYPTOS = [
+  { ticker: "BTC",  name: "Bitcoin",   base: 62000, vol: 0.25, sector: "Crypto", cap: 1.2e12, volume: 34e9 },
+  { ticker: "ETH",  name: "Ethereum",  base: 3300,  vol: 0.28, sector: "Crypto", cap: 390e9, volume: 18e9 },
+  { ticker: "XMR",  name: "Monero",    base: 145,   vol: 0.22, sector: "Crypto", cap: 2.7e9, volume: 180e6 },
+  { ticker: "SOL",  name: "Solana",    base: 110,   vol: 0.30, sector: "Crypto", cap: 51e9, volume: 3.2e9 },
+  { ticker: "ADA",  name: "Cardano",   base: 0.62,  vol: 0.35, sector: "Crypto", cap: 22e9, volume: 520e6 },
+  { ticker: "DOGE", name: "Dogecoin",  base: 0.19,  vol: 0.40, sector: "Crypto", cap: 27e9, volume: 1.1e9 }
+];
+
+// Fixed opening history. It is deliberately deterministic so every new game
+// starts with the same chart data until a real market-data source is added.
+const MARKET_HISTORY = [
+  [0.94,0.96,0.95,0.98,1.00,0.97,1.02,1.01,1.04,1.06,1.03,1.07,1.09,1.08,1.12,1.10,1.14,1.16,1.13,1.17,1.15,1.19,1.21,1.18,1.22,1.24,1.21,1.25,1.27,1.00],
+  [1.08,1.06,1.09,1.04,1.02,1.05,1.01,1.03,0.99,1.02,0.97,1.00,0.96,0.94,0.98,0.95,0.92,0.94,0.91,0.93,0.89,0.92,0.90,0.87,0.91,0.88,0.86,0.90,0.87,1.00],
+  [0.82,0.86,0.84,0.89,0.91,0.88,0.93,0.96,0.94,0.99,1.03,1.01,1.06,1.09,1.07,1.12,1.10,1.15,1.18,1.16,1.21,1.25,1.22,1.27,1.30,1.28,1.33,1.36,1.34,1.00],
+  [1.03,1.01,0.98,1.00,0.96,0.94,0.97,0.93,0.90,0.92,0.89,0.91,0.95,0.93,0.97,0.99,0.96,1.01,1.03,1.00,1.04,1.06,1.02,1.08,1.10,1.07,1.12,1.14,1.11,1.00],
+  [0.90,0.92,0.95,0.93,0.97,1.00,0.98,1.02,1.05,1.03,1.07,1.10,1.08,1.12,1.15,1.13,1.17,1.20,1.18,1.22,1.25,1.23,1.28,1.30,1.27,1.31,1.34,1.32,1.36,1.00],
+  [1.06,1.04,1.02,1.05,1.00,0.98,1.01,0.97,0.95,0.99,0.96,0.94,0.98,0.96,0.93,0.97,0.95,0.92,0.96,0.94,0.91,0.95,0.93,0.97,0.99,0.96,1.00,1.02,1.04,1.00],
+  [0.88,0.90,0.94,0.91,0.96,0.99,1.02,1.00,1.05,1.08,1.06,1.11,1.14,1.12,1.17,1.20,1.18,1.23,1.26,1.24,1.29,1.32,1.30,1.35,1.38,1.36,1.40,1.43,1.41,1.00],
+  [1.02,1.00,0.98,1.01,0.99,0.96,0.94,0.97,0.95,0.93,0.96,0.94,0.92,0.95,0.97,0.94,0.91,0.93,0.90,0.92,0.89,0.91,0.94,0.92,0.95,0.97,0.94,0.98,1.00,1.00],
+  [0.78,0.82,0.80,0.85,0.88,0.86,0.91,0.95,0.93,0.98,1.02,1.00,1.06,1.10,1.08,1.14,1.18,1.16,1.22,1.26,1.23,1.29,1.33,1.30,1.36,1.40,1.37,1.43,1.46,1.00],
+  [0.72,0.78,0.75,0.82,0.86,0.81,0.89,0.94,0.91,0.99,1.04,0.98,1.08,1.13,1.07,1.16,1.21,1.14,1.25,1.31,1.24,1.34,1.42,1.35,1.46,1.52,1.44,1.56,1.62,1.00],
+  [1.12,1.08,1.05,1.09,1.03,1.00,1.04,0.98,0.96,1.01,0.95,0.92,0.97,0.94,0.90,0.96,0.91,0.88,0.93,0.89,0.85,0.91,0.87,0.84,0.90,0.86,0.82,0.88,0.85,1.00],
+  [0.92,0.95,0.91,0.98,1.01,0.97,1.04,1.08,1.05,1.11,1.15,1.12,1.19,1.23,1.20,1.27,1.31,1.28,1.35,1.39,1.36,1.43,1.47,1.44,1.51,1.55,1.52,1.59,1.63,1.00],
+  [0.86,0.90,0.88,0.94,0.98,0.95,1.01,1.05,1.02,1.08,1.12,1.09,1.15,1.19,1.16,1.22,1.26,1.23,1.29,1.33,1.30,1.36,1.40,1.37,1.43,1.47,1.44,1.50,1.54,1.00],
+  [1.05,1.02,1.07,1.00,0.96,1.01,0.94,0.99,0.92,0.97,0.91,0.95,0.89,0.94,0.88,0.93,0.87,0.92,0.86,0.91,0.85,0.90,0.84,0.89,0.83,0.88,0.82,0.87,0.81,1.00],
+  [0.93,0.97,0.95,1.02,1.05,1.01,1.08,1.12,1.10,1.16,1.20,1.18,1.24,1.28,1.25,1.31,1.35,1.33,1.39,1.43,1.41,1.47,1.51,1.49,1.55,1.59,1.57,1.63,1.67,1.00]
+];
+
+function makeMarketAsset(a, historyIndex) {
+  const multipliers = MARKET_HISTORY[historyIndex % MARKET_HISTORY.length];
+  const history = multipliers.map(x => a.base * x);
+  const price = history[history.length - 1];
+  const prev = history[history.length - 2] || price;
+  const change = prev > 0 ? ((price - prev) / prev * 100) : 0;
+  return { ...a, price, prev, change, history, preGameHistory: [...history], eventAffected: false, lastDayChange: change };
+}
+
+function initMarket() {
+  const m = G.market;
+  m.stocks = STOCKS.map((s, i) => makeMarketAsset(s, i));
+  m.crypto = CRYPTOS.map((c, i) => makeMarketAsset(c, i + STOCKS.length));
+  m.portfolio = { stocks: {}, crypto: { DOGE: 6 } };
+  m.watchlist = [];
+  m._selected = null;
+  m._tab = "overview";
+}
+
+function updateMarket() {
+  const m = G.market;
+  const move = asset => {
+    asset.prev = asset.price;
+    const drift = (Math.random() - 0.48) * asset.vol * asset.base;
+    const spike = Math.random() < (asset.vol > 0.2 ? 0.10 : 0.05) ? (Math.random() - 0.5) * asset.base * asset.vol : 0;
+    asset.price = Math.max(asset.base >= 1 ? 1 : 0.01, +(asset.price + drift + spike).toFixed(asset.base >= 1 ? 0 : 4));
+    asset.change = asset.prev > 0 ? ((asset.price - asset.prev) / asset.prev * 100) : 0;
+    asset.lastDayChange = asset.change;
+    asset.history.push(asset.price);
+    if (asset.history.length > 30) asset.history.shift();
+    asset.eventAffected = false;
+  };
+  m.stocks.forEach(move);
+  m.crypto.forEach(move);
+}
+
+function allMarketAssets() { return [...G.market.stocks, ...G.market.crypto]; }
+function findMarketAsset(ticker) { return allMarketAssets().find(a => a.ticker === ticker); }
+function money(v) { return v >= 1 ? "$" + Math.round(v).toLocaleString() : "$" + Number(v).toFixed(4); }
+function marketPct(v) { return `${v >= 0 ? "+" : ""}${v.toFixed(1)}%`; }
+function marketArrow(v) { return v > 0 ? "▲" : v < 0 ? "▼" : "—"; }
+function volatilityLevel(a) { return a.vol < 0.12 ? "LOW" : a.vol < 0.25 ? "MEDIUM" : "HIGH"; }
+function sentimentFor(a) {
+  const h = a.history;
+  const recent = h.slice(-7);
+  const first = recent[0] || a.price;
+  const delta = first ? (a.price - first) / first : 0;
+  if (delta > 0.025) return "Bullish";
+  if (delta < -0.025) return "Bearish";
+  return "Neutral";
+}
+function primaryRiskFor(a) {
+  if (a.sector === "Crypto") return "Social sentiment";
+  if (a.vol >= 0.15) return "Macro";
+  if (a.sector === "Tech" || a.sector === "AI") return "Earnings";
+  return "Sector";
+}
+function riskMetrics(a) {
+  const macro = a.vol >= 0.20 ? "↑↑" : a.vol >= 0.12 ? "↑" : "↓";
+  const sector = a.vol >= 0.12 ? "↑" : "↓";
+  const liquidity = a.volume >= 10e6 || a.sector === "Crypto" ? "↓" : "↑";
+  const earnings = a.sector === "Tech" || a.sector === "AI" ? "↑↑↑" : a.vol >= 0.12 ? "↑↑" : "↑";
+  const social = a.sector === "Crypto" ? (a.vol >= 0.30 ? "↑↑↑" : "↑↑") : "—";
+  return { macro, sector, liquidity, earnings, social };
+}
+function spark(values, width) {
+  const chars = "▁▂▃▄▅▆▇█";
+  const vals = values.slice(-width);
+  if (!vals.length) return "";
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  if (hi === lo) return chars[3].repeat(vals.length);
+  return vals.map(v => chars[Math.max(0, Math.min(chars.length - 1, Math.round((v - lo) / (hi - lo) * (chars.length - 1))))]).join("");
+}
+function trendArrow(values) {
+  let up = 0, down = 0;
+  for (let i = 1; i < values.length; i++) {
+    if (values[i] > values[i - 1]) up++; else if (values[i] < values[i - 1]) down++;
+  }
+  return up > down ? `↑↑↑ (${Math.min(3, up)}-day uptrend)` : down > up ? `↓↓↓ (${Math.min(3, down)}-day downtrend)` : "→ Neutral trend";
+}
+function sectorBoard() {
+  const groups = {};
+  allMarketAssets().forEach(a => {
+    if (!groups[a.sector]) groups[a.sector] = [];
+    groups[a.sector].push(a.change);
+  });
+  return Object.entries(groups).map(([sector, vals]) => {
+    const avg = vals.reduce((s, v) => s + v, 0) / vals.length;
+    const color = avg > 0 ? "#00ff41" : avg < 0 ? "#ff4444" : "#888";
+    return `<div class="market-sector"><span>${sector}</span><span style="color:${color}">${marketArrow(avg)} ${marketPct(avg)}</span></div>`;
+  }).join("");
+}
+function portfolioSummary() {
+  const m = G.market;
+  let invested = 0, value = 0, daily = 0;
+  const exposure = {};
+  const add = (a, qty) => {
+    const cost = a.base * qty;
+    invested += cost; value += a.price * qty; daily += (a.price - a.prev) * qty;
+    exposure[a.sector] = (exposure[a.sector] || 0) + a.price * qty;
+  };
+  Object.entries(m.portfolio.stocks).forEach(([t,q]) => { const a=findMarketAsset(t); if(a) add(a,q); });
+  Object.entries(m.portfolio.crypto).forEach(([t,q]) => { const a=findMarketAsset(t); if(a) add(a,q); });
+  const pnl = value - invested;
+  const stockVal = Object.entries(m.portfolio.stocks).reduce((s,[t,q]) => { const a=findMarketAsset(t); return s+(a?a.price*q:0); },0);
+  const cryptoVal = value - stockVal;
+  const ratio = value > 0 ? Math.round(stockVal / value * 100) : 0;
+  const sectors = Object.entries(exposure).sort((a,b)=>b[1]-a[1]).map(([s,v])=>`${s} ${Math.round(v/value*100)}%`).join(" · ") || "None";
+  return { invested, value, pnl, daily, sectors, ratio, cryptoRatio: 100-ratio };
+}
+function selectMarketAsset(ticker) { G.market._selected = ticker; G.market._tab = "overview"; renderMarket(); }
+function toggleWatchlist(ticker) {
+  const m=G.market; const i=m.watchlist.indexOf(ticker);
+  if(i>=0) m.watchlist.splice(i,1); else m.watchlist.unshift(ticker);
+  renderMarket();
+}
+function buyStock(ticker, qty) {
+  const m = G.market;
+  const s = m.stocks.find(x => x.ticker === ticker);
+  if (!s || qty <= 0) return;
+  const cost = Math.round(s.price * qty * 100) / 100;
+  if (cost > G.bank) { addLog("Not enough in bank!", "bad"); renderMarket(); return; }
+  G.bank -= cost;
+  m.portfolio.stocks[ticker] = (m.portfolio.stocks[ticker] || 0) + qty;
+  addLog(`Bought ${qty} ${ticker} @ $${s.price.toLocaleString()}`, "good");
+  renderMarket();
+}
+
+function sellStock(ticker, qty) {
+  const m = G.market;
+  const s = m.stocks.find(x => x.ticker === ticker);
+  if (!s || qty <= 0) return;
+  const held = m.portfolio.stocks[ticker] || 0;
+  if (qty > held) { addLog("Not enough shares!", "bad"); renderMarket(); return; }
+  const revenue = Math.round(s.price * qty * 100) / 100;
+  G.bank += revenue;
+  m.portfolio.stocks[ticker] -= qty;
+  if (m.portfolio.stocks[ticker] <= 0) delete m.portfolio.stocks[ticker];
+  addLog(`Sold ${qty} ${ticker} @ $${s.price.toLocaleString()}`, "good");
+  renderMarket();
+}
+
+function buyCrypto(ticker, qty) {
+  const m = G.market;
+  const c = m.crypto.find(x => x.ticker === ticker);
+  if (!c || qty <= 0) return;
+  const cost = Math.round(c.price * qty * 100) / 100;
+  if (cost > G.bank) { addLog("Not enough in bank!", "bad"); renderMarket(); return; }
+  G.bank -= cost;
+  m.portfolio.crypto[ticker] = (m.portfolio.crypto[ticker] || 0) + qty;
+  addLog(`Bought ${qty} ${ticker} @ $${c.price.toLocaleString()}`, "good");
+  renderMarket();
+}
+
+function sellCrypto(ticker, qty) {
+  const m = G.market;
+  const c = m.crypto.find(x => x.ticker === ticker);
+  if (!c || qty <= 0) return;
+  const held = m.portfolio.crypto[ticker] || 0;
+  if (qty > held) { addLog("Not enough coins!", "bad"); renderMarket(); return; }
+  const revenue = Math.round(c.price * qty * 100) / 100;
+  G.bank += revenue;
+  m.portfolio.crypto[ticker] -= qty;
+  if (m.portfolio.crypto[ticker] <= 0) delete m.portfolio.crypto[ticker];
+  addLog(`Sold ${qty} ${ticker} @ $${c.price.toLocaleString()}`, "good");
+  renderMarket();
+}
+
+function marketPortfolioValue() {
+  const m = G.market;
+  let val = 0;
+  for (const [t, q] of Object.entries(m.portfolio.stocks || {})) {
+    const s = m.stocks.find(x => x.ticker === t);
+    if (s) val += s.price * q;
+  }
+  for (const [t, q] of Object.entries(m.portfolio.crypto || {})) {
+    const c = m.crypto.find(x => x.ticker === t);
+    if (c) val += c.price * q;
+  }
+  return Math.round(val * 100) / 100;
+}
+
+function buyMarket(ticker) {
+  const a=findMarketAsset(ticker);
+  if (!a) return;
+  const id=a.sector === "Crypto" ? `cqty_${ticker}` : `sqty_${ticker}`;
+  const qty=+(document.getElementById(id)?.value || 1);
+  a.sector === "Crypto" ? buyCrypto(ticker,qty) : buyStock(ticker,qty);
+}
+function sellMarket(ticker) {
+  const a=findMarketAsset(ticker);
+  if (!a) return;
+  const id=a.sector === "Crypto" ? `cqty_${ticker}` : `sqty_${ticker}`;
+  const qty=+(document.getElementById(id)?.value || 1);
+  a.sector === "Crypto" ? sellCrypto(ticker,qty) : sellStock(ticker,qty);
+}
+
+function renderAssetCard(a) {
+  if (!a) return "";
+  const held = a.sector === "Crypto" ? (G.market.portfolio.crypto[a.ticker] || 0) : (G.market.portfolio.stocks[a.ticker] || 0);
+  const risk = primaryRiskFor(a);
+  const risks = riskMetrics(a);
+  const vol = volatilityLevel(a);
+  const sentiment = sentimentFor(a);
+  const daily = a.change;
+  const riskUp = a.vol >= 0.25 ? "↑↑↑" : a.vol >= 0.12 ? "↑" : "↓";
+  const event = a.eventAffected ? `<span style="color:#ff9800">EVENT</span>` : "";
+  return `<div class="market-detail">
+    <div class="market-detail-head"><strong>${a.ticker} — ${a.name}</strong><span>${event}</span></div>
+    <div class="market-detail-grid">
+      <div>PRICE<strong>${money(a.price)}</strong></div><div>DAILY<strong class="${daily>0?'up':daily<0?'down':'flat'}">${marketArrow(daily)} ${marketPct(daily)}</strong></div>
+      <div>VOLATILITY<strong>${vol}</strong></div><div>MARKET CAP<strong>${money(a.cap)}</strong></div>
+      <div>VOLUME<strong>${a.volume >= 1e9 ? (a.volume/1e9).toFixed(1)+"B" : (a.volume/1e6).toFixed(1)+"M"}</strong></div><div>SENTIMENT<strong>${sentiment}</strong></div>
+      <div>RISK TYPE<strong>${risk}</strong></div><div>RISK LEVEL<strong>${risk} ${riskUp}</strong></div>
+    </div>
+    <div class="market-chart"><strong>PRE-DAY 1 HISTORY</strong><br>Days -29 → 0: ${spark(a.preGameHistory || a.history,30)}</div>
+    <div class="market-chart">7-Day Trend: ${spark(a.history,7)}</div>
+    <div class="market-chart">30-Day Trend: ${spark(a.history,30)}</div>
+    <div class="market-chart">Trend: ${trendArrow(a.history.slice(-4))}</div>
+    <div class="market-chart">Macro Risk ${risks.macro} · Sector Risk ${risks.sector} · Liquidity Risk ${risks.liquidity} · Earnings Risk ${risks.earnings}${a.sector === "Crypto" ? ` · Social Sentiment Risk ${risks.social}` : ""}</div>
+    <div style="font-size:10px;color:#888;margin-top:5px">Held: ${held} · Sector: ${a.sector}</div>
+    <button class="menu-btn" style="margin-top:5px" onclick="toggleWatchlist('${a.ticker}')">${G.market.watchlist.includes(a.ticker) ? "REMOVE WATCHLIST" : "ADD WATCHLIST"}</button>
+  </div>`;
+}
+
+function renderTicker() {
+  const assets = allMarketAssets();
+  const row = [...assets, ...assets].map(a => {
+    const cls = a.eventAffected ? "event" : a.change > 0 ? "up" : a.change < 0 ? "down" : "flat";
+    return `<span class="ticker-item ${cls}" onclick="selectMarketAsset('${a.ticker}')"><b>${a.ticker}</b> ${money(a.price)} ${marketArrow(a.change)} ${marketPct(a.change)}</span>`;
+  }).join("");
+  return `<div class="market-ticker"><div class="market-ticker-track">${row}</div></div>`;
+}
+
+function renderMarketOverview(kind="stocks") {
+  const m=G.market;
+  const p=portfolioSummary();
+  const selected=findMarketAsset(m._selected);
+  const watch=m.watchlist.map(findMarketAsset).filter(a => a && (kind === "crypto" ? a.sector === "Crypto" : a.sector !== "Crypto"));
+  const source=kind === "crypto" ? m.crypto : m.stocks;
+  const visible=watch.length ? watch : source;
+  const ticker=kind === "crypto" ? [...m.crypto,...m.crypto] : [...m.stocks,...m.stocks];
+  const tickerHtml=`<div class="market-ticker"><div class="market-ticker-track">${ticker.map(a => { const cls=a.eventAffected?"event":a.change>0?"up":a.change<0?"down":"flat"; return `<span class="ticker-item ${cls}" onclick="selectMarketAsset('${a.ticker}')"><b>${a.ticker}</b> ${money(a.price)} ${marketArrow(a.change)} ${marketPct(a.change)}</span>`; }).join("")}</div></div>`;
+  const selectedForTab=selected && (kind === "crypto" ? selected.sector === "Crypto" : selected.sector !== "Crypto") ? selected : null;
+  return `${tickerHtml}
+    ${kind === "stocks" ? `<div class="market-title-row"><span>SECTOR INDEX BOARD</span><span style="color:#888">AVG DAILY MOVE</span></div><div class="market-sector-grid">${sectorBoard()}</div>` : ""}
+    <div class="market-title-row"><span>${watch.length ? "WATCHLIST" : (kind === "crypto" ? "CRYPTO MARKET" : "STOCK MARKET")}</span><span>${watch.length ? "PINNED" : "ALL ASSETS"}</span></div>
+    ${visible.map(a => {
+      const held=a.sector==="Crypto"?(m.portfolio.crypto[a.ticker]||0):(m.portfolio.stocks[a.ticker]||0);
+      const maxBuy=a.price>0?Math.floor(G.bank/a.price*100)/100:0;
+      return `<div class="market-row ${a.eventAffected?'event-row':''}" onclick="selectMarketAsset('${a.ticker}')"><span class="ticker">${a.ticker}</span><span>${a.name}</span><span>${money(a.price)}</span><span class="${a.change>0?'up':a.change<0?'down':'flat'}">${marketArrow(a.change)} ${marketPct(a.change)}</span><span>Held ${held}</span><span onclick="event.stopPropagation()"><input class="drug-input" type="number" min="0.01" step="0.01" value="1" id="${a.sector==='Crypto'?'cqty_':'sqty_'}${a.ticker}" style="width:48px"><button class="menu-btn mini" onclick="buyMarket('${a.ticker}')">BUY</button><button class="menu-btn mini" onclick="sellMarket('${a.ticker}')">SELL</button></span></div>`;
+    }).join("")}
+    ${selectedForTab ? renderAssetCard(selectedForTab) : `<div class="info-box" style="font-size:10px">Click any ${kind === "crypto" ? "crypto asset" : "stock"} for the full detail card.</div>`}
+    <div class="market-title-row"><span>PORTFOLIO SUMMARY</span></div>
+    <div class="market-portfolio"><span>Invested $${Math.round(p.invested).toLocaleString()}</span><span>Unrealized ${p.pnl>=0?'+':''}$${Math.round(p.pnl).toLocaleString()}</span><span>Daily P/L ${p.daily>=0?'+':''}$${Math.round(p.daily).toLocaleString()}</span><span>Exposure ${p.sectors}</span><span>Stock/Crypto ${p.ratio}% / ${p.cryptoRatio}%</span></div>`;
+}
+
+function switchMarketTab(tab) { G.market._tab = tab; renderMarket(); }
+
+function renderMarket() {
+  const m=G.market;
+  if (!m.stocks || m.stocks.length===0) initMarket();
+  if (!m.history) m.history=[];
+  const c=document.getElementById("content");
+  const activeTab=m._tab || "stocks";
+  const portVal=marketPortfolioValue();
+  let content="";
+  if(activeTab === "bank") {
+    content=`<div class="info-box">Cash: $${G.cash.toLocaleString()}<br>Bank Balance: $${G.bank.toLocaleString()}<br>Interest: 5% per day on deposits</div>
+      <div class="bank-row"><span style="min-width:70px">Deposit:</span><input class="drug-input" type="number" min="0" id="bankDep" style="width:120px" placeholder="Amount"><button class="menu-btn" style="width:auto;padding:4px 12px" onclick="doBank('deposit')">DEPOSIT</button><button class="menu-btn" style="width:auto;padding:4px 12px" onclick="doBank('depositAll')">ALL</button></div>
+      <div class="bank-row"><span style="min-width:70px">Withdraw:</span><input class="drug-input" type="number" min="0" id="bankWit" style="width:120px" placeholder="Amount"><button class="menu-btn" style="width:auto;padding:4px 12px" onclick="doBank('withdraw')">WITHDRAW</button><button class="menu-btn" style="width:auto;padding:4px 12px" onclick="doBank('withdrawAll')">ALL</button></div>`;
+  } else {
+    content=renderMarketOverview(activeTab);
+  }
+  c.innerHTML=`<div style="display:flex;gap:0;margin-bottom:6px">
+    <button class="menu-btn" style="flex:1;text-align:center;${activeTab==='bank'?'background:#00ff41;color:#0a0a0a':''}" onclick="switchMarketTab('bank')">BANK</button>
+    <button class="menu-btn" style="flex:1;text-align:center;${activeTab==='stocks'?'background:#00ff41;color:#0a0a0a':''}" onclick="switchMarketTab('stocks')">STOCKS</button>
+    <button class="menu-btn" style="flex:1;text-align:center;${activeTab==='crypto'?'background:#00ff41;color:#0a0a0a':''}" onclick="switchMarketTab('crypto')">CRYPTO</button>
+  </div>
+  <div class="hack-stats"><div class="hack-stat">Cash: <span class="val">$${G.cash.toLocaleString()}</span></div><div class="hack-stat">Bank: <span class="val">$${G.bank.toLocaleString()}</span></div><div class="hack-stat">Portfolio: <span class="val">$${portVal.toLocaleString()}</span></div></div>
+  ${content}`;
+}
+
+function renderDrugMenu(mode) {
+  const c = document.getElementById("content");
+  const isBuy = mode === "buy";
+  const atHome = G.city === G.homeCity;
+  let rows = DRUGS.map((d, i) => {
+    const price = G.prices[i];
+    const buyPrice = atHome ? Math.round(price * 0.9) : price;
+    const sellPrice = atHome ? Math.round(price * 1.1) : price;
+    const available = price > 0;
+    const owned = G.inventory[i];
+    const blocked = !isBuy && G.boughtToday[i] && G.city === G.homeCity;
+    if (!available) {
+      return `<div class="drug-row">
+        <span class="drug-name">${d.name}</span>
+        <span class="drug-price" style="color:#666">N/A</span>
+        <span class="drug-owned">${owned}</span>
+        <span style="color:#666">-</span>
+      </div>`;
+    }
+    if (blocked) {
+      return `<div class="drug-row" style="opacity:0.3;pointer-events:none">
+        <span class="drug-name">${d.name} <span style="color:#ff4444;font-size:9px">LOCKED</span></span>
+        <span class="drug-price" style="color:#666">$${sellPrice.toLocaleString()}</span>
+        <span class="drug-owned">x${owned}</span>
+        <span style="color:#666">-</span>
+      </div>`;
+    }
+    return `<div class="drug-row">
+      <span class="drug-name">${d.name}${atHome ? ' <span style="color:#4fc3f7;font-size:9px">' + (isBuy ? '-10%' : '+10%') + '</span>' : ''}</span>
+      <span class="drug-price">$${isBuy ? buyPrice.toLocaleString() : sellPrice.toLocaleString()}${isBuy ? "/ea" : ""}</span>
+      <span class="drug-owned">x${owned}</span>
+      <input class="drug-input" type="number" min="0" value="0" id="qty${i}" max="999">
+      <button class="menu-btn" style="width:auto;padding:4px 10px;margin:0" onclick="doTrade('${mode}',${i})">${isBuy?"BUY":"SELL"}</button>
+    </div>`;
+  }).join("");
+
+  c.innerHTML = `
+    <div class="title">${isBuy ? "BUY DRUGS" : "SELL DRUGS"} - ${CITIES[G.city].name}</div>
+    <div class="drug-row" style="border:none;background:none;color:#888;font-size:11px">
+      <span class="drug-name">Drug</span>
+      <span class="drug-price">Price</span>
+      <span class="drug-owned">Own</span>
+      <span>Qty</span>
+      <span style="width:50px"></span>
+    </div>
+    ${rows}
+    ${isBuy ? `<div class="info-box">Cash: $${G.cash.toLocaleString()} | Pockets: ${totalDrugs()}/${G.maxCapacity}</div>` : ""}
+    ${atHome ? '<div style="font-size:9px;color:#4fc3f7;margin-bottom:4px">*hometown discount — buy -10% / sell +10%</div>' : ""}
+    <button class="menu-btn back-btn" onclick="renderTrap()">BACK</button>`;
+}
+
+function doTrade(mode, drugIdx) {
+  const qtyInput = document.getElementById("qty" + drugIdx);
+  const qty = parseInt(qtyInput.value) || 0;
+  if (qty <= 0) return;
+
+  if (mode === "buy") {
+    const atHome = G.city === G.homeCity;
+    const cityLocks = G.cityDrugLocks[G.city] || [];
+    if (cityLocks.includes(drugIdx)) { addLog("Drug is locked in this city today!", "bad"); renderDrugMenu(mode); refreshStats(); return; }
+    const price = atHome ? Math.round(G.prices[drugIdx] * 0.9) : G.prices[drugIdx];
+    const cost = qty * price;
+    if (cost > G.cash) { addLog("Not enough cash!", "bad"); renderDrugMenu(mode); refreshStats(); return; }
+    if (totalDrugs() + qty > G.maxCapacity) { addLog("Not enough pocket space!", "bad"); renderDrugMenu(mode); refreshStats(); return; }
+    G.cash -= cost;
+    G.inventory[drugIdx] += qty;
+    if (atHome) G.boughtToday[drugIdx] = true;
+    addLog(`Bought ${qty} ${DRUGS[drugIdx].name} for $${cost.toLocaleString()}${atHome ? " (home discount)" : ""}.`, "good");
+  } else {
+    if (qty > G.inventory[drugIdx]) { addLog("You don't have that many!", "bad"); renderDrugMenu(mode); refreshStats(); return; }
+    if (G.boughtToday[drugIdx] && G.city === G.homeCity) { addLog("Can't sell today — bought at home today!", "bad"); renderDrugMenu(mode); refreshStats(); return; }
+    if (G.unsellable.includes(drugIdx)) { addLog("Can't sell today — streets are clean!", "bad"); renderDrugMenu(mode); refreshStats(); return; }
+    const atHome = G.city === G.homeCity;
+    const sellPrice = atHome ? Math.round(G.prices[drugIdx] * 1.1) : G.prices[drugIdx];
+    const revenue = qty * sellPrice;
+    G.cash += revenue;
+    G.inventory[drugIdx] -= qty;
+    addLog(`Sold ${qty} ${DRUGS[drugIdx].name} for $${revenue.toLocaleString()}${atHome ? " (home bonus)" : ""}.`, "good");
+  }
+  renderDrugMenu(mode);
+  refreshStats();
+}
+
+function renderTravelMenu() {
+  const c = document.getElementById("content");
+  let rows = CITIES.map((city, i) => {
+    const isHome = i === G.homeCity;
+    const homeTag = isHome ? ' <span style="color:#4fc3f7;font-size:9px">[HOME]</span>' : '';
+    if (i === G.city) {
+      return `<button class="city-btn current" disabled>${city.name}${homeTag} (YOU ARE HERE)<span class="city-distance"></span></button>`;
+    }
+    const key = distKey(G.city, i);
+    const baseDays = TRAVEL_DAYS[key];
+    const reduction = G.playerCar ? G.playerCar.travelReduction : 0;
+    const days = Math.max(1, Math.ceil(baseDays * (1 - reduction)));
+    return `<button class="city-btn" onclick="doTravel(${i})">${city.name}${homeTag}<span class="city-distance">${days} day${days > 1 ? "s" : ""} travel</span></button>`;
+  }).join("");
+
+  c.innerHTML = `
+    <div class="title">TRAVEL TO</div>
+    ${rows}
+    <div class="info-box">Traveling advances the clock. Plan your route wisely.</div>
+    <button class="menu-btn" onclick="renderMoveHome()">MOVE HOME TO ANOTHER CITY</button>
+    <button class="menu-btn back-btn" onclick="renderSafehouse()">BACK</button>`;
+}
+
+function renderMoveHome() {
+  const c = document.getElementById("content");
+  const rows = CITIES.map((city, i) => {
+    if (i === G.homeCity) return `<button class="city-btn current" disabled>${city.name} (CURRENT HOME)</button>`;
+    if (i === G.city) return `<button class="city-btn" disabled>${city.name} (YOU ARE HERE)</button>`;
+    const cost = 500;
+    const canAfford = G.cash >= cost;
+    return `<button class="city-btn" style="${canAfford ? '' : 'opacity:0.3'}" onclick="moveHome(${i})">${city.name}<span class="city-distance">$${cost}</span></button>`;
+  }).join("");
+
+  c.innerHTML = `
+    <div class="title">MOVE HOME</div>
+    ${rows}
+    <div class="info-box">Moving home costs $500. Home gives 10% off drug purchases.</div>
+    <button class="menu-btn back-btn" onclick="renderTravelMenu()">BACK</button>`;
+}
+
+function moveHome(cityIdx) {
+  const cost = 500;
+  if (G.cash < cost) { addLog("Not enough cash to move!", "bad"); renderMoveHome(); return; }
+  G.cash -= cost;
+  G.homeCity = cityIdx;
+  addLog(`Moved home to ${CITIES[cityIdx].name}. (-$${cost})`, "neutral");
+  renderMoveHome();
+}
+
+function hasGun() {
+  return G.guns.some(g => g.assignedTo === "player");
+}
+
+function hasStolenGun() {
+  return G.guns.some(g => g.assignedTo === "player" && g.status === "stolen");
+}
+
+function policeEscapeChance() {
+  const carBonus = G.playerCar ? G.playerCar.drive : 0;
+  const maskBonus = G.gear.some(g => g.mask) ? 10 : 0;
+  return Math.min(95, 40 + G.stats.driving * 10 + carBonus + maskBonus);
+}
+
+function gunDamage() {
+  const g = G.guns.find(g => g.assignedTo === "player");
+  let dmg = g ? (g.damage || 0) : 0;
+  if (crewHas("Goon")) dmg += 10;
+  return dmg;
+}
+
+function hasDrugs() {
+  return totalDrugs() > 0;
+}
+
+function triggerPoliceEncounter() {
+  let chance = 0.35;
+  if (crewHas("Lookout")) chance -= 0.10;
+  if (crewHas("Snitch")) chance -= 0.10;
+  if (Math.random() > chance) return false;
+  G.police = { active: true, phase: "menu", turn: 0, copHp: 30, maxCopHp: 30, log: [] };
+  renderPoliceEncounter();
+  return true;
+}
+
+function renderPoliceEncounter() {
+  const p = G.police;
+  const overlay = document.getElementById("eventOverlay");
+  if (!overlay) return;
+  overlay.style.display = "flex";
+
+  let html = "";
+
+  if (p.phase === "menu") {
+    html = `
+      <div style="font-size:14px;margin-bottom:8px;color:#ff4444">AH SHIT, COPS!</div>
+      <div style="font-size:11px;color:#ccc;margin-bottom:12px">Be cool...</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="menu-btn" onclick="policeRun()">RUN (driving check)</button>
+        ${hasDrugs() || hasStolenGun() ? `<button class="menu-btn" onclick="policePullOver()">PULL OVER</button>` : `<button class="menu-btn" onclick="policeEscapeClean()">PULL OVER (nothing illegal)</button>`}
+        ${hasGun() ? `<button class="menu-btn" style="border-color:#ff4444;color:#ff4444" onclick="policeFight()">FIGHT</button>` : ""}
+      </div>
+      <div style="font-size:9px;color:#888;margin-top:8px">Driving skill, your car, and an escape mask help you run. New guns are legal; stolen guns are confiscated if found.</div>`;
+  } else if (p.phase === "run") {
+    const roll = Math.random() * 100;
+    const chance = policeEscapeChance();
+    if (roll < chance) {
+      html = `
+        <div style="font-size:14px;margin-bottom:8px;color:#00ff41">ESCAPED!</div>
+        <div style="font-size:11px;color:#ccc;margin-bottom:12px">You lost the cops. Close one.</div>
+        <button class="menu-btn" onclick="closePoliceEncounter()">CONTINUE</button>`;
+    } else {
+      html = `
+        <div style="font-size:14px;margin-bottom:8px;color:#ff4444">CAUGHT!</div>
+        <div style="font-size:11px;color:#ccc;margin-bottom:12px">Couldn't shake them. Now you gotta deal with it.</div>
+        <button class="menu-btn" onclick="policePullOver()">PULL OVER</button>`;
+    }
+  } else if (p.phase === "pullover") {
+    if (!hasDrugs() && !hasStolenGun()) {
+      html = `
+        <div style="font-size:14px;margin-bottom:8px;color:#00ff41">CLEAN</div>
+        <div style="font-size:11px;color:#ccc;margin-bottom:12px">Nothing to find. They let you go with a warning.</div>
+        <button class="menu-btn" onclick="closePoliceEncounter()">CONTINUE</button>`;
+    } else {
+      let bustMsg = "They found everything. You're busted.";
+      if (hasDrugs()) bustMsg += " All drugs confiscated.";
+      if (hasStolenGun()) bustMsg += " Your stolen gun is seized.";
+      const confDrugs = hasDrugs();
+      const confGun = hasStolenGun();
+      html = `
+        <div style="font-size:14px;margin-bottom:8px;color:#ff4444">BUSTED</div>
+        <div style="font-size:11px;color:#ccc;margin-bottom:12px">${bustMsg}</div>
+        <button class="menu-btn" onclick="policeBust(${confDrugs},${confGun})">ACCEPT FATE</button>`;
+    }
+  } else if (p.phase === "fight") {
+    html = renderPoliceFight();
+  }
+
+  overlay.innerHTML = `<div style="background:#0a0a0a;border:1px solid #00ff41;padding:12px;max-width:350px;max-height:80vh;overflow-y:auto">${html}</div>`;
+}
+
+function renderPoliceFight() {
+  const p = G.police;
+  const copAlive = p.copHp > 0;
+  const playerAlive = G.hp > 0;
+  const fled = p.phase === "fled";
+
+  if (!copAlive) {
+    return `
+      <div style="font-size:14px;margin-bottom:8px;color:#00ff41">COP DOWN!</div>
+      <div style="font-size:11px;color:#ccc;margin-bottom:12px">The cop is out. You speed off.</div>
+      ${p.log.map(l => `<div style="font-size:10px;color:#aaa;margin:1px 0">${l}</div>`).join("")}
+      <button class="menu-btn" onclick="closePoliceEncounter()">CONTINUE</button>`;
+  }
+
+  if (!playerAlive) {
+    return `
+      <div style="font-size:14px;margin-bottom:8px;color:#ff4444">WASTED</div>
+      <div style="font-size:11px;color:#ccc;margin-bottom:12px">You went down in a blaze of glory.</div>
+      ${p.log.map(l => `<div style="font-size:10px;color:#aaa;margin:1px 0">${l}</div>`).join("")}
+      <button class="menu-btn" onclick="gameOver()">GAME OVER</button>`;
+  }
+
+  if (p.phase === "fled") {
+    return `
+      <div style="font-size:14px;margin-bottom:8px;color:#00ff41">ESCAPED!</div>
+      <div style="font-size:11px;color:#ccc;margin-bottom:12px">You lost them.</div>
+      ${p.log.map(l => `<div style="font-size:10px;color:#aaa;margin:1px 0">${l}</div>`).join("")}
+      <button class="menu-btn" onclick="closePoliceEncounter()">CONTINUE</button>`;
+  }
+
+  const aimBonus = 5 + G.stats.aiming * 4;
+  const driveBonus = G.stats.driving * 8;
+
+  return `
+    <div style="font-size:14px;margin-bottom:8px;color:#ff4444">FIREFIGHT!</div>
+    <div style="font-size:11px;color:#ccc;margin-bottom:4px">Turn ${p.turn + 1}</div>
+    <div style="font-size:10px;color:#888;margin-bottom:8px">You: ${G.hp}/${G.maxHp} HP | Cop: ${p.copHp}/${p.maxCopHp} HP</div>
+    <div style="max-height:80px;overflow-y:auto;margin-bottom:8px">
+      ${p.log.map(l => `<div style="font-size:10px;color:#aaa;margin:1px 0">${l}</div>`).join("")}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <button class="menu-btn" onclick="policeFightTurn('shoot')">SHOOT (aim: ${aimBonus}%)</button>
+      <button class="menu-btn" onclick="policeFightTurn('ram')">RAM COP (drive: ${driveBonus}%)</button>
+      <button class="menu-btn" onclick="policeFightTurn('flee')">FLEE (drive: ${driveBonus}%)</button>
+    </div>`;
+}
+
+function policeFightTurn(action) {
+  const p = G.police;
+  const aimBonus = 5 + G.stats.aiming * 4;
+  const driveBonus = G.stats.driving * 8;
+  const dmg = gunDamage();
+  const turnNum = p.turn + 1;
+
+  // Cop calls off after 6 turns
+  if (turnNum >= 6) {
+    p.log.push(`Turn ${turnNum}: Cop radioed for backup. Aborting pursuit.`);
+    p.phase = "fled";
+    renderPoliceEncounter();
+    return;
+  }
+
+  // Player action
+  if (action === "shoot") {
+    if (Math.random() * 100 < aimBonus) {
+      p.copHp -= dmg;
+      p.log.push(`Turn ${turnNum}: You hit the cop for ${dmg} damage!`);
+    } else {
+      p.log.push(`Turn ${turnNum}: You missed.`);
+    }
+  } else if (action === "ram") {
+    if (Math.random() * 100 < driveBonus) {
+      const ramDmg = 10 + G.stats.strength * 2;
+      p.copHp -= ramDmg;
+      p.log.push(`Turn ${turnNum}: You rammed the cop car for ${ramDmg} damage!`);
+    } else {
+      p.log.push(`Turn ${turnNum}: Bad angle. No damage.`);
+    }
+  } else if (action === "flee") {
+    if (Math.random() * 100 < driveBonus) {
+      p.phase = "fled";
+      p.log.push(`Turn ${turnNum}: You shook them off!`);
+      renderPoliceEncounter();
+      return;
+    } else {
+      p.log.push(`Turn ${turnNum}: Couldn't escape.`);
+    }
+  }
+
+  // Cop shoots back
+  if (p.copHp > 0) {
+    const copAccuracy = 30 + turnNum * 3;
+    const copDmg = 5 + Math.floor(Math.random() * 5);
+    if (Math.random() * 100 < copAccuracy) {
+      let remaining = copDmg;
+      let msg = `Turn ${turnNum}: Cop shot you for ${copDmg} damage!`;
+      if (G.armor > 0) {
+        const absorbed = Math.min(G.armor, remaining);
+        G.armor -= absorbed;
+        remaining -= absorbed;
+        msg += ` Vest absorbed ${absorbed}.`;
+      }
+      if (remaining > 0) G.hp -= remaining;
+      p.log.push(msg);
+    } else {
+      p.log.push(`Turn ${turnNum}: Cop missed you.`);
+    }
+    G.hp = Math.max(0, G.hp);
+  }
+
+  p.turn++;
+  renderPoliceEncounter();
+}
+
+function policeRun() {
+  G.police.phase = "run";
+  renderPoliceEncounter();
+}
+
+function policePullOver() {
+  G.police.phase = "pullover";
+  renderPoliceEncounter();
+}
+
+function policeEscapeClean() {
+  addLog("Cops let you go. Nothing to see here.", "good");
+  closePoliceEncounter();
+}
+
+function policeBust(confDrugs, confGun) {
+  if (confDrugs) {
+    G.inventory = new Array(DRUGS.length).fill(0);
+    addLog("All drugs confiscated by police!", "bad");
+  }
+  if (confGun) {
+    const playerGun = G.guns.find(g => g.assignedTo === "player" && g.status === "stolen");
+    if (playerGun) {
+      playerGun.assignedTo = "seized";
+      syncGunGear();
+      addLog(`${playerGun.name} seized by police!`, "bad");
+    }
+  }
+  closePoliceEncounter();
+}
+
+function policeFight() {
+  G.police.phase = "fight";
+  renderPoliceEncounter();
+}
+
+function closePoliceEncounter() {
+  G.police = { active: false, phase: "menu", turn: 0, copHp: 30, maxCopHp: 30, log: [] };
+  const overlay = document.getElementById("eventOverlay");
+  if (overlay) overlay.style.display = "none";
+  checkGameOver();
+  render();
+}
+
+function triggerMarketAssetEvent() {
+  if (Math.random() > 0.15) return;
+  const assets = allMarketAssets();
+  const a = assets[Math.floor(Math.random() * assets.length)];
+  const old = a.price;
+  const direction = Math.random() < 0.5 ? -1 : 1;
+  const pct = 0.05 + Math.random() * 0.15;
+  a.prev = a.price;
+  a.price = Math.max(a.base >= 1 ? 1 : 0.01, +(a.price * (1 + direction * pct)).toFixed(a.base >= 1 ? 0 : 4));
+  a.change = a.prev > 0 ? ((a.price - a.prev) / a.prev * 100) : 0;
+  a.lastDayChange = a.change;
+  a.history.push(a.price);
+  if (a.history.length > 30) a.history.shift();
+  a.eventAffected = true;
+}
+
+function doTravel(cityIdx) {
+  if (triggerPoliceEncounter()) return;
+  const key = distKey(G.city, cityIdx);
+  const baseDays = TRAVEL_DAYS[key];
+  const reduction = G.playerCar ? G.playerCar.travelReduction : 0;
+  const days = Math.max(1, Math.ceil(baseDays * (1 - reduction)));
+  advanceDate(days);
+  G.city = cityIdx;
+  addLog(`Traveled to ${CITIES[cityIdx].name} (+${days} day${days > 1 ? "s" : ""}).`, "neutral");
+  randomizePrices();
+  for (let i = 0; i < days; i++) updateMarket();
+  triggerMarketAssetEvent();
+  triggerRandomEvent();
+  checkGameOver();
+  render();
+}
+
+function renderInventory() {
+  const c = document.getElementById("content");
+  const hasHQ = G.hq !== "";
+  let rows = DRUGS.map((d, i) => {
+    const qty = G.inventory[i];
+    const hqQty = hasHQ ? G.hqInventory[i] : 0;
+    const value = qty * G.prices[i];
+    return `<div class="drug-row">
+      <span class="drug-name">${d.name}</span>
+      <span class="drug-owned">x${qty}</span>
+      ${hasHQ ? `<span style="font-size:9px;color:#4fc3f7">HQ: x${hqQty}</span>` : ""}
+      <span class="drug-price">~$${value.toLocaleString()}</span>
+      ${hasHQ && qty > 0 ? `<button class="menu-btn" style="width:auto;padding:2px 6px;margin:0;font-size:9px" onclick="moveDrugToHQ(${i})">STORE</button>` : ""}
+      ${hasHQ && hqQty > 0 ? `<button class="menu-btn" style="width:auto;padding:2px 6px;margin:0;font-size:9px" onclick="retrieveDrugFromHQ(${i})">GRAB</button>` : ""}
+    </div>`;
+  }).join("");
+
+  c.innerHTML = `
+    <div class="title">INVENTORY</div>
+    ${rows}
+    <div class="info-box">
+      Pockets: ${totalDrugs()}/${G.maxCapacity}<br>
+      ${hasHQ ? `HQ (${G.hq}): ${totalHQDrugs() + gunHQCount()}/${G.maxCapacity} (${gunHQCount()} gun${gunHQCount() === 1 ? "" : "s"})<br>` : ""}
+      Estimated value: ~$${DRUGS.reduce((s, d, i) => s + G.inventory[i] * G.prices[i], 0).toLocaleString()}
+    </div>
+    <button class="menu-btn back-btn" onclick="renderSafehouse()">BACK</button>`;
+}
+
+function totalHQDrugs() {
+  return G.hqInventory.reduce((s, q) => s + q, 0);
+}
+
+function moveDrugToHQ(idx) {
+  if (!G.hq) return;
+  const qty = G.inventory[idx];
+  if (qty <= 0) return;
+  const hqSpace = G.maxCapacity - totalHQDrugs() - gunHQCount();
+  const move = Math.min(qty, hqSpace);
+  if (move <= 0) { addLog("HQ is full!", "bad"); renderInventory(); return; }
+  G.inventory[idx] -= move;
+  G.hqInventory[idx] += move;
+  addLog(`Stored ${move} ${DRUGS[idx].name} in HQ.`, "good");
+  renderInventory();
+}
+
+function retrieveDrugFromHQ(idx) {
+  if (!G.hq) return;
+  const qty = G.hqInventory[idx];
+  if (qty <= 0) return;
+  const pocketSpace = G.maxCapacity - totalDrugs();
+  const grab = Math.min(qty, pocketSpace);
+  if (grab <= 0) { addLog("Pockets are full!", "bad"); renderInventory(); return; }
+  G.hqInventory[idx] -= grab;
+  G.inventory[idx] += grab;
+  addLog(`Grabbed ${grab} ${DRUGS[idx].name} from HQ.`, "good");
+  renderInventory();
+}
+
+function refreshStats() {
+  const app = document.getElementById("app");
+  const statsBar = app.querySelector('.stats-bar');
+  if (!statsBar) return;
+  statsBar.innerHTML = `
+    <span>${getDateString()}</span>
+    <span>Day ${String(G.day).padStart(2, "0")}</span>
+    <span>📍 ${CITIES[G.city].name}</span>
+    <span>$${G.cash.toLocaleString()}</span>
+    ${G.debt > 0 ? `<span class="warn">DEBT: $${G.debt.toLocaleString()}</span>` : ""}
+    ${G.bank > 0 ? `<span>Bank: $${G.bank.toLocaleString()}</span>` : ""}
+    <span>Pockets: ${totalDrugs()}/${G.maxCapacity}</span>
+    <span>HP: ${G.hp}/${G.maxHp}${G.armor > 0 ? ` | Armor: ${G.armor}` : ""}</span>`;
+}
+
+function doBank(mode) {
+  if (mode === "deposit") {
+    const amt = parseInt(document.getElementById("bankDep").value) || 0;
+    if (amt <= 0 || amt > G.cash) { addLog("Invalid amount.", "bad"); renderMarket(); return; }
+    G.cash -= amt;
+    G.bank += amt;
+    addLog(`Deposited $${amt.toLocaleString()} in bank.`, "good");
+  } else if (mode === "depositAll") {
+    if (G.cash <= 0) return;
+    G.bank += G.cash;
+    addLog(`Deposited $${G.cash.toLocaleString()} in bank.`, "good");
+    G.cash = 0;
+  } else if (mode === "withdraw") {
+    const amt = parseInt(document.getElementById("bankWit").value) || 0;
+    if (amt <= 0 || amt > G.bank) { addLog("Invalid amount.", "bad"); renderMarket(); return; }
+    G.bank -= amt;
+    G.cash += amt;
+    addLog(`Withdrew $${amt.toLocaleString()} from bank.`, "good");
+  } else if (mode === "withdrawAll") {
+    if (G.bank <= 0) return;
+    G.cash += G.bank;
+    addLog(`Withdrew $${G.bank.toLocaleString()} from bank.`, "good");
+    G.bank = 0;
+  }
+  renderMarket();
+}
+
+function renderLoanShark() {
+  const c = document.getElementById("content");
+  const interest = Math.round(G.debt * 0.10);
+  c.innerHTML = `
+    <div class="title">LOAN SHARK</div>
+    <div class="info-box" style="border-color:#ff4444">
+      <span style="color:#ff4444">You owe: $${G.debt.toLocaleString()}</span><br>
+      Interest: 10% per day (+$${interest.toLocaleString()})<br>
+      Pay it off fast!
+    </div>
+    <div class="bank-row">
+      <span style="min-width:70px">Pay:</span>
+      <input class="drug-input" type="number" min="0" id="loanPay" style="width:120px" placeholder="Amount">
+      <button class="menu-btn" style="width:auto;padding:4px 12px" onclick="doLoanPay()">PAY</button>
+      <button class="menu-btn" style="width:auto;padding:4px 12px" onclick="doLoanPayAll()">PAY ALL</button>
+    </div>
+    <div class="info-box">Cash: $${G.cash.toLocaleString()}<br><span style="color:#ff4444;font-size:10px">Loan shark only accepts cash. Withdraw from bank first.</span></div>
+    <button class="menu-btn back-btn" onclick="renderTrap()">BACK</button>`;
+}
+
+function doLoanPayAll() {
+  const amt = Math.min(G.cash, G.debt);
+  if (amt <= 0) { addLog("No cash to pay!", "bad"); renderLoanShark(); refreshStats(); return; }
+  G.cash -= amt;
+  G.debt -= amt;
+  if (G.debt <= 0) {
+    G.debt = 0;
+    addLog("DEBT PAID OFF! Loan shark is happy.", "good");
+  } else {
+    addLog(`Paid $${amt.toLocaleString()} toward debt.`, "good");
+  }
+  render();
+}
+
+function doLoanPay() {
+  const amt = parseInt(document.getElementById("loanPay").value) || 0;
+  if (amt <= 0 || amt > G.cash) { addLog("Invalid amount.", "bad"); renderLoanShark(); refreshStats(); return; }
+  G.cash -= amt;
+  G.debt -= amt;
+  if (G.debt <= 0) {
+    G.debt = 0;
+    addLog("DEBT PAID OFF! Loan shark is happy.", "good");
+  } else {
+    addLog(`Paid $${amt.toLocaleString()} toward debt.`, "good");
+  }
+  render();
+}
+
+function firstaidLevel() {
+  const xp = G.firstaidXp;
+  if (xp >= 200) return 5;
+  if (xp >= 100) return 4;
+  if (xp >= 50) return 3;
+  if (xp >= 20) return 2;
+  if (xp >= 5) return 1;
+  return 0;
+}
+
+function firstaidHealAmount() {
+  const level = firstaidLevel();
+  return 5 + level * 3; // 5 at lvl0, 8 at lvl1, 11 at lvl2, 14 at lvl3, 17 at lvl4, 20 at lvl5
+}
+
+function startHeal() {
+  if (G.hp >= G.maxHp) return;
+  if (G.healing <= 0) {
+    G.healing = 1;
+    addLog("Started resting to heal...", "neutral");
+  }
+}
+
+function processHealingTick() {
+  if (G.healing > 0 && G.hp < G.maxHp) {
+    const heal = firstaidHealAmount();
+    G.hp = Math.min(G.maxHp, G.hp + heal);
+    G.healing = 0;
+    G.firstaidXp += 1;
+    const lvl = firstaidLevel();
+    addLog(`Rested and healed +${heal} HP (${G.hp}/${G.maxHp}). First Aid XP: ${G.firstaidXp} (Lv.${lvl})`, "good");
+  }
+}
+
+function endDay() {
+  advanceDate(1);
+  rollTrunkStock();
+  rollLotStock();
+  updateVirusStatus();
+  processHealingTick();
+  G.boughtToday = new Array(DRUGS.length).fill(false);
+  // interest on bank
+  if (G.bank > 0) {
+    const int = Math.round(G.bank * 0.05);
+    G.bank += int;
+    if (int > 0) addLog(`Bank interest: +$${int.toLocaleString()}`, "good");
+  }
+  // interest on debt
+  if (G.debt > 0) {
+    const interest = Math.round(G.debt * 0.10);
+    G.debt += interest;
+    addLog(`Loan shark interest: +$${interest.toLocaleString()}`, "bad");
+  }
+  randomizePrices();
+  updateMarket();
+  triggerMarketAssetEvent();
+  triggerRandomEvent();
+  checkGameOver();
+  render();
+}
+
+function triggerTravelEvent() {
+  if (G.police && G.police.active) return;
+  if (Math.random() > 0.40) return;
+  if (Math.random() < 0.25) {
+    triggerRareEvent();
+  } else {
+    triggerMarketEvent();
+  }
+}
+
+function formatDrugChange(name, oldPrice, newPrice) {
+  const delta = oldPrice > 0 ? Math.round(((newPrice - oldPrice) / oldPrice) * 100) : 0;
+  const sign = delta > 0 ? "+" : "";
+  return `<span style="color:#ff9800;font-weight:bold">${name} ${sign}${delta}%</span>`;
+}
+
+function triggerMarketEvent() {
+  const drugIdx = Math.floor(Math.random() * DRUGS.length);
+  const d = DRUGS[drugIdx];
+  const variant = Math.floor(Math.random() * 4);
+
+  if (variant === 0) {
+    const oldPrice = G.prices[drugIdx];
+    const drop = Math.round(d.base * (0.4 + Math.random() * 0.3));
+    G.prices[drugIdx] = Math.max(d.min, drop);
+    addEventOverlay(`${d.name} FLOOD`, `${formatDrugChange(d.name, oldPrice, G.prices[drugIdx])} — prices dropped to $${G.prices[drugIdx].toLocaleString()}.`, "good");
+  } else if (variant === 1) {
+    const oldPrice = G.prices[drugIdx];
+    const rise = Math.round(d.base * (1.5 + Math.random() * 1.0));
+    G.prices[drugIdx] = Math.min(d.max, rise);
+    addEventOverlay(`DRY MARKET`, `${formatDrugChange(d.name, oldPrice, G.prices[drugIdx])} — prices rose to $${G.prices[drugIdx].toLocaleString()}.`, "bad");
+  } else if (variant === 2) {
+    const changes = [];
+    for (let i = 0; i < DRUGS.length; i++) {
+      const oldPrice = G.prices[i];
+      const bump = Math.round(G.prices[i] * (1.3 + Math.random() * 0.5));
+      G.prices[i] = Math.min(DRUGS[i].max, bump);
+      changes.push(formatDrugChange(DRUGS[i].name, oldPrice, G.prices[i]));
+    }
+    addEventOverlay("HEAT WAVE", `Drug prices jumped: ${changes.join(" &nbsp; ")}`, "bad");
+  } else {
+    const changes = [];
+    for (let i = 0; i < DRUGS.length; i++) {
+      const oldPrice = G.prices[i];
+      const drop = Math.round(G.prices[i] * (0.3 + Math.random() * 0.3));
+      G.prices[i] = Math.max(DRUGS[i].min, drop);
+      changes.push(formatDrugChange(DRUGS[i].name, oldPrice, G.prices[i]));
+    }
+    addEventOverlay("NEW LAWS", `Drug prices dropped: ${changes.join(" &nbsp; ")}`, "good");
+  }
+}
+function triggerRareEvent() {
+  const variant = Math.floor(Math.random() * 5);
+
+  if (variant === 0) {
+    addEventOverlay("GANGBUST", "Rico has left a bid for power. HQ prices 25% off today.", "good");
+    G.eventDiscounts = { ...G.eventDiscounts, hq: 0.25 };
+  } else if (variant === 1) {
+    addEventOverlay("PRISON REFORM", "Prison reform releases criminals into society. Crew members 50% off.", "good");
+    G.eventDiscounts = { ...G.eventDiscounts, crew: 0.50 };
+  } else if (variant === 2) {
+    addEventOverlay("GUN STORE ROBBED", "Gun store robbed at gunpoint! Trunk prices 40% off today.", "good");
+    G.eventDiscounts = { ...G.eventDiscounts, trunk: 0.40 };
+  } else if (variant === 3) {
+    const idx = Math.floor(Math.random() * DRUGS.length);
+    const city = G.city;
+    if (!G.cityDrugLocks[city]) G.cityDrugLocks[city] = [];
+    G.cityDrugLocks[city].push(idx);
+    addEventOverlay("HUGE BUST", `A huge bust wiped ${DRUGS[idx].name} off the streets. Can't buy it here today.`, "bad");
+  } else {
+    const locked = [];
+    while (locked.length < 4) {
+      const r = Math.floor(Math.random() * DRUGS.length);
+      if (!locked.includes(r)) locked.push(r);
+    }
+    G.unsellable = locked;
+    for (const i of locked) {
+      const drop = Math.round(G.prices[i] * 0.8);
+      G.prices[i] = Math.max(DRUGS[i].min, drop);
+    }
+    const names = locked.map(i => DRUGS[i].name).join(", ");
+    addEventOverlay("CAMPS CLEANED", `Homeless camps cleaned up. Can't sell ${names} today — prices 20% off.`, "neutral");
+  }
+}
+
+function addEventOverlay(title, msg, type) {
+  const overlay = document.getElementById("eventOverlay");
+  if (!overlay) return;
+  const color = type === "good" ? "#00ff41" : type === "bad" ? "#ff4444" : "#ffcc00";
+  overlay.style.display = "flex";
+  overlay.innerHTML = `<div style="background:#0a0a0a;border:1px solid ${color};padding:12px;max-width:350px;text-align:center">
+    <div style="font-size:14px;margin-bottom:8px;color:${color}">${title}</div>
+    <div style="font-size:11px;color:#ccc;margin-bottom:12px">${msg}</div>
+    <button class="menu-btn" onclick="closeEventOverlay()">CONTINUE</button>
+  </div>`;
+}
+
+function closeEventOverlay() {
+  const overlay = document.getElementById("eventOverlay");
+  if (overlay) overlay.style.display = "none";
+  render();
+}
+
+function triggerRandomEvent() {
+  triggerTravelEvent();
+}
+
+function checkGameOver() {
+  if (G.hp <= 0) {
+    G.over = true;
+  }
+}
+
+function renderGameOver(app) {
+  const nw = netWorth();
+  let rank = "";
+  if (nw >= 50000) rank = "Drug Lord";
+  else if (nw >= 25000) rank = "Kingpin";
+  else if (nw >= 10000) rank = "Dealer";
+  else if (nw >= 0) rank = "Small Timer";
+  else rank = "Dead Broke";
+
+  app.innerHTML = `
+    <div class="header">
+      <h1>GAME OVER</h1>
+      <div class="stats-bar"><span>${getDateString()}</span></div>
+    </div>
+    <div class="info-box">
+      <strong>FINAL RESULTS</strong><br><br>
+      Cash: $${G.cash.toLocaleString()}<br>
+      Bank: $${G.bank.toLocaleString()}<br>
+      Debt: $${G.debt.toLocaleString()}<br>
+      Inventory Value: ~$${DRUGS.reduce((s, d, i) => s + G.inventory[i] * G.prices[i], 0).toLocaleString()}<br><br>
+      <strong>NET WORTH: $${nw.toLocaleString()}</strong><br>
+      Rank: <strong>${rank}</strong>
+    </div>
+    <button class="menu-btn" onclick="initGame(); render();">NEW GAME</button>`;
+}
+
+initGame();
+render();
+
+setInterval(scanTick, 100);
+</script>
