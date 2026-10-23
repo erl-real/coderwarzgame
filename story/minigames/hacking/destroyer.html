@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DESTROYER // SYSTEM_WIPE</title>
+    <style>
+        body { margin: 0; background: #000; color: #f00; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        canvas { border: 2px solid #500; background: #050000; }
+        .ui { margin-bottom: 10px; font-size: 14px; font-weight: bold; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+    <div class="ui">DESTRUCTION_RATIO: <span id="score">0</span>%</div>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <div style="margin-top:10px; font-size:10px; color:#444">SPACE TO DROP BOMB // DESTROY ALL SECTORS</div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+
+        let shipX = 0;
+        let buildings = [];
+        let bombs = [];
+        let destroyed = 0;
+
+        function init() {
+            buildings = [];
+            for (let i = 0; i < 20; i++) {
+                buildings.push({
+                    x: i * 30,
+                    h: 50 + Math.random() * 150,
+                    w: 28,
+                    active: true
+                });
+            }
+        }
+
+        window.addEventListener('keydown', e => {
+            if (e.code === 'Space') bombs.push({ x: shipX + 15, y: 40 });
+        });
+
+        function update() {
+            shipX += 2;
+            if (shipX > 600) shipX = -30;
+
+            bombs.forEach((b, i) => {
+                b.y += 4;
+                if (b.y > 400) bombs.splice(i, 1);
+
+                buildings.forEach(build => {
+                    if (build.active && b.x > build.x && b.x < build.x + build.w && b.y > 400 - build.h) {
+                        build.active = false;
+                        bombs.splice(i, 1);
+                        destroyed++;
+                        scoreEl.textContent = Math.floor((destroyed / 20) * 100);
+                    }
+                });
+            });
+
+            if (destroyed >= 20) {
+                alert('SYSTEM_WIPE_COMPLETE');
+                destroyed = 0;
+                init();
+            }
+        }
+
+        function draw() {
+            ctx.fillStyle = '#050000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Ship
+            ctx.fillStyle = '#f00';
+            ctx.fillRect(shipX, 20, 30, 10);
+
+            // Buildings
+            ctx.fillStyle = '#500';
+            buildings.forEach(b => {
+                if (b.active) ctx.fillRect(b.x, 400 - b.h, b.w, b.h);
+            });
+
+            // Bombs
+            ctx.fillStyle = '#fff';
+            bombs.forEach(b => ctx.fillRect(b.x, b.y, 4, 4));
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        init();
+        loop();
+    </script>
+</body>
+</html>

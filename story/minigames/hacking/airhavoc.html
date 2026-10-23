@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIR HAVOC // TERMINAL CONTROL</title>
+    <style>
+        body { margin: 0; background: #050505; color: #0ea5e9; font-family: 'JetBrains Mono', monospace; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        canvas { border: 1px solid #1e293b; background: #000; cursor: crosshair; }
+        .ui { position: absolute; top: 20px; left: 20px; pointer-events: none; }
+        .msg { position: absolute; bottom: 20px; width: 100%; text-align: center; font-size: 12px; color: #475569; }
+    </style>
+</head>
+<body>
+    <div class="ui">
+        <div style="font-size: 18px; font-weight: 800; color: #0ea5e9;">AIR_HAVOC_v1.0</div>
+        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">LANDINGS: <span id="score">0</span></div>
+    </div>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <div class="msg">CLICK AND DRAG PLANES TO THE RUNWAY // AVOID COLLISIONS</div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+
+        let score = 0;
+        let planes = [];
+        let selectedPlane = null;
+        let gameOver = false;
+
+        const runway = { x: 300, y: 200, w: 100, h: 20 };
+
+        function spawnPlane() {
+            if (planes.length < 6 && !gameOver) {
+                const side = Math.floor(Math.random() * 4);
+                let x, y, vx, vy;
+                if (side === 0) { x = -20; y = Math.random()*400; vx = 1; vy = (Math.random()-0.5); }
+                else if (side === 1) { x = 620; y = Math.random()*400; vx = -1; vy = (Math.random()-0.5); }
+                else if (side === 2) { x = Math.random()*600; y = -20; vx = (Math.random()-0.5); vy = 1; }
+                else { x = Math.random()*600; y = 420; vx = (Math.random()-0.5); vy = -1; }
+
+                planes.push({
+                    x, y, vx, vy,
+                    path: [],
+                    radius: 10,
+                    id: Math.random()
+                });
+            }
+        }
+
+        canvas.addEventListener('mousedown', e => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            selectedPlane = planes.find(p => Math.sqrt((p.x-mx)**2 + (p.y-my)**2) < 20);
+            if (selectedPlane) selectedPlane.path = [];
+        });
+
+        canvas.addEventListener('mousemove', e => {
+            if (selectedPlane) {
+                const rect = canvas.getBoundingClientRect();
+                const mx = e.clientX - rect.left;
+                const my = e.clientY - rect.top;
+                selectedPlane.path.push({x: mx, y: my});
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => selectedPlane = null);
+
+        function update() {
+            if (gameOver) return;
+
+            planes.forEach((p, i) => {
+                if (p.path.length > 0) {
+                    const target = p.path[0];
+                    const dx = target.x - p.x;
+                    const dy = target.y - p.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 5) p.path.shift();
+                    else {
+                        p.vx = (dx/dist) * 1.5;
+                        p.vy = (dy/dist) * 1.5;
+                    }
+                }
+                p.x += p.vx;
+                p.y += p.vy;
+
+                // Collision with other planes
+                planes.forEach((p2, i2) => {
+                    if (i !== i2) {
+                        if (Math.sqrt((p.x-p2.x)**2 + (p.y-p2.y)**2) < 20) gameOver = true;
+                    }
+                });
+
+                // Landing logic
+                if (Math.abs(p.x - runway.x) < 50 && Math.abs(p.y - runway.y) < 20) {
+                    planes.splice(i, 1);
+                    score++;
+                    scoreEl.textContent = score;
+                }
+
+                // Bounds
+                if (p.x < -50 || p.x > 650 || p.y < -50 || p.y > 450) planes.splice(i, 1);
+            });
+
+            if (Math.random() < 0.01) spawnPlane();
+        }
+
+        function draw() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Runway
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(runway.x - 50, runway.y - 10, 100, 20);
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath(); ctx.moveTo(runway.x - 50, runway.y); ctx.lineTo(runway.x + 50, runway.y); ctx.stroke();
+            ctx.setLineDash([]);
+
+            planes.forEach(p => {
+                // Path
+                ctx.strokeStyle = 'rgba(14, 165, 233, 0.3)';
+                ctx.beginPath();
+                if (p.path.length > 0) {
+                    ctx.moveTo(p.x, p.y);
+                    p.path.forEach(pt => ctx.lineTo(pt.x, pt.y));
+                }
+                ctx.stroke();
+
+                // Plane
+                ctx.fillStyle = (p === selectedPlane) ? '#fff' : '#0ea5e9';
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 5, 0, Math.PI*2);
+                ctx.fill();
+                
+                // Direction indicator
+                ctx.strokeStyle = '#0ea5e9';
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p.x + p.vx*10, p.y + p.vy*10);
+                ctx.stroke();
+            });
+
+            if (gameOver) {
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ef4444';
+                ctx.font = '20px JetBrains Mono';
+                ctx.textAlign = 'center';
+                ctx.fillText('CRITICAL_SYSTEM_FAILURE', 300, 200);
+                ctx.font = '12px JetBrains Mono';
+                ctx.fillText('CLICK TO REINITIATE', 300, 230);
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        canvas.addEventListener('click', () => {
+            if (gameOver) {
+                gameOver = false;
+                score = 0;
+                scoreEl.textContent = '0';
+                planes = [];
+            }
+        });
+
+        loop();
+    </script>
+</body>
+</html>

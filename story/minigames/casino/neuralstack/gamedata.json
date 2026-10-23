@@ -1,0 +1,16 @@
+{
+  "decks": [
+    { "id": "standard", "name": "Classic Kernel", "desc": "Standard 52-card decryption set." },
+    { "id": "hardened", "name": "Deep Web Stack", "desc": "Reduced recovery options, higher data yield." }
+  ],
+  "suits": [
+    { "id": "spades", "name": "Spades", "protocol": "Command" },
+    { "id": "hearts", "name": "Hearts", "protocol": "Neural" },
+    { "id": "diamonds", "name": "Diamonds", "protocol": "Vault" },
+    { "id": "clubs", "name": "Clubs", "protocol": "Logic" }
+  ],
+  "rewards": {
+    "win": 5000,
+    "card_placed": 10
+  }
+}

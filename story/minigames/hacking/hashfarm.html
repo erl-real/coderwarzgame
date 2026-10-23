@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HASH_FARM // MINING_IDLE</title>
+    <style>
+        body { margin: 0; background: #050505; color: #10b981; font-family: 'JetBrains Mono', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .rig-grid { display: grid; grid-template-columns: repeat(4, 80px); gap: 10px; }
+        .rig { width: 80px; height: 80px; background: #111; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; cursor: pointer; position: relative; }
+        .rig.active { border-color: #10b981; }
+        .rig.active::after { content: ''; position: absolute; top: 5px; right: 5px; width: 4px; height: 4px; background: #10b981; border-radius: 50%; box-shadow: 0 0 5px #10b981; }
+        .ui { margin-bottom: 20px; width: 350px; display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; }
+        .btn { margin-top: 20px; background: #111; border: 1px solid #333; color: #10b981; padding: 10px 20px; cursor: pointer; text-transform: uppercase; font-size: 10px; }
+        .btn:hover { border-color: #10b981; background: #1a1a1a; }
+    </style>
+</head>
+<body>
+    <div class="ui">
+        <span>HASH_RATE: <span id="hr">0</span> H/s</span>
+        <span>COINS: <span id="coins">0.0000</span></span>
+    </div>
+    <div class="rig-grid" id="rigs"></div>
+    <button class="btn" onclick="buyRig()">Upgrade Rig ($<span id="cost">10</span>)</button>
+
+    <script>
+        let hr = 0, coins = 0, cost = 10, rigCount = 0;
+        const rigsEl = document.getElementById('rigs');
+
+        function buyRig() {
+            if (coins >= cost || rigCount === 0) {
+                if (rigCount > 0) coins -= cost;
+                rigCount++;
+                cost = Math.floor(cost * 1.8);
+                hr += 10;
+                addRigUI();
+                update();
+            }
+        }
+
+        function addRigUI() {
+            const el = document.createElement('div');
+            el.className = 'rig active';
+            el.innerHTML = `<div>RIG_${rigCount}</div><div style="color:#555">RUNNING</div>`;
+            rigsEl.appendChild(el);
+        }
+
+        function update() {
+            document.getElementById('hr').textContent = hr;
+            document.getElementById('coins').textContent = coins.toFixed(4);
+            document.getElementById('cost').textContent = cost;
+        }
+
+        setInterval(() => {
+            coins += hr / 1000;
+            update();
+        }, 100);
+
+        // First rig is free
+        buyRig();
+    </script>
+</body>
+</html>

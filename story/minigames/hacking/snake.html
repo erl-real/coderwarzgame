@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNAKE // BLOCKADE_PROTO</title>
+    <style>
+        body { margin: 0; background: #000; color: #0f0; font-family: 'Courier New', Courier, monospace; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        canvas { border: 4px solid #111; background: #050505; image-rendering: pixelated; }
+        .ui { margin-bottom: 10px; font-size: 18px; font-weight: 800; letter-spacing: 4px; }
+    </style>
+</head>
+<body>
+    <div class="ui">SNAKE_STREAM // LEN: <span id="score">1</span></div>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+
+        const grid = 20;
+        let snake = [{x: 10, y: 10}];
+        let food = {x: 15, y: 15};
+        let dx = 1, dy = 0;
+        let nextDx = 1, nextDy = 0;
+        let gameOver = false;
+
+        window.addEventListener('keydown', e => {
+            if (e.key === 'ArrowUp' && dy === 0) { nextDx = 0; nextDy = -1; }
+            if (e.key === 'ArrowDown' && dy === 0) { nextDx = 0; nextDy = 1; }
+            if (e.key === 'ArrowLeft' && dx === 0) { nextDx = -1; nextDy = 0; }
+            if (e.key === 'ArrowRight' && dx === 0) { nextDx = 1; nextDy = 0; }
+        });
+
+        function update() {
+            if (gameOver) return;
+
+            dx = nextDx; dy = nextDy;
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+            if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20) { gameOver = true; return; }
+            if (snake.some(s => s.x === head.x && s.y === head.y)) { gameOver = true; return; }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                scoreEl.textContent = snake.length;
+                spawnFood();
+            } else {
+                snake.pop();
+            }
+        }
+
+        function spawnFood() {
+            food = {
+                x: Math.floor(Math.random() * 20),
+                y: Math.floor(Math.random() * 20)
+            };
+            if (snake.some(s => s.x === food.x && s.y === food.y)) spawnFood();
+        }
+
+        function draw() {
+            ctx.fillStyle = '#050505';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Food
+            ctx.fillStyle = '#f00';
+            ctx.fillRect(food.x * grid + 2, food.y * grid + 2, grid - 4, grid - 4);
+
+            // Snake
+            ctx.fillStyle = '#0f0';
+            snake.forEach((s, i) => {
+                ctx.globalAlpha = 1 - (i / snake.length * 0.5);
+                ctx.fillRect(s.x * grid + 1, s.y * grid + 1, grid - 2, grid - 2);
+            });
+            ctx.globalAlpha = 1;
+
+            if (gameOver) {
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#f00';
+                ctx.font = '20px Courier New';
+                ctx.textAlign = 'center';
+                ctx.fillText('STREAM_TERMINATED', 200, 200);
+                ctx.font = '10px Courier New';
+                ctx.fillText('CLICK TO RE-ESTABLISH', 200, 230);
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            setTimeout(() => requestAnimationFrame(loop), 100);
+        }
+
+        canvas.addEventListener('click', () => {
+            if (gameOver) {
+                snake = [{x: 10, y: 10}];
+                dx = 1; dy = 0; nextDx = 1; nextDy = 0;
+                gameOver = false;
+                scoreEl.textContent = '1';
+                spawnFood();
+            }
+        });
+
+        loop();
+    </script>
+</body>
+</html>

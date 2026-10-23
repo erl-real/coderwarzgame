@@ -1,0 +1,67 @@
+{
+  "shared_systems": {
+    "transport": {
+      "name": "Logistics & Transport",
+      "description": "Movement of goods, personnel, and data across the globe.",
+      "levels": [
+        { "level": 1, "name": "Local Couriers", "capacity": 100, "speed": 1, "unlock_cost": 0 },
+        { "level": 2, "name": "Regional Freight", "capacity": 500, "speed": 1.5, "unlock_cost": 5000 },
+        { "level": 3, "name": "Global Air-Lift", "capacity": 2000, "speed": 3, "unlock_cost": 25000 },
+        { "level": 4, "name": "Autonomous Drone Swarm", "capacity": 5000, "speed": 6, "unlock_cost": 100000 },
+        { "level": 5, "name": "Satellite Teleportation Hub", "capacity": 10000, "speed": 10, "unlock_cost": 500000 }
+      ]
+    },
+    "hiring": {
+      "name": "Personnel & Recruitment",
+      "description": "Acquiring skilled workers, agents, or officials.",
+      "levels": [
+        { "level": 1, "name": "Contract Freelancers", "max_workers": 5, "efficiency": 1, "unlock_cost": 0 },
+        { "level": 2, "name": "Full-Time Staff", "max_workers": 20, "efficiency": 1.2, "unlock_cost": 10000 },
+        { "level": 3, "name": "Specialized Departments", "max_workers": 100, "efficiency": 1.5, "unlock_cost": 50000 },
+        { "level": 4, "name": "AI-Augmented Workforce", "max_workers": 500, "efficiency": 2.5, "unlock_cost": 200000 },
+        { "level": 5, "name": "Collective Neural Network", "max_workers": 5000, "efficiency": 5, "unlock_cost": 1000000 }
+      ]
+    },
+    "management": {
+      "name": "Operations Management",
+      "description": "Internal efficiency, morale, and resource optimization.",
+      "levels": [
+        { "level": 1, "name": "Basic Supervision", "morale_boost": 0.1, "waste_reduction": 0.05, "unlock_cost": 0 },
+        { "level": 2, "name": "Middle Management", "morale_boost": 0.2, "waste_reduction": 0.1, "unlock_cost": 15000 },
+        { "level": 3, "name": "Executive Board", "morale_boost": 0.4, "waste_reduction": 0.2, "unlock_cost": 75000 },
+        { "level": 4, "name": "Predictive Analytics", "morale_boost": 0.6, "waste_reduction": 0.4, "unlock_cost": 250000 },
+        { "level": 5, "name": "Total System Oversight", "morale_boost": 1.0, "waste_reduction": 0.8, "unlock_cost": 1500000 }
+      ]
+    }
+  },
+  "entity_types": {
+    "gov": {
+      "label": "Government",
+      "primary_resource": "Tax Revenue",
+      "secondary_resource": "Public Approval",
+      "buildings": ["Capital", "Police Station", "Research Lab", "Military Base", "Utility Hub"],
+      "exclusive_actions": ["Impose Sanctions", "Deploy Peacekeepers", "Nationalize Tech"],
+      "allowed_buys": ["gov"]
+    },
+    "org": {
+      "label": "Corporation",
+      "primary_resource": "Profit",
+      "secondary_resource": "Market Share",
+      "buildings": ["HQ", "Factory", "Retail Store", "Data Center", "Logistics Hub"],
+      "exclusive_actions": ["Hostile Takeover", "Market Manipulation", "PR Campaign"],
+      "allowed_buys": ["org"]
+    },
+    "crew": {
+      "label": "Criminal Crew",
+      "primary_resource": "Dirty Cash",
+      "secondary_resource": "Street Cred",
+      "buildings": ["Safehouse", "Illegal Lab", "Front Business", "Black Market", "Training Camp"],
+      "exclusive_actions": ["Heist", "Street War", "Smuggling Run"],
+      "allowed_buys": ["crew", "illegal_biz"]
+    }
+  },
+  "skill_tree_demo_config": {
+    "points_name": "Influence Points (IP)",
+    "sectors": ["Logistics", "HR", "Operations", "Production", "Espionage"]
+  }
+}

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE CIV // GLOBAL_DOMINATION</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+        body { font-family: 'JetBrains Mono', monospace; background: #050505; color: #fff; overflow: hidden; }
+        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; background: rgba(255,255,255,0.05); padding: 2px; border: 1px solid rgba(255,255,255,0.1); }
+        .grid-cell { aspect-ratio: 1; background: #0a0b0e; transition: all 0.2s; position: relative; cursor: pointer; border: 1px solid transparent; }
+        .grid-cell:hover { background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); }
+        .grid-cell.owned { background: rgba(59, 130, 246, 0.2); }
+        .grid-cell.rival { background: rgba(244, 63, 94, 0.2); }
+        .unit { position: absolute; inset: 20%; display: flex; items-center; justify-content: center; }
+        .ui-panel { background: #0a0b0e; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .stat-glow { text-shadow: 0 0 10px currentColor; }
+    </style>
+</head>
+<body x-data="gameEngine()" x-init="init()" class="h-screen flex flex-col p-4 md:p-8">
+
+    <!-- Header Stats -->
+    <div class="h-16 shrink-0 flex items-center justify-between px-6 border-b border-white/10 mb-6 bg-black/40 rounded-2xl">
+        <div class="flex items-center gap-8">
+            <div>
+                <h1 class="text-xl font-black italic tracking-tighter text-blue-400">CORE CIV v1.0</h1>
+                <p class="text-[8px] text-white/20 uppercase tracking-[0.4em]">Global Botnet Conquest</p>
+            </div>
+            <div class="flex gap-10">
+                <div class="flex flex-col">
+                    <span class="text-[8px] uppercase font-black text-white/30">Science</span>
+                    <span class="text-sm font-bold text-blue-400 stat-glow" x-text="player.science + ' RP'">0 RP</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[8px] uppercase font-black text-white/30">Energy</span>
+                    <span class="text-sm font-bold text-emerald-400 stat-glow" x-text="player.energy">0</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[8px] uppercase font-black text-white/30">Infected</span>
+                    <span class="text-sm font-bold text-amber-400 stat-glow" x-text="player.infected">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="text-right">
+                <div class="text-[8px] uppercase font-black text-white/30">Turn</div>
+                <div class="text-sm font-bold" x-text="turn">1</div>
+            </div>
+            <button @click="nextTurn()" class="h-10 px-8 bg-blue-500 text-black font-black text-[10px] uppercase tracking-widest hover:bg-blue-400 transition-all active:scale-95">
+                END_TURN
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Game Area -->
+    <div class="flex-1 flex gap-6 overflow-hidden">
+        
+        <!-- Left Sidebar (Units/Build) -->
+        <div class="w-64 shrink-0 flex flex-col gap-4">
+            <div class="flex-1 ui-panel rounded-3xl p-6 flex flex-col gap-4">
+                <h3 class="text-[10px] font-black uppercase text-blue-400 tracking-widest italic border-b border-blue-500/20 pb-2">Build Queue</h3>
+                <div class="space-y-2">
+                    <button @click="queueUnit('probe')" class="w-full h-12 win-dark border border-white/10 rounded-xl text-[9px] font-black uppercase flex items-center justify-center gap-2 hover:bg-white/5 transition" :disabled="player.energy < 100">
+                        <i data-lucide="crosshairs" class="w-3 h-3 text-blue-400"></i> Deploy Probe ($100)
+                    </button>
+                    <button @click="queueUnit('node')" class="w-full h-12 win-dark border border-white/10 rounded-xl text-[9px] font-black uppercase flex items-center justify-center gap-2 hover:bg-white/5 transition" :disabled="player.energy < 500">
+                        <i data-lucide="server" class="w-3 h-3 text-emerald-400"></i> New Core Node ($500)
+                    </button>
+                </div>
+
+                <div class="mt-auto space-y-4">
+                    <h3 class="text-[10px] font-black uppercase text-blue-400 tracking-widest italic border-b border-blue-500/20 pb-2">Tech Tree</h3>
+                    <div class="space-y-2 overflow-y-auto custom-scrollbar pr-2 h-48">
+                        <template x-for="tech in techs">
+                            <button @click="research(tech)" class="w-full text-left p-3 rounded-xl border border-white/5 bg-white/[0.02] transition" :class="player.unlockedTechs.includes(tech.id) ? 'border-emerald-500/40 bg-emerald-500/5' : (player.science >= tech.cost ? 'hover:bg-white/5 border-blue-500/20' : 'opacity-30')">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[10px] font-black uppercase" x-text="tech.name"></span>
+                                    <span class="text-[8px] font-bold text-blue-400" x-text="tech.cost + ' RP'" x-show="!player.unlockedTechs.includes(tech.id)"></span>
+                                    <i data-lucide="check" class="w-3 h-3 text-emerald-400" x-show="player.unlockedTechs.includes(tech.id)"></i>
+                                </div>
+                                <p class="text-[7px] text-white/30 uppercase tracking-tight" x-text="tech.effect"></p>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Map Area -->
+        <div class="flex-1 ui-panel rounded-3xl p-4 overflow-hidden flex flex-col items-center justify-center bg-black/40 relative">
+            <div class="grid-container w-full max-w-[600px]">
+                <template x-for="(cell, index) in grid">
+                    <div class="grid-cell" :class="cell.owner === 'player' ? 'owned' : (cell.owner === 'rival' ? 'rival' : '')" @click="handleCellClick(index)">
+                        <div class="unit" x-show="cell.unit">
+                            <i :data-lucide="cell.unit === 'node' ? 'server' : 'crosshairs'" class="w-full h-full" :class="cell.owner === 'player' ? 'text-blue-400' : 'text-rose-500'"></i>
+                        </div>
+                        <div class="absolute bottom-1 right-1 text-[6px] text-white/10 font-bold" x-text="index"></div>
+                    </div>
+                </template>
+            </div>
+            
+            <!-- Turn Log Overlay -->
+            <div class="absolute bottom-6 left-6 right-6 h-8 bg-black/60 rounded-lg border border-white/5 flex items-center px-4 overflow-hidden">
+                <div class="text-[9px] font-black text-blue-400/60 uppercase tracking-widest italic" x-text="statusMsg">SYSTEM STANDBY...</div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar (Intel) -->
+        <div class="w-64 shrink-0 flex flex-col gap-4">
+            <div class="flex-1 ui-panel rounded-3xl p-6 flex flex-col gap-4">
+                <h3 class="text-[10px] font-black uppercase text-rose-500 tracking-widest italic border-b border-rose-500/20 pb-2">Threat Intelligence</h3>
+                <div class="space-y-4">
+                    <template x-for="rival in rivals">
+                        <div class="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/10">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[10px] font-black uppercase text-rose-400" x-text="rival.name"></span>
+                                <span class="text-[8px] font-bold text-white/30" x-text="'Power: ' + rival.power"></span>
+                            </div>
+                            <div class="h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-rose-500 shadow-[0_0_8px_#f43f5e]" :style="'width: ' + rival.hostility + '%'"></div>
+                            </div>
+                            <div class="text-[7px] text-white/20 uppercase font-black mt-2">Hostility Index</div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function gameEngine() {
+            return {
+                turn: 1,
+                player: {
+                    energy: 1000,
+                    science: 0,
+                    infected: 1,
+                    unlockedTechs: [],
+                    nodes: 1
+                },
+                grid: Array(100).fill().map((_, i) => ({
+                    id: i,
+                    owner: i === 0 ? 'player' : (i === 99 ? 'rival' : null),
+                    unit: i === 0 ? 'node' : (i === 99 ? 'node' : null),
+                    level: 1
+                })),
+                techs: [
+                    { id: 'mining', name: 'Crypto Hijack', cost: 100, effect: '+20 Energy per Node' },
+                    { id: 'spread', name: 'Zero-Day Script', cost: 250, effect: 'Probes move +1 tile' },
+                    { id: 'firewall', name: 'Encrypted Link', cost: 500, effect: '+50% Node Defense' },
+                    { id: 'ai', name: 'Neural Botnet', cost: 1000, effect: 'Auto-repair 10% daily' }
+                ],
+                rivals: [
+                    { id: 1, name: 'SYNDICATE_01', power: 120, hostility: 45 }
+                ],
+                statusMsg: "WELCOME TO THE CORE. EXPAND THE BOTNET.",
+
+                init() {
+                    lucide.createIcons();
+                },
+
+                handleCellClick(idx) {
+                    const cell = this.grid[idx];
+                    this.statusMsg = `CELL_Ox${idx.toString(16).toUpperCase()} // ${cell.owner ? 'OCCUPIED' : 'VACANT'}`;
+                },
+
+                nextTurn() {
+                    this.turn++;
+                    // Basic resource gain
+                    const nodeCount = this.grid.filter(c => c.owner === 'player' && c.unit === 'node').length;
+                    const energyGain = nodeCount * 50;
+                    const scienceGain = nodeCount * 10;
+                    
+                    this.player.energy += energyGain;
+                    this.player.science += scienceGain;
+                    
+                    // Rival AI simulation
+                    this.rivalAI();
+                    
+                    this.statusMsg = `TURN ${this.turn} COMPLETE. ENERGY +${energyGain}, SCIENCE +${scienceGain}.`;
+                    this.$nextTick(() => lucide.createIcons());
+                },
+
+                rivalAI() {
+                    // Simple expansion
+                    const rivalCells = this.grid.filter(c => c.owner === 'rival');
+                    rivalCells.forEach(c => {
+                        if (Math.random() < 0.2) {
+                            const neighbors = [c.id-1, c.id+1, c.id-10, c.id+10];
+                            const targetIdx = neighbors[Math.floor(Math.random()*4)];
+                            if (targetIdx >= 0 && targetIdx < 100 && !this.grid[targetIdx].owner) {
+                                this.grid[targetIdx].owner = 'rival';
+                                this.grid[targetIdx].unit = 'probe';
+                            }
+                        }
+                    });
+                },
+
+                research(tech) {
+                    if (this.player.science >= tech.cost && !this.player.unlockedTechs.includes(tech.id)) {
+                        this.player.science -= tech.cost;
+                        this.player.unlockedTechs.push(tech.id);
+                        this.statusMsg = `RESEARCH COMPLETE: ${tech.name.toUpperCase()}`;
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

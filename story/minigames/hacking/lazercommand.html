@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAZER_COMMAND // DEFENSE_LINK</title>
+    <style>
+        body { margin: 0; background: #000; color: #fff; font-family: monospace; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        canvas { border: 2px solid #ef4444; background: #000; cursor: crosshair; }
+        .ui { margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="ui">THREATS_INTERCEPTED: <span id="score">0</span></div>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <div style="margin-top:10px; font-size:10px; color:#444">CLICK TO FIRE LASER // PROTECT THE SYSTEM CORE</div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+
+        let score = 0;
+        let threats = [];
+        let lasers = [];
+        let explosions = [];
+        let gameOver = false;
+
+        function spawnThreat() {
+            if (threats.length < 5 && !gameOver) {
+                threats.push({
+                    x: Math.random() * 600,
+                    y: -20,
+                    tx: Math.random() * 600,
+                    ty: 400,
+                    speed: 0.5 + Math.random() * 1
+                });
+            }
+        }
+
+        canvas.addEventListener('click', e => {
+            if (gameOver) return;
+            const rect = canvas.getBoundingClientRect();
+            lasers.push({
+                sx: 300, sy: 400,
+                ex: e.clientX - rect.left,
+                ey: e.clientY - rect.top,
+                life: 20
+            });
+        });
+
+        function update() {
+            if (gameOver) return;
+
+            threats.forEach((t, i) => {
+                const dx = t.tx - t.x, dy = t.ty - t.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                t.x += (dx/dist) * t.speed;
+                t.y += (dy/dist) * t.speed;
+
+                if (t.y > 380) gameOver = true;
+
+                // Check laser collision
+                lasers.forEach(l => {
+                    const ldx = l.ex - t.x, ldy = l.ey - t.y;
+                    if (Math.sqrt(ldx*ldx + ldy*ldy) < 20) {
+                        threats.splice(i, 1);
+                        score++;
+                        scoreEl.textContent = score;
+                        explosions.push({x: t.x, y: t.y, r: 0, maxR: 30});
+                    }
+                });
+            });
+
+            lasers.forEach((l, i) => {
+                l.life--;
+                if (l.life <= 0) lasers.splice(i, 1);
+            });
+
+            explosions.forEach((e, i) => {
+                e.r += 2;
+                if (e.r > e.maxR) explosions.splice(i, 1);
+            });
+
+            if (Math.random() < 0.02) spawnThreat();
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Core
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(280, 380, 40, 20);
+
+            // Threats
+            ctx.strokeStyle = '#ef4444';
+            threats.forEach(t => {
+                ctx.beginPath(); ctx.moveTo(t.x, t.y); ctx.lineTo(t.x + (t.tx-t.x)/10, t.y + (t.ty-t.y)/10); ctx.stroke();
+            });
+
+            // Lasers
+            ctx.strokeStyle = '#fff';
+            lasers.forEach(l => {
+                ctx.beginPath(); ctx.moveTo(l.sx, l.sy); ctx.lineTo(l.ex, l.ey); ctx.stroke();
+            });
+
+            // Explosions
+            ctx.strokeStyle = '#f59e0b';
+            explosions.forEach(e => {
+                ctx.beginPath(); ctx.arc(e.x, e.y, e.r, 0, Math.PI*2); ctx.stroke();
+            });
+
+            if (gameOver) {
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(0, 0, 600, 400);
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.fillText('SYSTEM_CORE_BREACHED', 300, 200);
+                ctx.fillText('CLICK TO RE-ARM', 300, 230);
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        canvas.addEventListener('click', () => {
+            if (gameOver) {
+                gameOver = false; score = 0; threats = []; lasers = [];
+                scoreEl.textContent = '0';
+            }
+        });
+
+        loop();
+    </script>
+</body>
+</html>

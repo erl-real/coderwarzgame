@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MICRO_CHESS // LOGIC_ENGINE</title>
+    <style>
+        body { margin: 0; background: #050505; color: #fff; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .board { display: grid; grid-template-columns: repeat(8, 40px); grid-template-rows: repeat(8, 40px); border: 2px solid #333; }
+        .cell { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
+        .cell.light { background: #222; }
+        .cell.dark { background: #111; }
+        .cell.selected { background: #3b82f6 !important; }
+        .ui { margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="ui" id="status">PLAYER_WHITE_TURN</div>
+    <div class="board" id="board"></div>
+    <div style="margin-top:20px; font-size:10px; color:#444">CLICK PIECE THEN TARGET SQUARE TO MOVE.</div>
+
+    <script>
+        const boardEl = document.getElementById('board');
+        let board = [];
+        let selected = null;
+        let turn = 'w';
+
+        const pieces = {
+            'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',
+            'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙'
+        };
+
+        function init() {
+            board = [
+                ['r','n','b','q','k','b','n','r'],
+                ['p','p','p','p','p','p','p','p'],
+                ['','','','','','','',''],
+                ['','','','','','','',''],
+                ['','','','','','','',''],
+                ['','','','','','','',''],
+                ['P','P','P','P','P','P','P','P'],
+                ['R','N','B','Q','K','B','N','R']
+            ];
+            render();
+        }
+
+        function render() {
+            boardEl.innerHTML = '';
+            for(let r=0; r<8; r++) {
+                for(let c=0; c<8; c++) {
+                    const el = document.createElement('div');
+                    el.className = `cell ${(r+c)%2 === 0 ? 'light' : 'dark'}`;
+                    if (selected && selected.r === r && selected.c === c) el.className += ' selected';
+                    el.textContent = pieces[board[r][c]] || '';
+                    el.onclick = () => handleClick(r, c);
+                    boardEl.appendChild(el);
+                }
+            }
+            document.getElementById('status').textContent = `TURN: ${turn === 'w' ? 'WHITE' : 'BLACK'}`;
+        }
+
+        function handleClick(r, c) {
+            const piece = board[r][c];
+            if (selected) {
+                // Move piece
+                board[r][c] = board[selected.r][selected.c];
+                board[selected.r][selected.c] = '';
+                selected = null;
+                turn = turn === 'w' ? 'b' : 'w';
+                render();
+            } else if (piece && ((turn === 'w' && piece === piece.toUpperCase()) || (turn === 'b' && piece === piece.toLowerCase()))) {
+                selected = {r, c};
+                render();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

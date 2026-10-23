@@ -1,0 +1,21 @@
+[
+  { "id": "html", "label": "Web Page", "rarityWeight": 80, "minMb": 0.001, "maxMb": 0.05, "minValue": 0.0001, "maxValue": 0.0099, "ext": ["html", "htm", "php", "js"] },
+  { "id": "text", "label": "Tiny Text", "rarityWeight": 75, "minMb": 0.001, "maxMb": 0.02, "minValue": 0.0001, "maxValue": 0.005, "ext": ["txt", "log", "conf"] },
+  { "id": "doc", "label": "Document", "rarityWeight": 60, "minMb": 0.1, "maxMb": 15, "minValue": 1, "maxValue": 50, "ext": ["doc", "docx", "pdf", "rtf"] },
+  { "id": "photo", "label": "Photo", "rarityWeight": 45, "minMb": 0.2, "maxMb": 18, "minValue": 25, "maxValue": 170, "ext": ["jpg", "png", "webp", "raw"] },
+  { "id": "audio", "label": "Music", "rarityWeight": 35, "minMb": 3, "maxMb": 45, "minValue": 45, "maxValue": 320, "ext": ["mp3", "wav", "flac", "ogg"] },
+  { "id": "video", "label": "Video", "rarityWeight": 25, "minMb": 8, "maxMb": 1500, "minValue": 120, "maxValue": 900, "ext": ["mp4", "mov", "mkv"] },
+  { "id": "archive", "label": "Archive", "rarityWeight": 20, "minMb": 5, "maxMb": 2000, "minValue": 80, "maxValue": 650, "ext": ["zip", "rar", "7z", "tar.gz"] },
+  { "id": "program", "label": "Program", "rarityWeight": 15, "minMb": 5, "maxMb": 300, "minValue": 220, "maxValue": 1800, "ext": ["exe", "msi", "appimg", "bin"] },
+  { "id": "game", "label": "Game", "rarityWeight": 10, "minMb": 200, "maxMb": 95000, "minValue": 450, "maxValue": 3500, "ext": ["iso", "pkg", "zip"] },
+  { "id": "system", "label": "System File", "rarityWeight": 8, "minMb": 60, "maxMb": 30000, "minValue": 850, "maxValue": 7000, "ext": ["img", "sys", "cfg", "fw"] },
+  { "id": "schema", "label": "Logic Schema", "rarityWeight": 6, "minMb": 0.05, "maxMb": 5, "minValue": 1200, "maxValue": 9500, "ext": ["json", "yaml", "xml", "proto"] },
+  { "id": "table", "label": "Data Table", "rarityWeight": 5, "minMb": 1, "maxMb": 500, "minValue": 2500, "maxValue": 15000, "ext": ["csv", "tsv", "xlsx"] },
+  { "id": "db", "label": "Database", "rarityWeight": 4, "minMb": 100, "maxMb": 500000, "minValue": 15000, "maxValue": 85000, "ext": ["db", "sqlite", "sql", "mdb"] },
+  { "id": "enc_p", "label": "Encrypted (Personal)", "rarityWeight": 3, "minMb": 1, "maxMb": 100, "minValue": 5000, "maxValue": 25000, "ext": ["key", "vault", "priv"] },
+  { "id": "enc_o", "label": "Encrypted (Org)", "rarityWeight": 2, "minMb": 50, "maxMb": 5000, "minValue": 45000, "maxValue": 150000, "ext": ["corp", "sec", "int"] },
+  { "id": "enc_g", "label": "Encrypted (Gov)", "rarityWeight": 1, "minMb": 500, "maxMb": 50000, "minValue": 250000, "maxValue": 1200000, "ext": ["gov", "top", "cls"] },
+  { "id": "spy", "label": "Spy Intelligence", "rarityWeight": 0.5, "minMb": 0.01, "maxMb": 10, "minValue": 500000, "maxValue": 5000000, "ext": ["intel", "msg", "raw"], "hidden": true },
+  { "id": "occult", "label": "Occult Signal", "rarityWeight": 0.2, "minMb": 0.001, "maxMb": 666, "minValue": 666666, "maxValue": 6666666, "ext": ["sig", "dark", "void"], "hidden": true },
+  { "id": "forbidden", "label": "Forbidden Unknown", "rarityWeight": 0.05, "minMb": 0.0001, "maxMb": 999999, "minValue": 9999999, "maxValue": 99999999, "ext": ["???", "null", "none"], "hidden": true }
+]

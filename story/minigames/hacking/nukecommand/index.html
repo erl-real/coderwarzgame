@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUKE COMMAND // STRATEGIC_BOMBER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+        body { font-family: 'JetBrains Mono', monospace; background: #020305; color: #fff; overflow: hidden; }
+        .win-dark { background: #0a0b0e; border: 1px solid rgba(255,255,255,0.1); color: #fff; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .radar-scope { width: 300px; height: 300px; border-radius: 50%; border: 2px solid #3b82f6; background: radial-gradient(circle, #001 0%, #000 100%); position: relative; overflow: hidden; }
+        .radar-scope::after { content: ''; position: absolute; width: 100%; height: 100%; top: 0; left: 0; background: conic-gradient(from 0deg, transparent 0deg, rgba(59, 130, 246, 0.1) 350deg, rgba(59, 130, 246, 0.2) 360deg); animation: rotate 4s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .crt::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); z-index: 50; background-size: 100% 2px, 3px 100%; pointer-events: none; }
+        .stat-glow { text-shadow: 0 0 10px currentColor; }
+    </style>
+</head>
+<body x-data="gameEngine()" x-init="init()" class="h-screen flex flex-col p-4 md:p-8 crt">
+
+    <!-- Header HUD -->
+    <div class="h-16 shrink-0 flex items-center justify-between px-6 win-dark border-b border-rose-500/20 mb-6 rounded-2xl bg-black/80 backdrop-blur-xl">
+        <div class="flex items-center gap-8">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500">
+                    <i data-lucide="bomb" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black italic tracking-tighter text-rose-500 uppercase">Nuke_Command</h1>
+                    <p class="text-[8px] text-white/30 uppercase tracking-[0.4em]">B-1 Strategic Incursion</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-10">
+                <div class="flex flex-col">
+                    <span class="text-[8px] uppercase font-black text-white/30">Target_Distance</span>
+                    <span class="text-sm font-bold text-blue-400 stat-glow" x-text="dist + ' nm'">0 nm</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[8px] uppercase font-black text-white/30">Fuel_Remaining</span>
+                    <span class="text-sm font-bold text-emerald-400 stat-glow" x-text="fuel + '%'">100%</span>
+                </div>
+            </div>
+        </div>
+
+        <button @click="nextCycle()" class="h-10 px-8 bg-rose-500 text-black font-black text-[10px] uppercase tracking-widest hover:bg-rose-400 transition-all active:scale-95">
+            EXECUTE_TURN
+        </button>
+    </div>
+
+    <!-- Main Game Area -->
+    <div class="flex-1 flex gap-6 overflow-hidden relative">
+        
+        <!-- Systems (Left) -->
+        <div class="w-72 shrink-0 flex flex-col gap-4 overflow-hidden">
+            <div class="flex-1 win-dark rounded-3xl p-6 flex flex-col gap-4 overflow-hidden bg-black/40">
+                <h3 class="text-[10px] font-black uppercase text-blue-400 tracking-widest italic border-b border-blue-500/20 pb-2">Avionics_Status</h3>
+                <div class="space-y-6">
+                    <template x-for="sys in systems">
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-[9px] font-black uppercase text-white/40">
+                                <span x-text="sys.name"></span>
+                                <span :class="sys.status > 50 ? 'text-emerald-400' : 'text-rose-500'" x-text="sys.status + '%'"></span>
+                            </div>
+                            <div class="h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-blue-500" :style="'width: ' + sys.status + '%'"></div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cockpit (Center) -->
+        <div class="flex-1 win-dark rounded-3xl p-8 flex flex-col items-center justify-center bg-black/40 relative border-rose-500/10 overflow-hidden">
+            <div class="radar-scope shadow-[0_0_50px_rgba(59,130,246,0.1)]">
+                <!-- Target blips -->
+                <div class="absolute w-2 h-2 bg-rose-500 rounded-full animate-ping" style="top: 40%; left: 60%"></div>
+            </div>
+
+            <!-- Ticker Overlay -->
+            <div class="absolute bottom-6 left-6 right-6 h-8 bg-black/60 rounded-lg border border-white/5 flex items-center px-4 overflow-hidden">
+                <div class="text-[9px] font-black text-rose-400/60 uppercase tracking-widest italic" x-text="tickerMsg">PENETRATING_ENEMY_AIRSPACE...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function gameEngine() {
+            return {
+                dist: 5000,
+                fuel: 100,
+                systems: [
+                    { name: 'NAVIGATION', status: 100 },
+                    { name: 'JAMMING', status: 100 },
+                    { name: 'WEAPON_LINK', status: 100 }
+                ],
+                tickerMsg: "SYSTEM READY.",
+
+                async init() {
+                    lucide.createIcons();
+                },
+
+                nextCycle() {
+                    const move = 200 + Math.floor(Math.random() * 300);
+                    this.dist = Math.max(0, this.dist - move);
+                    this.fuel -= 5;
+                    
+                    // Random damage
+                    if (Math.random() < 0.2) {
+                        const sys = this.systems[Math.floor(Math.random()*3)];
+                        sys.status -= 10;
+                        this.tickerMsg = `WARNING: ${sys.name} SYSTEM COMPROMISED.`;
+                    }
+
+                    if (this.dist <= 0) {
+                        alert("MISSION SUCCESS // PAYLOAD DELIVERED");
+                        location.reload();
+                    }
+                    if (this.fuel <= 0) {
+                        alert("MISSION FAILURE // OUT OF FUEL");
+                        location.reload();
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

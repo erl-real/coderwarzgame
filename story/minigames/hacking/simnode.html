@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIM_NODE // CITY_CONSTRUCTOR</title>
+    <style>
+        body { margin: 0; background: #050505; color: #fff; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .grid { display: grid; grid-template-columns: repeat(10, 40px); gap: 2px; background: #111; padding: 10px; }
+        .cell { width: 40px; height: 40px; background: #000; border: 1px solid #222; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 8px; }
+        .cell.road { background: #333; }
+        .cell.power { background: #f59e0b; color: #000; font-weight: bold; }
+        .cell.server { background: #3b82f6; color: #fff; font-weight: bold; }
+        .ui { margin-bottom: 10px; width: 420px; display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #3b82f6; }
+        .controls { margin-top: 20px; display: flex; gap: 10px; }
+        .btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; cursor: pointer; font-size: 10px; }
+        .btn.active { border-color: #3b82f6; color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="ui">
+        <span>CASH: $<span id="cash">1000</span></span>
+        <span>LOAD: <span id="load">0</span>%</span>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="controls">
+        <button class="btn active" id="btn-road" onclick="setTool('road')">ROAD ($10)</button>
+        <button class="btn" id="btn-power" onclick="setTool('power')">POWER ($50)</button>
+        <button class="btn" id="btn-server" onclick="setTool('server')">SERVER ($100)</button>
+    </div>
+
+    <script>
+        const gridEl = document.getElementById('grid');
+        let cash = 1000, tool = 'road';
+        let map = Array(100).fill(null).map((_, i) => ({ id: i, type: null }));
+
+        function setTool(t) {
+            tool = t;
+            document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + t).classList.add('active');
+        }
+
+        function init() {
+            gridEl.innerHTML = '';
+            map.forEach(cell => {
+                const el = document.createElement('div');
+                el.className = 'cell' + (cell.type ? ' ' + cell.type : '');
+                el.textContent = cell.type ? cell.type.toUpperCase().slice(0,1) : '';
+                el.onclick = () => build(cell.id);
+                gridEl.appendChild(el);
+            });
+            document.getElementById('cash').textContent = cash;
+        }
+
+        function build(id) {
+            const prices = { road: 10, power: 50, server: 100 };
+            if (cash >= prices[tool] && !map[id].type) {
+                cash -= prices[tool];
+                map[id].type = tool;
+                init();
+            }
+        }
+
+        setInterval(() => {
+            const servers = map.filter(c => c.type === 'server').length;
+            const power = map.filter(c => c.type === 'power').length;
+            cash += servers * 5;
+            document.getElementById('load').textContent = Math.min(100, Math.floor(Math.random() * 100));
+            init();
+        }, 2000);
+
+        init();
+    </script>
+</body>
+</html>

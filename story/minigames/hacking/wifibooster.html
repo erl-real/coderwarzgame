@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DODGEM // DATA_HIGHWAY</title>
+    <style>
+        body { margin: 0; background: #000; color: #fff; font-family: monospace; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        canvas { border: 2px solid #3b82f6; background: #050505; }
+        .ui { margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="ui">BANDWIDTH: <span id="score">0</span>GB/s</div>
+    <canvas id="gameCanvas" width="300" height="500"></canvas>
+    <div style="margin-top:10px; font-size:10px; color:#444">ARROWS TO STEER // DODGE TRAFFIC NODES</div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+
+        let score = 0;
+        let player = { x: 135, y: 400, w: 30, h: 50 };
+        let traffic = [];
+        let gameOver = false;
+        let speed = 5;
+
+        window.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') player.x -= 20;
+            if (e.key === 'ArrowRight') player.x += 20;
+            player.x = Math.max(50, Math.min(220, player.x));
+        });
+
+        function spawnTraffic() {
+            if (traffic.length < 4 && !gameOver) {
+                traffic.push({
+                    x: 50 + Math.floor(Math.random() * 4) * 45,
+                    y: -100,
+                    w: 30, h: 50,
+                    color: `hsl(${Math.random()*360}, 70%, 50%)`
+                });
+            }
+        }
+
+        function update() {
+            if (gameOver) return;
+
+            traffic.forEach((t, i) => {
+                t.y += speed;
+                if (t.y > 500) {
+                    traffic.splice(i, 1);
+                    score += 10;
+                    scoreEl.textContent = score;
+                    speed += 0.05;
+                }
+
+                if (player.x < t.x + t.w && player.x + player.w > t.x && player.y < t.y + t.h && player.y + player.h > t.y) {
+                    gameOver = true;
+                }
+            });
+
+            if (Math.random() < 0.02) spawnTraffic();
+        }
+
+        function draw() {
+            ctx.fillStyle = '#050505';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Road lines
+            ctx.strokeStyle = '#333';
+            ctx.setLineDash([20, 20]);
+            ctx.beginPath(); ctx.moveTo(100, 0); ctx.lineTo(100, 500); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(150, 0); ctx.lineTo(150, 500); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(200, 0); ctx.lineTo(200, 500); ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Player
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(player.x, player.y, player.w, player.h);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(player.x+5, player.y+5, 20, 10); // Windshield
+
+            // Traffic
+            traffic.forEach(t => {
+                ctx.fillStyle = t.color;
+                ctx.fillRect(t.x, t.y, t.w, t.h);
+            });
+
+            if (gameOver) {
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ef4444';
+                ctx.textAlign = 'center';
+                ctx.font = '20px monospace';
+                ctx.fillText('CRASH_DETECTED', 150, 250);
+                ctx.font = '10px monospace';
+                ctx.fillText('CLICK TO RE-ROUTE', 150, 280);
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        canvas.addEventListener('click', () => {
+            if (gameOver) {
+                gameOver = false; score = 0; speed = 5; traffic = [];
+                scoreEl.textContent = '0';
+            }
+        });
+
+        loop();
+    </script>
+</body>
+</html>

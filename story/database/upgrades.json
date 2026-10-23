@@ -1,0 +1,22 @@
+[
+  { "id": "cpu-budget", "title": "Celeron Lite 2.4", "type": "hardware", "price": "$150", "effect": { "cpu": "Celeron Lite 2.4 GHz", "storageSpeedMbps": 10, "cpuPower": 1.2 }, "description": "Low-end processor for basic tasks." },
+  { "id": "cpu-mid", "title": "i5-Nexus 3.8", "type": "hardware", "price": "$450", "effect": { "cpu": "i5-Nexus 3.8 GHz Quad-Core", "storageSpeedMbps": 25, "cpuPower": 3.5 }, "description": "Mid-range workhorse." },
+  { "id": "cpu-x2", "title": "HX-2 Processor", "type": "hardware", "price": "$2400", "effect": { "cpu": "HX-2 Octa-Core 4.1 GHz", "storageSpeedMbps": 50, "cpuPower": 8.2 }, "description": "Upgrades CPU and data bus speed." },
+  { "id": "cpu-beast", "title": "ThreadRipper Pro 6.0", "type": "hardware", "price": "$8500", "effect": { "cpu": "ThreadRipper Pro 6.0 GHz 64-Core", "storageSpeedMbps": 250, "cpuPower": 25.0 }, "description": "Massive parallel processing power." },
+  { "id": "cpu-quantum", "title": "Quantum Neural Chip", "type": "hardware", "price": "$45000", "effect": { "cpu": "Q-Neural Gen 4", "storageSpeedMbps": 1200, "cpuPower": 100.0 }, "description": "State of the art quantum computing unit." },
+  { "id": "ram-4gb", "title": "4GB DDR3 Module", "type": "hardware", "price": "$80", "effect": { "ramGb": 4 }, "description": "Legacy memory module." },
+  { "id": "ram-8gb", "title": "8GB DDR4 Module", "type": "hardware", "price": "$180", "effect": { "ramGb": 8 }, "description": "Standard system memory." },
+  { "id": "ram-16gb", "title": "16GB DDR5 Module", "type": "hardware", "price": "$450", "effect": { "ramGb": 16 }, "description": "Adds +16GB high-speed system memory." },
+  { "id": "ram-64gb", "title": "64GB Server RAM", "type": "hardware", "price": "$1800", "effect": { "ramGb": 64 }, "description": "Enterprise-grade high capacity RAM." },
+  { "id": "ram-256gb", "title": "256GB ECC Rack", "type": "hardware", "price": "$12000", "effect": { "ramGb": 256 }, "description": "Massive memory for extreme multitasking." },
+  { "id": "ssd-128gb", "title": "128GB SATA SSD", "type": "hardware", "price": "$120", "effect": { "storageGb": 128, "storageSpeedMbps": 80 }, "description": "Budget storage upgrade." },
+  { "id": "ssd-512gb", "title": "512GB NVMe SSD", "type": "hardware", "price": "$450", "effect": { "storageGb": 512, "storageSpeedMbps": 350 }, "description": "Adds +512GB faster storage." },
+  { "id": "ssd-2tb", "title": "2TB NVMe Gen5", "type": "hardware", "price": "$1400", "effect": { "storageGb": 2048, "storageSpeedMbps": 1200 }, "description": "Ultra-fast high capacity storage." },
+  { "id": "ssd-16tb", "title": "16TB NVMe Array", "type": "hardware", "price": "$9500", "effect": { "storageGb": 16384, "storageSpeedMbps": 4500 }, "description": "Massive storage for data hoarders." },
+  { "id": "gpu-budget", "title": "GTX 750 2GB", "type": "hardware", "price": "$250", "effect": { "gpu": "GTX 750 2GB" }, "description": "Entry-level graphics card." },
+  { "id": "gpu-rx", "title": "RX Shadow GPU", "type": "hardware", "price": "$1200", "effect": { "gpu": "RX Shadow 8GB" }, "description": "Better graphics and compute acceleration." },
+  { "id": "gpu-rtx", "title": "RTX 5090 32GB", "type": "hardware", "price": "$4500", "effect": { "gpu": "RTX 5090 32GB" }, "description": "Top-tier gaming and compute power." },
+  { "id": "gpu-h100", "title": "Nvidia H100 Tensor", "type": "hardware", "price": "$28000", "effect": { "gpu": "Nvidia H100 80GB" }, "description": "Industrial AI and compute powerhouse." },
+  { "id": "os-11", "title": "CUBE OS 1.1 Upgrade", "type": "software", "price": "$700", "effect": { "os": "CUBE OS 1.1.00" }, "description": "System software update with improved tooling." },
+  { "id": "os-pro", "title": "CUBE OS Enterprise", "type": "software", "price": "$2500", "effect": { "os": "CUBE OS Enterprise v4" }, "description": "Professional grade operating system." }
+]

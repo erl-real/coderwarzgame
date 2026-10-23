@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESPORTS_IDLE // TEAM_MANAGER</title>
+    <style>
+        body { margin: 0; background: #050505; color: #fff; font-family: 'JetBrains Mono', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .dashboard { width: 500px; background: #0a0a0a; border: 1px solid #3b82f6; border-radius: 12px; padding: 20px; box-shadow: 0 0 30px rgba(59, 130, 246, 0.1); }
+        .stat { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .val { color: #3b82f6; font-weight: bold; }
+        .upgrades { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .upgrade { background: #111; border: 1px solid #222; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; }
+        .upgrade:hover:not(.disabled) { border-color: #3b82f6; background: #1a1a1a; }
+        .upgrade.disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-main { width: 100%; padding: 20px; background: #3b82f6; border: none; border-radius: 8px; color: #fff; font-weight: 800; text-transform: uppercase; cursor: pointer; margin-bottom: 20px; }
+        .btn-main:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div style="font-size: 20px; font-weight: 800; margin-bottom: 20px; text-align: center; color: #3b82f6;">PRO_ESPORTS_MANAGER_v1.0</div>
+        
+        <div class="stat"><span>TEAM_FUNDS:</span> <span class="val">$<span id="cash">0</span></span></div>
+        <div class="stat"><span>TEAM_SKILL:</span> <span class="val" id="skill">10</span></div>
+        <div class="stat"><span>FANS:</span> <span class="val" id="fans">0</span></div>
+
+        <button class="btn-main" onclick="playMatch()">Run Scrimmage</button>
+
+        <div class="upgrades">
+            <div class="upgrade" id="upg1" onclick="buy(0)">
+                <div>
+                    <div style="font-size: 12px; font-weight: bold;">New Mice & Keyboards</div>
+                    <div style="font-size: 10px; color: #555;">+2 Skill per Match</div>
+                </div>
+                <div class="val" id="cost0">$50</div>
+            </div>
+            <div class="upgrade" id="upg2" onclick="buy(1)">
+                <div>
+                    <div style="font-size: 12px; font-weight: bold;">Gaming House</div>
+                    <div style="font-size: 10px; color: #555;">Passive Fan Growth</div>
+                </div>
+                <div class="val" id="cost1">$500</div>
+            </div>
+            <div class="upgrade" id="upg3" onclick="buy(2)">
+                <div>
+                    <div style="font-size: 12px; font-weight: bold;">Social Media Manager</div>
+                    <div style="font-size: 10px; color: #555;">2x Cash per Fan</div>
+                </div>
+                <div class="val" id="cost2">$2500</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cash = 0;
+        let skill = 10;
+        let fans = 0;
+        let upgrades = [
+            { cost: 50, owned: 0 },
+            { cost: 500, owned: 0 },
+            { cost: 2500, owned: 0 }
+        ];
+
+        function playMatch() {
+            const win = Math.random() * 100 < skill;
+            const reward = win ? (10 + fans * 0.5 * (upgrades[2].owned + 1)) : 2;
+            cash += reward;
+            skill += (upgrades[0].owned + 1);
+            if (win) fans += 5;
+            update();
+        }
+
+        function buy(idx) {
+            if (cash >= upgrades[idx].cost) {
+                cash -= upgrades[idx].cost;
+                upgrades[idx].owned++;
+                upgrades[idx].cost = Math.floor(upgrades[idx].cost * 1.5);
+                update();
+            }
+        }
+
+        function update() {
+            document.getElementById('cash').textContent = Math.floor(cash).toLocaleString();
+            document.getElementById('skill').textContent = skill;
+            document.getElementById('fans').textContent = fans;
+            upgrades.forEach((u, i) => {
+                document.getElementById(`cost${i}`).textContent = `$${u.cost.toLocaleString()}`;
+                document.getElementById(`upg${i+1}`).className = 'upgrade' + (cash < u.cost ? ' disabled' : '');
+            });
+        }
+
+        setInterval(() => {
+            if (upgrades[1].owned > 0) {
+                fans += upgrades[1].owned;
+                update();
+            }
+        }, 1000);
+
+        update();
+    </script>
+</body>
+</html>

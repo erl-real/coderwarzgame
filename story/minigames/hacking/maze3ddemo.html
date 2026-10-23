@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAZE-3D // RAYCAST_EXFIL</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        canvas { border: 2px solid #333; }
+        .ui { position: absolute; top: 20px; left: 20px; font-family: monospace; color: #0f0; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div class="ui">
+        <div>CORE_LINK: ACTIVE</div>
+        <div>POS_X: <span id="posX">0</span></div>
+        <div>POS_Y: <span id="posY">0</span></div>
+    </div>
+    <canvas id="gameCanvas" width="640" height="480"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const map = [
+            [1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,0,1],
+            [1,0,1,0,0,1,0,1],
+            [1,0,0,0,1,1,0,1],
+            [1,0,1,0,0,0,0,1],
+            [1,0,0,0,1,0,0,1],
+            [1,1,1,1,1,1,1,1],
+        ];
+
+        const player = { x: 1.5, y: 1.5, dir: 0, plane: {x: 0, y: 0.66} };
+        const keys = {};
+
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        function update() {
+            const moveSpeed = 0.05;
+            const rotSpeed = 0.03;
+
+            if (keys['ArrowUp'] || keys['KeyW']) {
+                const nx = player.x + Math.cos(player.dir) * moveSpeed;
+                const ny = player.y + Math.sin(player.dir) * moveSpeed;
+                if (map[Math.floor(ny)][Math.floor(nx)] === 0) { player.x = nx; player.y = ny; }
+            }
+            if (keys['ArrowDown'] || keys['KeyS']) {
+                const nx = player.x - Math.cos(player.dir) * moveSpeed;
+                const ny = player.y - Math.sin(player.dir) * moveSpeed;
+                if (map[Math.floor(ny)][Math.floor(nx)] === 0) { player.x = nx; player.y = ny; }
+            }
+            if (keys['ArrowLeft'] || keys['KeyA']) player.dir -= rotSpeed;
+            if (keys['ArrowRight'] || keys['KeyD']) player.dir += rotSpeed;
+
+            document.getElementById('posX').textContent = player.x.toFixed(2);
+            document.getElementById('posY').textContent = player.y.toFixed(2);
+        }
+
+        function draw() {
+            // Ceiling and Floor
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height/2);
+            ctx.fillStyle = '#222';
+            ctx.fillRect(0, canvas.height/2, canvas.width, canvas.height/2);
+
+            for (let x = 0; i = 0, x < canvas.width; x++) {
+                const cameraX = 2 * x / canvas.width - 1;
+                const rayDirX = Math.cos(player.dir) + (Math.cos(player.dir + Math.PI/2) * cameraX * 0.66);
+                const rayDirY = Math.sin(player.dir) + (Math.sin(player.dir + Math.PI/2) * cameraX * 0.66);
+
+                let mapX = Math.floor(player.x);
+                let mapY = Math.floor(player.y);
+
+                const deltaDistX = Math.abs(1 / rayDirX);
+                const deltaDistY = Math.abs(1 / rayDirY);
+
+                let stepX, stepY, sideDistX, sideDistY;
+
+                if (rayDirX < 0) { stepX = -1; sideDistX = (player.x - mapX) * deltaDistX; }
+                else { stepX = 1; sideDistX = (mapX + 1.0 - player.x) * deltaDistX; }
+                if (rayDirY < 0) { stepY = -1; sideDistY = (player.y - mapY) * deltaDistY; }
+                else { stepY = 1; sideDistY = (mapY + 1.0 - player.y) * deltaDistY; }
+
+                let hit = 0, side;
+                while (hit === 0) {
+                    if (sideDistX < sideDistY) { sideDistX += deltaDistX; mapX += stepX; side = 0; }
+                    else { sideDistY += deltaDistY; mapY += stepY; side = 1; }
+                    if (map[mapY][mapX] > 0) hit = 1;
+                }
+
+                let perpWallDist;
+                if (side === 0) perpWallDist = (mapX - player.x + (1 - stepX) / 2) / rayDirX;
+                else perpWallDist = (mapY - player.y + (1 - stepY) / 2) / rayDirY;
+
+                const lineHeight = Math.floor(canvas.height / perpWallDist);
+                const drawStart = -lineHeight / 2 + canvas.height / 2;
+                
+                const colorVal = Math.min(255, 200 / (perpWallDist * 0.5));
+                ctx.strokeStyle = side === 1 ? `rgb(0, ${colorVal}, 0)` : `rgb(0, ${colorVal*0.7}, 0)`;
+                ctx.beginPath();
+                ctx.moveTo(x, drawStart);
+                ctx.lineTo(x, drawStart + lineHeight);
+                ctx.stroke();
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+</body>
+</html>

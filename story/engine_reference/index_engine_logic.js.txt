@@ -1,0 +1,75 @@
+/**
+ * Engine Logic and State Management extracted from index.html
+ */
+
+const { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } = React;
+
+// 🧩 Modular JavaScript classes
+class GameEntity {
+  constructor(data = {}) {
+    Object.assign(this, data);
+    if (!this.id) this.id = uuid();
+  }
+}
+
+class Server extends GameEntity {
+  constructor(id, name, stats = {}) {
+    super({ id, name, stats });
+    this.cpu = stats.cpu || 100;
+    this.storage = stats.storage || 500;
+    this.tasks = [];
+    this.status = "online";
+  }
+
+  tick(delta) {
+    if (this.status === "online") {
+      // Logic for background processing
+    }
+  }
+}
+
+// ⏱️ A game loop with tick/update cycles
+class GameLoop {
+  constructor(callback) {
+    this.callback = callback;
+    this.last = performance.now();
+    this.active = false;
+  }
+
+  start() {
+    this.active = true;
+    this.loop(performance.now());
+  }
+
+  stop() {
+    this.active = false;
+  }
+
+  loop = (now) => {
+    if (!this.active) return;
+    const delta = (now - this.last) / 1000;
+    this.last = now;
+    this.callback(delta);
+    requestAnimationFrame(this.loop);
+  }
+}
+
+// 🧠 The Kernel (Reducer)
+function reducer(state, action) {
+  switch (action.type) {
+    case 'WINDOW_OPEN':
+      // Handle window opening logic
+      return { ...state };
+    case 'WINDOW_CLOSE':
+      // Handle window closing logic
+      return { ...state };
+    case 'PC_UPGRADE':
+      // Handle hardware upgrade logic
+      return { ...state };
+    case 'ECONOMY_TICK':
+      // Handle market and income updates
+      return { ...state };
+    default:
+      return state;
+  }
+}

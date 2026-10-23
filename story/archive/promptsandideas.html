@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prompts and Ideas</title>
+</head>
+<body>
+    <h1>Prompts and Ideas</h1>
+
+    <pre>
+now: You are a UI skinning engineer.
+
+Your task is to transform the visual styling of the existing desktop-style game UI to closely mimic the Alienware Windows XP skin aesthetic shown in the reference images.
+
+You are ONLY allowed to modify styling and visual presentation.
+
+You are NOT allowed to:
+
+Change layout structure
+
+Move components
+
+Rename classes, IDs, or variables
+
+Refactor logic
+
+Change file structure
+
+Alter app registration systems
+
+Modify window manager logic
+
+Change z-index stacking logic
+
+Adjust positioning unless absolutely required for visual alignment
+
+Remove any existing functionality
+
+You must preserve:
+
+All component hierarchy
+
+All window behavior
+
+All drag/resize systems
+
+All taskbar logic
+
+All application mounting systems
+
+This is a VISUAL RESKIN ONLY.
+
+🎨 TARGET AESTHETIC SPECIFICATION
+
+Match the following design characteristics as closely as possible:
+
+1. Color Palette
+
+Primary: Deep black (#000000 – #0a0a0a)
+
+Secondary: Dark graphite (#111111 – #1c1c1c)
+
+Accent 1: Electric neon blue (#00bfff / #0099ff)
+
+Accent 2: Cyber red (#ff1a1a) for alerts
+
+Subtle chrome / silver highlights
+
+Blue LED glow highlights
+
+No pastel tones.
+No soft flat UI.
+No modern glassmorphism blur unless subtle and sharp.
+
+2. Window Styling
+
+All windows must:
+
+Have dark metallic gradient backgrounds
+
+Use sharp bevel edges
+
+Include subtle inner shadow
+
+Have chrome-like borders
+
+Include blue LED glow accents on active window
+
+Add slight outer glow on focused window
+
+Titlebars:
+
+Dark gradient (black → dark gray)
+
+Glowing blue active state
+
+Minimalistic futuristic buttons (not modern macOS style)
+
+Buttons should feel mechanical
+
+3. Taskbar
+
+Glossy black metallic texture
+
+Blue LED highlight line
+
+High contrast icons
+
+Slight reflection effect
+
+Active app glow
+
+No flat design.
+No rounded bubbly mac style.
+
+4. Desktop Background
+
+Dark space / carbon fiber / brushed metal
+
+Subtle radial lighting
+
+Optional alien emblem watermark
+
+Subtle wave lighting
+
+5. Icons
+
+Metallic
+
+Chrome / gunmetal textures
+
+Blue neon accent lines
+
+Slight glow
+
+Not flat SVG style
+
+6. Media Player / Widgets
+
+Futuristic hardware aesthetic
+
+Circular HUD-like elements
+
+LED meters
+
+Equalizer bars in red or blue
+
+Glass overlay panels
+
+Hard-edged sci-fi panels
+
+7. Shadows & Lighting
+
+Strong inner shadows
+
+LED edge glows
+
+Light bloom on active components
+
+Subtle specular highlights
+
+Avoid:
+
+Soft material UI
+
+Minimalist modern web aesthetic
+
+Rounded mobile-style UI
+
+🔧 IMPLEMENTATION RULES
+
+You must:
+
+Override styles using the existing class system
+
+Add new CSS variables only if needed
+
+Add a theme layer file if architecture supports it
+
+Avoid inline styling unless already used
+
+Preserve spacing system
+
+If necessary, create:
+
+A single theme override stylesheet
+
+A theme token map
+
+A glow utility class
+
+Do not modify functional JS.
+
+🧠 BEFORE OUTPUTTING CODE
+
+State that you are only modifying visual styles.
+
+Confirm no layout or structural logic is changed.
+
+Then output only the CSS / styling modifications required.
+
+No explanations beyond that.
+
+💣 OPTIONAL: ULTRA STRICT MODE
+
+If your builder tends to “modernize” things, append this:
+
+Do NOT modernize the UI.
+Do NOT simplify the design.
+Do NOT flatten gradients.
+The aesthetic must feel 2006–2010 high-end gaming PC skin.
+Slightly overdesigned is acceptable. Minimalism is not.
+    </pre>
+</body>
+</html>

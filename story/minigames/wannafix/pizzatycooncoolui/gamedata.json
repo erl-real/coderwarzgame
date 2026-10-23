@@ -1,0 +1,25 @@
+{
+  "ingredients": [
+    { "id": "dough", "name": "Standard Dough", "type": "base", "price": 0.50, "quality": 10 },
+    { "id": "tomato_sauce", "name": "Tomato Sauce", "type": "sauce", "price": 0.20, "quality": 10 },
+    { "id": "mozzarella", "name": "Mozzarella", "type": "cheese", "price": 0.80, "quality": 15 },
+    { "id": "pepperoni", "name": "Pepperoni", "type": "meat", "price": 1.20, "quality": 20 },
+    { "id": "mushrooms", "name": "Mushrooms", "type": "veggie", "price": 0.60, "quality": 12 },
+    { "id": "onions", "name": "Onions", "type": "veggie", "price": 0.30, "quality": 8 },
+    { "id": "ham", "name": "Ham", "type": "meat", "price": 1.10, "quality": 18 },
+    { "id": "pineapple", "name": "Pineapple", "type": "fruit", "price": 0.90, "quality": 5 },
+    { "id": "anchovies", "name": "Anchovies", "type": "fish", "price": 1.50, "quality": 25 },
+    { "id": "basil", "name": "Basil", "type": "herb", "price": 0.10, "quality": 10 }
+  ],
+  "cities": [
+    { "id": "rome", "name": "Rome", "pref": ["basil", "mozzarella"], "hate": ["pineapple"], "population": 2800000, "rent_mult": 1.2 },
+    { "id": "london", "name": "London", "pref": ["ham", "onions"], "hate": ["anchovies"], "population": 8900000, "rent_mult": 1.5 },
+    { "id": "berlin", "name": "Berlin", "pref": ["mushrooms", "pepperoni"], "hate": [], "population": 3700000, "rent_mult": 1.0 },
+    { "id": "nyc", "name": "New York", "pref": ["pepperoni", "mozzarella"], "hate": [], "population": 8400000, "rent_mult": 2.0 }
+  ],
+  "syndicate_missions": [
+    { "id": 1, "title": "The Flour Heist", "desc": "Intercept a competitor's shipment. High risk, high reward.", "reward": 5000, "risk": 40 },
+    { "id": 2, "title": "Protection Racket", "desc": "Ensure local businesses 'appreciate' your presence.", "reward": 2000, "risk": 20 },
+    { "id": 3, "title": "Pizza Sabotage", "desc": "Slip some 'special' ingredients into the rival's kitchen.", "reward": 8000, "risk": 65 }
+  ]
+}

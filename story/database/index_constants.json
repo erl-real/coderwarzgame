@@ -1,0 +1,41 @@
+{
+  "WIFI_SPEEDS_MBPS": {
+    "my wifi 6C": 240
+  },
+  "GOVERNMENT_CURRENCIES": [
+    { "code": "USD", "label": "US Dollar", "rate": 1, "symbol": "$" },
+    { "code": "EUR", "label": "Euro", "rate": 1.08, "symbol": "€" },
+    { "code": "JPY", "label": "Japanese Yen", "rate": 0.0067, "symbol": "¥" },
+    { "code": "GBP", "label": "British Pound", "rate": 1.27, "symbol": "£" },
+    { "code": "AUD", "label": "Australian Dollar", "rate": 0.66, "symbol": "A$" }
+  ],
+  "CRYPTO_COINS": [
+    { "code": "BTC", "label": "Bitcoin", "rate": 62000 },
+    { "code": "ETH", "label": "Ethereum", "rate": 3300 },
+    { "code": "XMR", "label": "Monero", "rate": 145 },
+    { "code": "SOL", "label": "Solana", "rate": 110 },
+    { "code": "ADA", "label": "Cardano", "rate": 0.62 },
+    { "code": "DOGE", "label": "Dogecoin", "rate": 0.19 }
+  ],
+  "MARKET_BRANDS": [
+    { "id": "nodex", "label": "Nodex Systems", "sector": "Infrastructure", "basePrice": 450 },
+    { "id": "cybershield", "label": "CyberShield Inc", "sector": "Security", "basePrice": 820 },
+    { "id": "quantum", "label": "Quantum Dynamics", "sector": "Compute", "basePrice": 12500 },
+    { "id": "voltmotors", "label": "Volt Motors", "sector": "Automotive", "basePrice": 1200 },
+    { "id": "aerodrone", "label": "AeroDrone", "sector": "Robotics", "basePrice": 2400 },
+    { "id": "biocore", "label": "BioCore Labs", "sector": "Healthcare", "basePrice": 3100 },
+    { "id": "starrelay", "label": "StarRelay", "sector": "Satellite", "basePrice": 15000 },
+    { "id": "nanolink", "label": "NanoLink", "sector": "Telecom", "basePrice": 650 },
+    { "id": "voidsoft", "label": "Void Software", "sector": "Software", "basePrice": 150 }
+  ],
+  "MAP_DOT_CALIBRATION": {
+    "xScale": 0.985,
+    "yScale": 0.94,
+    "xOffset": 0.2,
+    "yOffset": 2.6
+  },
+  "ORG_TYPES": {
+    "LEGAL": ["Cafe", "Tech Startup", "Retail Shop", "Warehouse", "Luxury Boutique"],
+    "UNDERWORLD": ["Hacker Collective", "Cyber Gang", "Data Brokers", "Dark Market Cell"]
+  }
+}

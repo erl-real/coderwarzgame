@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BARRIER // DODGE_LINK</title>
+    <style>
+        body { margin: 0; background: #000; color: #fff; font-family: monospace; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        canvas { border: 1px solid #333; }
+        .ui { position: absolute; top: 20px; left: 20px; color: #fff; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div class="ui">
+        <div>SCORE: <span id="score">0</span></div>
+    </div>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+
+        let score = 0;
+        let player = { x: 200, y: 550, w: 20, h: 20 };
+        let barriers = [];
+        let gameOver = false;
+        let speed = 3;
+
+        window.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            player.x = e.clientX - rect.left - player.w/2;
+            player.x = Math.max(0, Math.min(canvas.width - player.w, player.x));
+        });
+
+        function spawnBarrier() {
+            if (barriers.length < 5 && !gameOver) {
+                const w = 50 + Math.random() * 100;
+                barriers.push({
+                    x: Math.random() * (canvas.width - w),
+                    y: -20,
+                    w, h: 20
+                });
+            }
+        }
+
+        function update() {
+            if (gameOver) return;
+
+            barriers.forEach((b, i) => {
+                b.y += speed;
+                if (b.y > canvas.height) {
+                    barriers.splice(i, 1);
+                    score++;
+                    scoreEl.textContent = score;
+                    speed += 0.1;
+                }
+
+                if (player.x < b.x + b.w && player.x + player.w > b.x && player.y < b.y + b.h && player.y + player.h > b.y) {
+                    gameOver = true;
+                }
+            });
+
+            if (Math.random() < 0.02) spawnBarrier();
+        }
+
+        function draw() {
+            ctx.fillStyle = '#050505';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(player.x, player.y, player.w, player.h);
+
+            ctx.fillStyle = '#ef4444';
+            barriers.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+
+            if (gameOver) {
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.fillText('LINK_BROKEN', 200, 300);
+                ctx.fillText('CLICK TO RE-SYNC', 200, 330);
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        canvas.addEventListener('click', () => {
+            if (gameOver) {
+                gameOver = false; score = 0; speed = 3; barriers = [];
+                scoreEl.textContent = '0';
+            }
+        });
+
+        loop();
+    </script>
+</body>
+</html>

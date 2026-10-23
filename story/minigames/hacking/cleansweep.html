@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLEAN_SWEEP // SECTOR_PURGE</title>
+    <style>
+        body { margin: 0; background: #050505; color: #10b981; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        canvas { border: 2px solid #10b981; cursor: none; }
+        .ui { margin-bottom: 10px; font-size: 14px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="ui">PURGE_PROGRESS: <span id="percent">0</span>%</div>
+    <canvas id="gameCanvas" width="500" height="500"></canvas>
+    <div style="margin-top:10px; font-size:10px; color:#444">MOVE CURSOR TO PURGE CORRUPTED SECTORS</div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const percentEl = document.getElementById('percent');
+
+        let particles = [];
+        let cleaned = 0;
+        let total = 2500; // 50x50 grid
+
+        // Create "dirt" particles
+        const grid = 10;
+        const rows = canvas.height / grid;
+        const cols = canvas.width / grid;
+        let map = Array(rows).fill().map(() => Array(cols).fill(true));
+
+        function draw() {
+            ctx.fillStyle = '#050505';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            cleaned = 0;
+            for(let r=0; r<rows; r++) {
+                for(let c=0; c<cols; c++) {
+                    if (map[r][c]) {
+                        ctx.fillStyle = `rgba(16, 185, 129, ${0.2 + Math.random()*0.3})`;
+                        ctx.fillRect(c*grid, r*grid, grid-1, grid-1);
+                    } else {
+                        cleaned++;
+                    }
+                }
+            }
+
+            const p = Math.floor((cleaned / (rows*cols)) * 100);
+            percentEl.textContent = p;
+
+            if (p >= 100) {
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(0,0,canvas.width, canvas.height);
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.font = '20px Courier New';
+                ctx.fillText('SECTOR_PURGED', 250, 250);
+                setTimeout(() => location.reload(), 2000);
+            }
+        }
+
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+
+            const radius = 30;
+            for(let r=0; r<rows; r++) {
+                for(let c=0; c<cols; c++) {
+                    const dx = (c*grid + grid/2) - mx;
+                    const dy = (r*grid + grid/2) - my;
+                    if (Math.sqrt(dx*dx + dy*dy) < radius) {
+                        map[r][c] = false;
+                    }
+                }
+            }
+            draw();
+        });
+
+        draw();
+    </script>
+</body>
+</html>

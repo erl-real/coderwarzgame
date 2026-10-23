@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept Basics - Text Trading Game</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; color: #00ff41; font-family: 'Courier New', monospace; font-size: 14px; padding: 20px; }
+#game { max-width: 700px; margin: 0 auto; }
+.header { border: 1px solid #00ff41; padding: 10px; margin-bottom: 10px; text-align: center; }
+.stats { display: flex; justify-content: space-between; border: 1px solid #00ff41; padding: 10px; margin-bottom: 10px; }
+.stat { text-align: center; }
+.stat-label { color: #00aa2a; font-size: 10px; }
+.stat-value { color: #00ff41; font-size: 16px; font-weight: bold; }
+.location-bar { background: #111; border: 1px solid #00ff41; padding: 10px; margin-bottom: 10px; text-align: center; }
+.market { border: 1px solid #00ff41; margin-bottom: 10px; }
+.market-header { background: #111; padding: 8px; border-bottom: 1px solid #00ff41; }
+.market-row { display: flex; padding: 8px; border-bottom: 1px solid #003300; }
+.market-row:hover { background: #0a1a0a; }
+.item-name { flex: 2; }
+.item-price { flex: 1; text-align: right; }
+.item-owned { flex: 1; text-align: right; color: #ffaa00; }
+.item-actions { flex: 1; text-align: right; }
+.item-actions button { background: none; border: 1px solid #00ff41; color: #00ff41; padding: 2px 8px; cursor: pointer; font-family: inherit; font-size: 12px; }
+.item-actions button:hover { background: #00ff41; color: #000; }
+.item-actions button.sell { border-color: #ff4444; color: #ff4444; }
+.item-actions button.sell:hover { background: #ff4444; color: #000; }
+.travel { border: 1px solid #00ff41; padding: 10px; margin-bottom: 10px; }
+.travel-title { margin-bottom: 8px; color: #00aa2a; }
+.travel-btn { background: none; border: 1px solid #00ff41; color: #00ff41; padding: 5px 12px; margin: 2px; cursor: pointer; font-family: inherit; }
+.travel-btn:hover { background: #00ff41; color: #000; }
+.travel-btn.current { background: #00ff41; color: #000; }
+.log { border: 1px solid #00ff41; padding: 10px; max-height: 150px; overflow-y: auto; margin-bottom: 10px; display: none; position: fixed; top: 10px; left: 10px; width: 350px; max-height: 400px; z-index: 100; background: #0a0a0a; }
+.log.open { display: block; }
+.log-title { color: #00aa2a; margin-bottom: 5px; display: flex; justify-content: space-between; }
+.log-title span { cursor: pointer; color: #ff4444; }
+.log-entry { color: #00882a; font-size: 12px; }
+.log-entry:last-child { color: #00ff41; }
+.log-icon { position: fixed; top: 10px; left: 10px; width: 30px; height: 30px; background: #0a0a0a; border: 1px solid #00ff41; color: #00ff41; cursor: pointer; font-family: inherit; font-size: 16px; display: flex; align-items: center; justify-content: center; z-index: 101; }
+.log-icon:hover { background: #00ff41; color: #000; }
+
+.day-counter { color: #ffaa00; }
+.tabs { display: flex; border: 1px solid #00ff41; border-bottom: none; margin-bottom: 10px; }
+.tab { flex: 1; padding: 8px; text-align: center; background: #0a0a0a; border: 1px solid #00ff41; border-right: none; cursor: pointer; color: #00aa2a; font-family: inherit; }
+.tab:last-child { border-right: 1px solid #00ff41; }
+.tab.active { background: #00ff41; color: #000; font-weight: bold; }
+.tab:hover { background: #111; }
+.tab.active:hover { background: #00ff41; }
+.tab-content { display: none; border: 1px solid #00ff41; padding: 15px; margin-bottom: 10px; min-height: 200px; }
+.tab-content.active { display: block; }
+.tab-content h3 { color: #00ff41; margin-bottom: 10px; }
+.tab-content p { color: #00aa2a; }
+.scrape-disk { border: 1px solid #00ff41; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.disk-bar { flex: 1; height: 16px; background: #111; border: 1px solid #003300; margin: 0 10px; position: relative; }
+.disk-fill { height: 100%; background: #00ff41; transition: width 0.3s; }
+.disk-label { position: absolute; width: 100%; text-align: center; font-size: 11px; line-height: 16px; color: #000; font-weight: bold; }
+.scrape-files { border: 1px solid #00ff41; margin-bottom: 10px; }
+.scrape-row { display: flex; padding: 8px; border-bottom: 1px solid #003300; align-items: center; }
+.scrape-row:hover { background: #0a1a0a; }
+.file-name { flex: 2; }
+.file-info { flex: 1; text-align: right; color: #00aa2a; font-size: 12px; }
+.file-dl { flex: 1; text-align: right; }
+.file-dl button { background: none; border: 1px solid #00ff41; color: #00ff41; padding: 2px 10px; cursor: pointer; font-family: inherit; font-size: 12px; }
+.file-dl button:hover { background: #00ff41; color: #000; }
+.file-dl button:disabled { border-color: #333; color: #333; cursor: default; }
+.file-dl button:disabled:hover { background: none; color: #333; }
+.dl-progress { border: 1px solid #00ff41; padding: 10px; margin-bottom: 10px; display: none; }
+.dl-progress.active { display: block; }
+.dl-bar { height: 20px; background: #111; border: 1px solid #003300; position: relative; }
+.dl-fill { height: 100%; background: #00ff41; width: 0%; transition: width 0.1s linear; }
+.dl-text { text-align: center; margin-top: 5px; color: #00aa2a; font-size: 12px; }
+.scrape-stash { border: 1px solid #00ff41; margin-bottom: 10px; }
+.stash-header { background: #111; padding: 8px; border-bottom: 1px solid #00ff41; display: flex; justify-content: space-between; }
+.stash-row { display: flex; padding: 6px 8px; border-bottom: 1px solid #003300; font-size: 12px; }
+.stash-row:last-child { border-bottom: none; }
+.sell-btn { background: none; border: 1px solid #ff4444; color: #ff4444; padding: 1px 6px; cursor: pointer; font-family: inherit; font-size: 11px; margin-left: 8px; }
+.sell-btn:hover { background: #ff4444; color: #000; }
+.store-mode { display: flex; border: 1px solid #00ff41; margin-bottom: 10px; }
+.store-mode-btn { flex: 1; padding: 8px; text-align: center; background: #0a0a0a; border: none; border-right: 1px solid #00ff41; cursor: pointer; color: #00aa2a; font-family: inherit; font-size: 13px; }
+.store-mode-btn:last-child { border-right: none; }
+.store-mode-btn.active { background: #00ff41; color: #000; font-weight: bold; }
+.store-mode-btn:hover { background: #111; }
+.store-mode-btn.active:hover { background: #00ff41; }
+.store-buy-list { border: 1px solid #00ff41; }
+.store-sell-list { border: 1px solid #00ff41; }
+.store-empty { padding: 15px; color: #003300; text-align: center; }
+.store-buy-item { display: flex; padding: 8px; border-bottom: 1px solid #003300; align-items: center; }
+.store-buy-item:hover { background: #0a1a0a; }
+.store-buy-name { flex: 2; }
+.store-buy-desc { flex: 2; color: #00aa2a; font-size: 11px; }
+.store-buy-price { flex: 1; text-align: right; color: #ffaa00; }
+.store-buy-btn { flex: 1; text-align: right; }
+.store-buy-btn button { background: none; border: 1px solid #00ff41; color: #00ff41; padding: 2px 10px; cursor: pointer; font-family: inherit; font-size: 12px; }
+.store-buy-btn button:hover { background: #00ff41; color: #000; }
+.store-buy-btn button:disabled { border-color: #333; color: #333; cursor: default; }
+.store-buy-btn button:disabled:hover { background: none; color: #333; }
+.store-sell-item { display: flex; padding: 8px; border-bottom: 1px solid #003300; align-items: center; }
+.store-sell-item:hover { background: #0a1a0a; }
+.store-sell-name { flex: 2; }
+.store-sell-size { flex: 1; text-align: right; color: #00aa2a; font-size: 12px; }
+.store-sell-price { flex: 1; text-align: right; color: #ffaa00; }
+.store-sell-btn { flex: 1; text-align: right; }
+.store-sell-btn button { background: none; border: 1px solid #ff4444; color: #ff4444; padding: 2px 10px; cursor: pointer; font-family: inherit; font-size: 12px; }
+.store-sell-btn button:hover { background: #ff4444; color: #000; }
+.crew-health { display: flex; justify-content: space-between; border: 1px solid #00ff41; padding: 8px; margin-bottom: 10px; }
+.crew-health-bar { flex: 1; height: 14px; background: #111; border: 1px solid #003300; margin: 0 10px; position: relative; }
+.crew-health-fill { height: 100%; background: #ff4444; transition: width 0.3s; }
+.crew-health-label { position: absolute; width: 100%; text-align: center; font-size: 10px; line-height: 14px; color: #fff; font-weight: bold; }
+.crew-list { border: 1px solid #00ff41; margin-bottom: 10px; }
+.crew-row { display: flex; padding: 10px; border-bottom: 1px solid #003300; align-items: center; cursor: pointer; }
+.crew-row:hover { background: #0a1a0a; }
+.crew-row.selected { background: #001a00; border-left: 3px solid #00ff41; }
+.crew-row.dead { opacity: 0.3; cursor: default; }
+.crew-name { flex: 2; }
+.crew-level { flex: 1; text-align: center; color: #00aa2a; font-size: 12px; }
+    crew-hp { flex: 1; text-align: right; color: #ff4444; font-size: 12px; }
+.crew-actions { display: none; border: 1px solid #00ff41; padding: 10px; margin-bottom: 10px; }
+.crew-actions.active { display: block; }
+.crew-actions-title { color: #00aa2a; margin-bottom: 8px; }
+.crew-action-btns { display: flex; gap: 8px; }
+.crew-action-btn { flex: 1; padding: 10px; background: none; border: 1px solid #00ff41; color: #00ff41; cursor: pointer; font-family: inherit; font-size: 13px; text-align: center; }
+.crew-action-btn:hover { background: #00ff41; color: #000; }
+.crew-action-btn.hack { border-color: #00aaff; color: #00aaff; }
+.crew-action-btn.hack:hover { background: #00aaff; color: #000; }
+.crew-action-btn.steal { border-color: #ffaa00; color: #ffaa00; }
+.crew-action-btn.steal:hover { background: #ffaa00; color: #000; }
+.crew-action-btn.fight { border-color: #ff4444; color: #ff4444; }
+.crew-action-btn.fight:hover { background: #ff4444; color: #000; }
+.crew-result { margin-top: 10px; padding: 8px; border: 1px solid #003300; color: #00aa2a; font-size: 12px; display: none; }
+.crew-result.active { display: block; }
+</style>
+</head>
+<body>
+<div id="game">
+  <div class="header">CODERWARZ - CONCEPT BASICS</div>
+  <div class="stats">
+    <div class="stat"><div class="stat-label">CASH</div><div class="stat-value" id="cash">$2000</div></div>
+    <div class="stat"><div class="stat-label">BANK</div><div class="stat-value" id="bank">$0</div></div>
+    <div class="stat"><div class="stat-label">DEBT</div><div class="stat-value" id="debt">$5000</div></div>
+    <div class="stat"><div class="stat-label">BAG</div><div class="stat-value" id="bag">0/100</div></div>
+    <div class="stat"><div class="stat-label">DAY</div><div class="stat-value day-counter" id="day">1/30</div></div>
+    <div class="stat"><div class="stat-label">PC HP</div><div class="stat-value" id="pc-hp">100</div></div>
+    <div class="stat"><div class="stat-label">PLAYER HP</div><div class="stat-value" id="player-hp">100</div></div>
+  </div>
+  <div class="location-bar">LOCATION: <span id="location">Austin</span></div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('trade')">TRADE</div>
+    <div class="tab" onclick="switchTab('store')">STORE</div>
+    <div class="tab" onclick="switchTab('crew')">CREW</div>
+    <div class="tab" onclick="switchTab('scrape')">SCRAPE</div>
+  </div>
+  <div id="tab-trade" class="tab-content active">
+  <div class="market">
+    <div class="market-header">
+      <div class="market-row">
+        <div class="item-name">ITEM</div>
+        <div class="item-price">PRICE</div>
+        <div class="item-owned">OWNED</div>
+        <div class="item-actions">BUY/SELL</div>
+      </div>
+    </div>
+    <div id="market-list"></div>
+  </div>
+  <div class="travel">
+    <div class="travel-title">TRAVEL (costs 1 day)</div>
+    <div id="travel-btns"></div>
+  </div>
+  </div>
+  <div id="tab-store" class="tab-content">
+    <div class="store-mode">
+      <button class="store-mode-btn active" onclick="switchStoreMode('buy')">BUY</button>
+      <button class="store-mode-btn" onclick="switchStoreMode('sell')">SELL FILES</button>
+    </div>
+    <div id="store-buy" class="store-buy-list"></div>
+    <div id="store-sell" class="store-sell-list" style="display:none;"></div>
+  </div>
+  <div id="tab-crew" class="tab-content">
+    <div class="crew-health">
+      <span>PC HP:</span>
+      <div class="crew-health-bar"><div class="crew-health-fill" id="pc-hp-fill" style="width:100%;background:#00ff41;"></div><div class="crew-health-label" id="pc-hp-label">100/100</div></div>
+    </div>
+    <div class="crew-health">
+      <span>PLAYER HP:</span>
+      <div class="crew-health-bar"><div class="crew-health-fill" id="player-hp-fill" style="width:100%;background:#00ff41;"></div><div class="crew-health-label" id="player-hp-label">100/100</div></div>
+    </div>
+    <div class="crew-list" id="crew-list"></div>
+    <div class="crew-actions" id="crew-actions">
+      <div class="crew-actions-title" id="crew-actions-title">Actions:</div>
+      <div class="crew-action-btns">
+        <button class="crew-action-btn hack" onclick="crewAction('hack')">HACK</button>
+        <button class="crew-action-btn steal" onclick="crewAction('steal')">STEAL</button>
+        <button class="crew-action-btn fight" onclick="crewAction('fight')">FIGHT</button>
+      </div>
+      <div class="crew-result" id="crew-result"></div>
+    </div>
+  </div>
+  <div id="tab-scrape" class="tab-content">
+    <div class="scrape-disk">
+      <span>DISK:</span>
+      <div class="disk-bar"><div class="disk-fill" id="disk-fill" style="width:0%"></div><div class="disk-label" id="disk-label">0/100</div></div>
+      <span id="disk-text">0/100 MB</span>
+    </div>
+    <div class="scrape-files">
+      <div class="scrape-row" style="background:#111;font-weight:bold;">
+        <div class="file-name">FILE</div>
+        <div class="file-info">SIZE / TIME / VALUE</div>
+        <div class="file-dl">DOWNLOAD</div>
+      </div>
+      <div id="scrape-list"></div>
+    </div>
+    <div class="dl-progress" id="dl-progress">
+      <div class="dl-bar"><div class="dl-fill" id="dl-fill"></div></div>
+      <div class="dl-text" id="dl-text">Downloading...</div>
+    </div>
+  </div>
+  <button class="log-icon" onclick="toggleLog()">#</button>
+  <div class="log" id="log-panel">
+    <div class="log-title"><span>LOG</span><span onclick="toggleLog()">[X]</span></div>
+    <div id="log-list"></div>
+  </div>
+</div>
+
+<script>
+const ITEMS = [
+  { id: "weed", name: "Weed", min: 200, max: 800 },
+  { id: "shrooms", name: "Shrooms", min: 500, max: 1600 },
+  { id: "speed", name: "Speed", min: 1000, max: 4000 },
+  { id: "cocaine", name: "Cocaine", min: 5000, max: 15000 },
+  { id: "acid", name: "Acid", min: 800, max: 3000 }
+];
+
+const CITIES = [
+  { name: "Austin", profile: 1.0 },
+  { name: "New York", profile: 1.3 },
+  { name: "Detroit", profile: 0.7 },
+  { name: "Phoenix", profile: 0.9 },
+  { name: "Charlotte", profile: 1.1 }
+];
+
+const MAX_BAG = 100;
+const MAX_DAYS = 30;
+const MAX_DISK = 100;
+const DEBT_INTEREST = 0.10;
+const BANK_INTEREST = 0.05;
+let MAX_BAG_USER = MAX_BAG;
+let MAX_DISK_USER = MAX_DISK;
+
+const FILES = [
+  { id: "txt", name: "text_file.txt", size: 1, time: 800, value: 8 },
+  { id: "img", name: "photo.png", size: 3, time: 2000, value: 30 },
+  { id: "doc", name: "financials.xlsx", size: 5, time: 4000, value: 90 },
+  { id: "db", name: "user_database.sql", size: 10, time: 7000, value: 250 },
+  { id: "enc", name: "encrypted_vault.bin", size: 18, time: 12000, value: 700 }
+];
+
+const STORE_ITEMS = [
+  { id: "bag1", name: "Bigger Bag", desc: "+50 bag space", cost: 500, type: "bag", amount: 50 },
+  { id: "bag2", name: "Duffle Bag", desc: "+100 bag space", cost: 2000, type: "bag", amount: 100 },
+  { id: "disk1", name: "USB Drive", desc: "+25 disk space", cost: 300, type: "disk", amount: 25 },
+  { id: "disk2", name: "External HDD", desc: "+50 disk space", cost: 1200, type: "disk", amount: 50 },
+  { id: "healthpack", name: "Health Pack", desc: "Heal 50 HP", cost: 2000, type: "healthpack" },
+  { id: "pcfix", name: "New PC", desc: "PC HP to 100", cost: 1000, type: "pcfix" }
+];
+
+const CREWS = [
+  { id: "script_kiddies", name: "Script Kiddies", level: 1 },
+  { id: "carders", name: "Carders", level: 2 },
+  { id: "hacktivists", name: "Hacktivists", level: 3 },
+  { id: "cartel", name: "Cartel Ops", level: 4 },
+  { id: "syndicate", name: "The Syndicate", level: 5 }
+];
+
+let state = {};
+let logEntries = [];
+
+function initState() {
+  state = {
+    cash: 2000,
+    bank: 0,
+    debt: 5000,
+    day: 1,
+    bag: 0,
+    city: 0,
+    inventory: {},
+    prices: {},
+    disk: 0,
+    stash: [],
+    downloading: false,
+    dlTimer: null,
+    ownedItems: {},
+    pcHp: 100,
+    playerHp: 100,
+    crewServer: {},
+    crewHp: {},
+    crewDeadUntil: {},
+    crewOfflineUntil: {},
+    selectedCrew: null
+  };
+  ITEMS.forEach(i => state.inventory[i.id] = 0);
+  CREWS.forEach(c => { state.crewServer[c.id] = 100; state.crewHp[c.id] = 100; state.crewDeadUntil[c.id] = 0; state.crewOfflineUntil[c.id] = 0; });
+  generatePrices();
+}
+
+function generatePrices() {
+  const cityProfile = CITIES[state.city].profile;
+  ITEMS.forEach(item => {
+    let base = Math.floor(Math.random() * (item.max - item.min) + item.min);
+    state.prices[item.id] = Math.floor(base * cityProfile * (0.8 + Math.random() * 0.4));
+  });
+}
+
+function updateUI() {
+  document.getElementById("cash").textContent = "$" + state.cash.toLocaleString();
+  document.getElementById("bank").textContent = "$" + state.bank.toLocaleString();
+  document.getElementById("debt").textContent = "$" + state.debt.toLocaleString();
+  document.getElementById("bag").textContent = state.bag + "/" + MAX_BAG_USER;
+  document.getElementById("day").textContent = state.day + "/" + MAX_DAYS;
+  document.getElementById("location").textContent = CITIES[state.city].name;
+
+  const list = document.getElementById("market-list");
+  list.innerHTML = "";
+  ITEMS.forEach(item => {
+    const owned = state.inventory[item.id];
+    const price = state.prices[item.id];
+    const row = document.createElement("div");
+    row.className = "market-row";
+    row.innerHTML = `
+      <div class="item-name">${item.name}</div>
+      <div class="item-price">$${price.toLocaleString()}</div>
+      <div class="item-owned">${owned}</div>
+      <div class="item-actions">
+        <button onclick="buy('${item.id}')">BUY</button>
+        <button class="sell" onclick="sell('${item.id}')" ${owned === 0 ? 'disabled' : ''}>SELL</button>
+      </div>`;
+    list.appendChild(row);
+  });
+
+  const travelDiv = document.getElementById("travel-btns");
+  travelDiv.innerHTML = "";
+  CITIES.forEach((city, i) => {
+    const btn = document.createElement("button");
+    btn.className = "travel-btn" + (i === state.city ? " current" : "");
+    btn.textContent = city.name;
+    btn.disabled = i === state.city;
+    btn.onclick = () => travel(i);
+    travelDiv.appendChild(btn);
+  });
+}
+
+function addLog(msg) {
+  logEntries.unshift(msg);
+  if (logEntries.length > 50) logEntries.pop();
+  const div = document.getElementById("log-list");
+  div.innerHTML = logEntries.map(e => `<div class="log-entry">${e}</div>`).join("");
+}
+
+function buy(id) {
+  const price = state.prices[id];
+  if (state.cash < price) { addLog("Not enough cash for " + id); return false; }
+  if (state.bag >= MAX_BAG_USER) { addLog("Bag is full!"); return false; }
+  state.cash -= price;
+  state.inventory[id]++;
+  state.bag++;
+  addLog("Bought 1 " + id + " for $" + price.toLocaleString());
+  updateUI();
+  return true;
+}
+
+function sell(id) {
+  if (state.inventory[id] <= 0) return false;
+  const price = state.prices[id];
+  state.cash += price;
+  state.inventory[id]--;
+  state.bag--;
+  addLog("Sold 1 " + id + " for $" + price.toLocaleString());
+  updateUI();
+  return true;
+}
+
+function travel(cityIndex) {
+  if (cityIndex === state.city) return;
+  state.city = cityIndex;
+  state.day++;
+  state.debt = Math.floor(state.debt * (1 + DEBT_INTEREST));
+  state.bank = Math.floor(state.bank * (1 + BANK_INTEREST));
+  CREWS.forEach(c => {
+    if (state.crewDeadUntil[c.id] > 0) state.crewDeadUntil[c.id]--;
+    if (state.crewOfflineUntil[c.id] > 0) state.crewOfflineUntil[c.id]--;
+  });
+  generatePrices();
+  addLog("Traveled to " + CITIES[cityIndex].name + ". Day " + state.day);
+  if (state.day > MAX_DAYS) { endGame(); return; }
+  updateUI();
+}
+
+function endGame() {
+  addLog("GAME OVER. Final score: $" + (state.cash + state.bank - state.debt).toLocaleString());
+}
+
+function renderScrape() {
+  const list = document.getElementById("scrape-list");
+  list.innerHTML = "";
+  FILES.forEach(f => {
+    const canFit = state.disk + f.size <= MAX_DISK_USER;
+    const row = document.createElement("div");
+    row.className = "scrape-row";
+    row.innerHTML = `
+      <div class="file-name">${f.name}</div>
+      <div class="file-info">${f.size}MB / ${(f.time/1000).toFixed(1)}s / $${f.value}</div>
+      <div class="file-dl"><button onclick="startDownload('${f.id}')" ${state.downloading || !canFit ? 'disabled' : ''}>GET</button></div>`;
+    list.appendChild(row);
+  });
+  updateDisk();
+}
+
+function updateDisk() {
+  const pct = (state.disk / MAX_DISK) * 100;
+  document.getElementById("disk-fill").style.width = pct + "%";
+  document.getElementById("disk-label").textContent = state.disk + "/" + MAX_DISK_USER;
+  document.getElementById("disk-text").textContent = state.disk + "/" + MAX_DISK_USER + " MB";
+}
+
+function renderStash() {
+  const div = document.getElementById("stash-list");
+  document.getElementById("stash-count").textContent = state.stash.length + " files";
+  if (state.stash.length === 0) {
+    div.innerHTML = '<div style="padding:8px;color:#003300;">No files downloaded yet.</div>';
+    return;
+  }
+  div.innerHTML = "";
+  state.stash.forEach((f, i) => {
+    const row = document.createElement("div");
+    row.className = "stash-row";
+    row.innerHTML = `<span style="flex:1;">${f.name}</span><span style="color:#00aa2a;">${f.size}MB</span><span style="color:#ffaa00;margin-left:10px;">$${f.value}</span>`;
+    div.appendChild(row);
+  });
+}
+
+function startDownload(fileId) {
+  if (state.downloading) return;
+  const file = FILES.find(f => f.id === fileId);
+  if (!file || state.disk + file.size > MAX_DISK_USER) return;
+  state.downloading = true;
+  const prog = document.getElementById("dl-progress");
+  const fill = document.getElementById("dl-fill");
+  const text = document.getElementById("dl-text");
+  prog.classList.add("active");
+  fill.style.width = "0%";
+  text.textContent = "Downloading " + file.name + "...";
+  renderScrape();
+  let elapsed = 0;
+  const tick = 50;
+  state.dlTimer = setInterval(() => {
+    elapsed += tick;
+    fill.style.width = Math.min((elapsed / file.time) * 100, 100) + "%";
+    if (elapsed >= file.time) {
+      clearInterval(state.dlTimer);
+      state.downloading = false;
+      state.disk += file.size;
+      state.stash.push({ name: file.name, size: file.size, value: file.value });
+      addLog("Downloaded " + file.name);
+      prog.classList.remove("active");
+      renderScrape();
+    }
+  }, tick);
+}
+
+function sellFile(index) {
+  const file = state.stash[index];
+  if (!file) return;
+  state.cash += file.value;
+  state.disk -= file.size;
+  state.stash.splice(index, 1);
+  addLog("Sold " + file.name + " for $" + file.value);
+  updateUI();
+  renderScrape();
+}
+
+let storeMode = "buy";
+
+function switchStoreMode(mode) {
+  storeMode = mode;
+  document.querySelectorAll('.store-mode-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById("store-buy").style.display = mode === "buy" ? "block" : "none";
+  document.getElementById("store-sell").style.display = mode === "sell" ? "block" : "none";
+  renderStore();
+}
+
+function renderStore() {
+  const buyDiv = document.getElementById("store-buy");
+  buyDiv.innerHTML = "";
+  STORE_ITEMS.forEach(item => {
+    const owned = state.ownedItems && state.ownedItems[item.id];
+    const canBuy = state.cash >= item.cost && !owned;
+    const row = document.createElement("div");
+    row.className = "store-buy-item";
+    row.innerHTML = `
+      <div class="store-buy-name">${item.name}</div>
+      <div class="store-buy-desc">${item.desc}</div>
+      <div class="store-buy-price">$${item.cost.toLocaleString()}</div>
+      <div class="store-buy-btn"><button onclick="storeBuy('${item.id}')" ${canBuy ? '' : 'disabled'}>${owned ? 'OWNED' : 'BUY'}</button></div>`;
+    buyDiv.appendChild(row);
+  });
+
+  const sellDiv = document.getElementById("store-sell");
+  sellDiv.innerHTML = "";
+  if (state.stash.length === 0) {
+    sellDiv.innerHTML = '<div class="store-empty">No files to sell. Download some in SCRAPE first.</div>';
+    return;
+  }
+  state.stash.forEach((f, i) => {
+    const row = document.createElement("div");
+    row.className = "store-sell-item";
+    row.innerHTML = `
+      <div class="store-sell-name">${f.name}</div>
+      <div class="store-sell-size">${f.size}MB</div>
+      <div class="store-sell-price">$${f.value}</div>
+      <div class="store-sell-btn"><button onclick="storeSellFile(${i})">SELL</button></div>`;
+    sellDiv.appendChild(row);
+  });
+}
+
+function storeBuy(itemId) {
+  const item = STORE_ITEMS.find(i => i.id === itemId);
+  if (!item || state.cash < item.cost) return;
+  const consumable = item.type === "healthpack" || item.type === "pcfix";
+  if (!consumable && state.ownedItems && state.ownedItems[item.id]) return;
+  state.cash -= item.cost;
+  if (item.type === "bag") { if (!state.ownedItems) state.ownedItems = {}; state.ownedItems[item.id] = true; MAX_BAG_USER = (MAX_BAG_USER || MAX_BAG) + item.amount; }
+  if (item.type === "disk") { if (!state.ownedItems) state.ownedItems = {}; state.ownedItems[item.id] = true; MAX_DISK_USER = (MAX_DISK_USER || MAX_DISK) + item.amount; }
+  if (item.type === "healthpack") { state.playerHp = Math.min(100, state.playerHp + 50); }
+  if (item.type === "pcfix") { state.pcHp = 100; }
+  addLog("Bought " + item.name + " for $" + item.cost.toLocaleString());
+  updateUI();
+  renderStore();
+}
+
+function storeSellFile(index) {
+  const file = state.stash[index];
+  if (!file) return;
+  state.cash += file.value;
+  state.disk -= file.size;
+  state.stash.splice(index, 1);
+  addLog("Sold " + file.name + " for $" + file.value);
+  updateUI();
+  renderStore();
+  renderScrape();
+}
+
+function renderCrew() {
+  const list = document.getElementById("crew-list");
+  list.innerHTML = "";
+  CREWS.forEach(c => {
+    const srv = state.crewServer[c.id];
+    const hp = state.crewHp[c.id];
+    const dead = state.crewDeadUntil[c.id] > 0;
+    const offline = state.crewOfflineUntil[c.id] > 0;
+    const isSelected = state.selectedCrew === c.id;
+    const status = dead ? "DEAD " + state.crewDeadUntil[c.id] + "d" : offline ? "OFFLINE " + state.crewOfflineUntil[c.id] + "d" : "";
+    const unavailable = dead || offline;
+    const row = document.createElement("div");
+    row.className = "crew-row" + (isSelected ? " selected" : "") + (unavailable ? " dead" : "");
+    row.innerHTML = `
+      <div class="crew-name">${c.name}</div>
+      <div class="crew-level">LVL ${c.level}</div>
+      <div class="crew-hp" style="flex:1;text-align:right;font-size:11px;">SRV ${unavailable ? status : srv + "/100"}</div>
+      <div class="crew-hp" style="flex:1;text-align:right;font-size:11px;">HP ${unavailable ? "" : hp + "/100"}</div>`;
+    if (!unavailable) row.onclick = () => selectCrew(c.id);
+    list.appendChild(row);
+  });
+  updateHealthBars();
+  const actions = document.getElementById("crew-actions");
+  const canAct = state.selectedCrew !== null && state.crewServer[state.selectedCrew] > 0 && state.crewHp[state.selectedCrew] > 0 && state.crewDeadUntil[state.selectedCrew] <= 0 && state.crewOfflineUntil[state.selectedCrew] <= 0;
+  actions.classList.toggle("active", canAct);
+  if (state.selectedCrew) {
+    const c = CREWS.find(cr => cr.id === state.selectedCrew);
+    document.getElementById("crew-actions-title").textContent = c.name + " - Actions:";
+  }
+  document.getElementById("crew-result").classList.remove("active");
+}
+
+function updateHealthBars() {
+  const pcPct = (state.pcHp / 100) * 100;
+  const pcFill = document.getElementById("pc-hp-fill");
+  pcFill.style.width = pcPct + "%";
+  pcFill.style.background = state.pcHp > 50 ? "#00aaff" : state.pcHp > 25 ? "#ffaa00" : "#ff4444";
+  document.getElementById("pc-hp-label").textContent = state.pcHp + "/100";
+  document.getElementById("pc-hp").textContent = state.pcHp;
+
+  const plPct = (state.playerHp / 100) * 100;
+  const plFill = document.getElementById("player-hp-fill");
+  plFill.style.width = plPct + "%";
+  plFill.style.background = state.playerHp > 50 ? "#00ff41" : state.playerHp > 25 ? "#ffaa00" : "#ff4444";
+  document.getElementById("player-hp-label").textContent = state.playerHp + "/100";
+  document.getElementById("player-hp").textContent = state.playerHp;
+}
+
+function selectCrew(crewId) {
+  state.selectedCrew = crewId;
+  renderCrew();
+}
+
+function crewAction(action) {
+  const crewId = state.selectedCrew;
+  if (!crewId) return;
+  if (state.crewDeadUntil[crewId] > 0 || state.crewOfflineUntil[crewId] > 0) return;
+  const crew = CREWS.find(c => c.id === crewId);
+  const result = document.getElementById("crew-result");
+  result.classList.add("active");
+  const successChance = 0.5 + (crew.level * 0.05);
+
+  if (action === "hack") {
+    if (Math.random() < successChance) {
+      const file = FILES[Math.floor(Math.random() * FILES.length)];
+      state.crewServer[crewId] = Math.max(0, state.crewServer[crewId] - (Math.floor(Math.random() * 10) + 5));
+      if (state.disk + file.size <= MAX_DISK_USER) {
+        state.stash.push({ name: file.name, size: file.size, value: file.value });
+        state.disk += file.size;
+        result.textContent = "Hack success! Got " + file.name + " (" + file.size + "MB, $" + file.value + ") Server: -" + (Math.floor(Math.random() * 10) + 5);
+      } else {
+        result.textContent = "Hack success but disk full! File lost. Server damaged.";
+      }
+      addLog("Hacked " + crew.name + " - success");
+    } else {
+      const dmg = Math.floor(Math.random() * 12) + 3;
+      state.pcHp = Math.max(0, state.pcHp - dmg);
+      result.textContent = "Hack failed! PC took " + dmg + " damage!";
+      addLog("Hack " + crew.name + " failed - PC took " + dmg);
+    }
+  } else if (action === "steal") {
+    const roll = Math.random();
+    if (roll < 0.45) {
+      const item = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+      if (state.bag < MAX_BAG_USER) {
+        state.inventory[item.id]++;
+        state.bag++;
+        result.textContent = "Stole 1 " + item.name + "!";
+        addLog("Stole " + item.name + " from " + crew.name);
+      } else {
+        result.textContent = "Stole item but bag is full! Lost it.";
+        addLog("Stole from " + crew.name + " but bag full");
+      }
+    } else if (roll < 0.7) {
+      result.textContent = "Got nothing! They were empty handed.";
+      addLog("Tried stealing from " + crew.name + " - nothing there");
+    } else if (roll < 0.85) {
+      const dmg = Math.floor(Math.random() * 4) + 1;
+      state.playerHp = Math.max(0, state.playerHp - dmg);
+      result.textContent = "Got caught! Took " + dmg + " damage.";
+      addLog("Steal from " + crew.name + " failed - took " + dmg);
+    } else {
+      state.pcHp = Math.max(0, state.pcHp - 5);
+      result.textContent = "Hacked back! PC took 5 damage!";
+      addLog("Steal from " + crew.name + " - counter hack! PC -5");
+    }
+  } else if (action === "fight") {
+    const baseDmg = Math.floor(Math.random() * 8) + 3;
+    const crewDmg = Math.floor(baseDmg * (1 + crew.level * 0.15));
+    if (Math.random() < 0.5) {
+      state.crewHp[crewId] = Math.max(0, state.crewHp[crewId] - crewDmg);
+      result.textContent = "You hit " + crew.name + " for " + crewDmg + " HP!";
+      addLog("Fought " + crew.name + " - dealt " + crewDmg + " HP");
+    } else {
+      state.playerHp = Math.max(0, state.playerHp - baseDmg);
+      result.textContent = "You took " + baseDmg + " damage!";
+      addLog("Fought " + crew.name + " - took " + baseDmg);
+    }
+  }
+
+  if (state.crewServer[crewId] <= 0 && state.crewOfflineUntil[crewId] <= 0 && state.crewDeadUntil[crewId] <= 0) {
+    state.crewOfflineUntil[crewId] = 3;
+    result.textContent += " " + crew.name + " server down! Offline 3 days.";
+    addLog(crew.name + " server down - offline 3 days");
+    state.selectedCrew = null;
+  }
+  if (state.crewHp[crewId] <= 0 && state.crewDeadUntil[crewId] <= 0 && state.crewOfflineUntil[crewId] <= 0) {
+    state.crewDeadUntil[crewId] = 10;
+    result.textContent += " " + crew.name + " destroyed! Dead 10 days.";
+    addLog(crew.name + " destroyed - dead 10 days");
+    state.selectedCrew = null;
+  }
+  if (state.pcHp <= 0) {
+    addLog("PC destroyed! Game over.");
+    endGame();
+  }
+  if (state.playerHp <= 0) {
+    addLog("You were killed! Game over.");
+    endGame();
+  }
+  updateUI();
+  renderCrew();
+}
+
+function toggleLog() {
+  document.getElementById("log-panel").classList.toggle("open");
+}
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tabName).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (tabName === 'crew') renderCrew();
+  if (tabName === 'store') renderStore();
+  if (tabName === 'scrape') renderScrape();
+}
+
+initState();
+updateUI();
+renderScrape();
+renderStore();
+renderCrew();
+addLog("Game started. You have $2000 and $5000 debt.");
+</script>
+</body>
+</html>

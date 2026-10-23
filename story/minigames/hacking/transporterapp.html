@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMBARGO // MARKET_FLOW</title>
+    <style>
+        body { margin: 0; background: #050505; color: #fff; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .market { width: 400px; background: #0a0a0a; border: 1px solid #333; border-radius: 8px; padding: 20px; }
+        .item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #222; }
+        .price { color: #10b981; font-weight: bold; }
+        .controls { display: flex; gap: 5px; }
+        .btn { background: #222; border: 1px solid #444; color: #fff; padding: 5px 10px; cursor: pointer; font-size: 10px; }
+        .btn:hover { border-color: #10b981; }
+        .ui { margin-bottom: 20px; width: 400px; display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="ui">
+        <span>CREDITS: <span id="cash">1000</span></span>
+        <span>CARGO: <span id="inv">0</span>/10</span>
+    </div>
+    <div class="market" id="market">
+        <!-- Market items -->
+    </div>
+    <button class="btn" style="margin-top:20px; padding:10px 20px" onclick="travel()">Jump to New Port</button>
+
+    <script>
+        let cash = 1000, inv = 0, cap = 10;
+        let items = [
+            { id: 'data', name: 'Raw Data', price: 50, held: 0 },
+            { id: 'keys', name: 'Auth Keys', price: 200, held: 0 },
+            { id: 'chips', name: 'Neural Chips', price: 500, held: 0 }
+        ];
+
+        function render() {
+            document.getElementById('cash').textContent = cash;
+            document.getElementById('inv').textContent = inv;
+            const container = document.getElementById('market');
+            container.innerHTML = '';
+            items.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'item';
+                el.innerHTML = `
+                    <div>
+                        <div style="font-weight:bold">${item.name}</div>
+                        <div style="font-size:10px; color:#555">HELD: ${item.held}</div>
+                    </div>
+                    <div class="controls">
+                        <span class="price" style="margin-right:15px">$${item.price}</span>
+                        <button class="btn" onclick="buy('${item.id}')">BUY</button>
+                        <button class="btn" onclick="sell('${item.id}')">SELL</button>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function buy(id) {
+            const item = items.find(i => i.id === id);
+            if (cash >= item.price && inv < cap) {
+                cash -= item.price;
+                item.held++;
+                inv++;
+                render();
+            }
+        }
+
+        function sell(id) {
+            const item = items.find(i => i.id === id);
+            if (item.held > 0) {
+                cash += item.price;
+                item.held--;
+                inv--;
+                render();
+            }
+        }
+
+        function travel() {
+            items.forEach(item => {
+                item.price = Math.floor(item.price * (0.5 + Math.random()));
+                if (item.price < 10) item.price = 10;
+            });
+            alert('PORT_JUMP_SUCCESSFUL // MARKET_RECALIBRATED');
+            render();
+        }
+
+        render();
+    </script>
+</body>
+</html>

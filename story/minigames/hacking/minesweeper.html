@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUFFER_CLEAN // MINESWEEPER</title>
+    <style>
+        body { margin: 0; background: #050505; color: #fff; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .grid { display: grid; grid-template-columns: repeat(10, 30px); grid-template-rows: repeat(10, 30px); gap: 2px; border: 4px solid #222; padding: 4px; background: #111; }
+        .cell { width: 30px; height: 30px; background: #333; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 14px; user-select: none; }
+        .cell.open { background: #000; color: #0ea5e9; }
+        .cell.mine { background: #ef4444; color: #fff; }
+        .cell.flag { background: #f59e0b; }
+        .ui { margin-bottom: 10px; font-size: 14px; font-weight: 800; color: #0ea5e9; }
+    </style>
+</head>
+<body>
+    <div class="ui">BUFFER_NODES: <span id="mcount">10</span> // CLEANING...</div>
+    <div class="grid" id="grid" oncontextmenu="return false;"></div>
+    <button onclick="init()" style="margin-top:20px; background:#222; color:#fff; border:1px solid #444; padding:5px 15px; cursor:pointer;">RESET_BUFFER</button>
+
+    <script>
+        const gridEl = document.getElementById('grid');
+        let size = 10, mines = 10;
+        let board = [], revealed = 0, gameOver = false;
+
+        function init() {
+            board = Array(size).fill().map(() => Array(size).fill(0));
+            revealed = 0; gameOver = false;
+            gridEl.innerHTML = '';
+            
+            // Place mines
+            let placed = 0;
+            while(placed < mines) {
+                let r = Math.floor(Math.random()*size), c = Math.floor(Math.random()*size);
+                if (board[r][c] !== 'M') { board[r][c] = 'M'; placed++; }
+            }
+
+            // Calc counts
+            for(let r=0; r<size; r++) {
+                for(let c=0; c<size; c++) {
+                    if (board[r][c] === 'M') continue;
+                    let count = 0;
+                    for(let i=-1; i<=1; i++) {
+                        for(let j=-1; j<=1; j++) {
+                            if (r+i>=0 && r+i<size && c+j>=0 && c+j<size && board[r+i][c+j] === 'M') count++;
+                        }
+                    }
+                    board[r][c] = count;
+                }
+            }
+
+            // Render
+            for(let r=0; r<size; r++) {
+                for(let c=0; c<size; c++) {
+                    const el = document.createElement('div');
+                    el.className = 'cell';
+                    el.dataset.r = r; el.dataset.c = c;
+                    el.onclick = () => reveal(r, c);
+                    el.oncontextmenu = (e) => { e.preventDefault(); el.classList.toggle('flag'); };
+                    gridEl.appendChild(el);
+                }
+            }
+        }
+
+        function reveal(r, c) {
+            if (gameOver) return;
+            const el = gridEl.children[r * size + c];
+            if (el.classList.contains('open') || el.classList.contains('flag')) return;
+
+            if (board[r][c] === 'M') {
+                gameOver = true;
+                el.classList.add('mine'); el.textContent = 'X';
+                alert('BUFFER_CORRUPTED // SYSTEM_CRASH');
+                return;
+            }
+
+            el.classList.add('open');
+            if (board[r][c] > 0) el.textContent = board[r][c];
+            else {
+                // Auto reveal
+                for(let i=-1; i<=1; i++) {
+                    for(let j=-1; j<=1; j++) {
+                        if (r+i>=0 && r+i<size && c+j>=0 && c+j<size) reveal(r+i, c+j);
+                    }
+                }
+            }
+
+            revealed++;
+            if (revealed === size*size - mines) {
+                gameOver = true;
+                alert('BUFFER_CLEANED // INTEGRITY_RESTORED');
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

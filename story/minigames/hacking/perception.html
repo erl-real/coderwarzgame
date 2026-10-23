@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PERCEPTION // PATTERN_MATCH</title>
+    <style>
+        body { margin: 0; background: #050505; color: #fff; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .grid { display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; }
+        .tile { width: 80px; height: 80px; background: #111; border: 1px solid #333; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .tile:hover { border-color: #3b82f6; }
+        .target { margin-bottom: 30px; padding: 20px; border: 2px solid #3b82f6; background: #000; font-size: 24px; font-weight: bold; }
+        .ui { margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="ui">HITS: <span id="score">0</span> // TIME: <span id="time">10</span>s</div>
+    <div class="target" id="target">?</div>
+    <div class="grid" id="grid"></div>
+
+    <script>
+        const gridEl = document.getElementById('grid');
+        const targetEl = document.getElementById('target');
+        let score = 0, time = 10, target = '';
+        let symbols = ['@', '#', '$', '%', '&', '*', '?', '!', '+'];
+
+        function nextRound() {
+            target = symbols[Math.floor(Math.random() * symbols.length)];
+            targetEl.textContent = target;
+            gridEl.innerHTML = '';
+            let shuffled = [...symbols].sort(() => Math.random() - 0.5);
+            shuffled.forEach(s => {
+                const el = document.createElement('div');
+                el.className = 'tile';
+                el.textContent = s;
+                el.onclick = () => {
+                    if (s === target) {
+                        score++;
+                        document.getElementById('score').textContent = score;
+                        time += 1;
+                        nextRound();
+                    } else {
+                        time -= 2;
+                    }
+                };
+                gridEl.appendChild(el);
+            });
+        }
+
+        function update() {
+            time -= 0.1;
+            document.getElementById('time').textContent = Math.max(0, time).toFixed(1);
+            if (time <= 0) {
+                alert('SESSION_TIMED_OUT // SCORE: ' + score);
+                score = 0; time = 10;
+                document.getElementById('score').textContent = score;
+                nextRound();
+            }
+            setTimeout(update, 100);
+        }
+
+        nextRound();
+        update();
+    </script>
+</body>
+</html>

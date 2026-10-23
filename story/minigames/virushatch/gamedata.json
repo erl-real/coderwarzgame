@@ -1,0 +1,12 @@
+{
+  "eras": [
+    { "id": "pre", "name": "Pre-Neural", "temp": 50, "life": 0 },
+    { "id": "bio", "name": "Bio-Synthetic", "temp": 25, "life": 40 },
+    { "id": "cyber", "name": "Digital Singularity", "temp": 15, "life": 90 }
+  ],
+  "tools": [
+    { "id": "heat", "name": "Thermal Injection", "cost": 100, "effect": "temp_up" },
+    { "id": "cool", "name": "Cryo Dump", "cost": 100, "effect": "temp_down" },
+    { "id": "life", "name": "DNA Seed", "cost": 500, "effect": "life_up" }
+  ]
+}

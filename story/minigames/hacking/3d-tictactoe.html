@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D TIC-TAC-TOE // NEURAL LINK</title>
+    <style>
+        body { margin: 0; background: #050505; color: #0ea5e9; font-family: 'JetBrains Mono', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 20px; background: rgba(14, 165, 233, 0.05); border: 1px solid rgba(14, 165, 233, 0.2); border-radius: 12px; }
+        .layer { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; border: 1px solid rgba(14, 165, 233, 0.3); padding: 8px; border-radius: 8px; position: relative; }
+        .layer::after { content: attr(data-label); position: absolute; top: -15px; left: 0; font-size: 10px; color: rgba(14, 165, 233, 0.5); }
+        .cell { width: 40px; height: 40px; border: 1px solid rgba(14, 165, 233, 0.2); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; cursor: pointer; transition: all 0.2s; background: #000; }
+        .cell:hover { background: rgba(14, 165, 233, 0.1); border-color: #0ea5e9; }
+        .cell.x { color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+        .cell.o { color: #0ea5e9; text-shadow: 0 0 10px rgba(14, 165, 233, 0.5); }
+        .status { margin-bottom: 20px; font-size: 18px; font-weight: 800; uppercase; tracking-widest; }
+        .btn { margin-top: 20px; background: none; border: 1px solid #0ea5e9; color: #0ea5e9; padding: 10px 20px; cursor: pointer; font-family: inherit; font-size: 12px; text-transform: uppercase; transition: all 0.2s; }
+        .btn:hover { background: #0ea5e9; color: #000; }
+    </style>
+</head>
+<body>
+    <div class="status" id="status">INITIATING_GAME_STATE...</div>
+    
+    <div class="grid-container" id="gridContainer">
+        <!-- 4 Layers of 4x4 -->
+        <div class="layer" data-label="LAYER_0" id="layer0"></div>
+        <div class="layer" data-label="LAYER_1" id="layer1"></div>
+        <div class="layer" data-label="LAYER_2" id="layer2"></div>
+        <div class="layer" data-label="LAYER_3" id="layer3"></div>
+    </div>
+
+    <button class="btn" onclick="resetGame()">Reset Link</button>
+
+    <script>
+        let board = Array(4).fill().map(() => Array(4).fill().map(() => Array(4).fill(null)));
+        let currentPlayer = 'X';
+        let gameOver = false;
+
+        function init() {
+            for (let l = 0; l < 4; l++) {
+                const layerEl = document.getElementById(`layer${l}`);
+                layerEl.innerHTML = '';
+                for (let r = 0; r < 4; r++) {
+                    for (let c = 0; r < 4; r++) { // Fixed logic error in manual loop
+                        // Just use a simpler loop
+                    }
+                }
+                // Refactored simpler loop
+                for (let i = 0; i < 16; i++) {
+                    const r = Math.floor(i / 4);
+                    const c = i % 4;
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.l = l;
+                    cell.dataset.r = r;
+                    cell.dataset.c = c;
+                    cell.onclick = () => handleClick(l, r, c, cell);
+                    layerEl.appendChild(cell);
+                }
+            }
+            updateStatus();
+        }
+
+        function handleClick(l, r, c, el) {
+            if (gameOver || board[l][r][c]) return;
+
+            board[l][r][c] = currentPlayer;
+            el.textContent = currentPlayer;
+            el.classList.add(currentPlayer.toLowerCase());
+
+            if (checkWin(l, r, c)) {
+                gameOver = true;
+                document.getElementById('status').textContent = `PLAYER_${currentPlayer}_VICTORY_DETECTED`;
+                document.getElementById('status').style.color = currentPlayer === 'X' ? '#ef4444' : '#0ea5e9';
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            updateStatus();
+            
+            if (currentPlayer === 'O') {
+                setTimeout(makeAIMove, 500);
+            }
+        }
+
+        function updateStatus() {
+            document.getElementById('status').textContent = `WAITING_FOR_PLAYER_${currentPlayer}...`;
+            document.getElementById('status').style.color = currentPlayer === 'X' ? '#ef4444' : '#0ea5e9';
+        }
+
+        function checkWin(l, r, c) {
+            const p = board[l][r][c];
+            const dirs = [
+                [1,0,0], [0,1,0], [0,0,1], // axes
+                [1,1,0], [1,-1,0], [1,0,1], [1,0,-1], [0,1,1], [0,1,-1], // 2D diagonals
+                [1,1,1], [1,1,-1], [1,-1,1], [1,-1,-1] // 3D diagonals
+            ];
+
+            for (const [dl, dr, dc] of dirs) {
+                let count = 1;
+                // Positive direction
+                for (let i = 1; i < 4; i++) {
+                    const nl = l + dl * i, nr = r + dr * i, nc = c + dc * i;
+                    if (nl>=0 && nl<4 && nr>=0 && nr<4 && nc>=0 && nc<4 && board[nl][nr][nc] === p) count++;
+                    else break;
+                }
+                // Negative direction
+                for (let i = 1; i < 4; i++) {
+                    const nl = l - dl * i, nr = r - dr * i, nc = c - dc * i;
+                    if (nl>=0 && nl<4 && nr>=0 && nr<4 && nc>=0 && nc<4 && board[nl][nr][nc] === p) count++;
+                    else break;
+                }
+                if (count >= 4) return true;
+            }
+            return false;
+        }
+
+        function makeAIMove() {
+            if (gameOver) return;
+            let moves = [];
+            for (let l=0; l<4; l++)
+                for (let r=0; r<4; r++)
+                    for (let c=0; c<4; c++)
+                        if (!board[l][r][c]) moves.push({l,r,c});
+            
+            if (moves.length === 0) return;
+            const move = moves[Math.floor(Math.random() * moves.length)];
+            const cell = document.querySelector(`.cell[data-l="${move.l}"][data-r="${move.r}"][data-c="${move.c}"]`);
+            handleClick(move.l, move.r, move.c, cell);
+        }
+
+        function resetGame() {
+            board = Array(4).fill().map(() => Array(4).fill().map(() => Array(4).fill(null)));
+            currentPlayer = 'X';
+            gameOver = false;
+            init();
+        }
+
+        init();
+    </script>
+</body>
+</html>

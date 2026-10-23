@@ -1,0 +1,1668 @@
+filetypes
+
+ File Type Hierarchy (from common → ultra‑rare)
+Your order already makes sense. Here it is formalized as a rarity ladder:
+
+HTML / Tiny Text Files
+
+Documents (txt, doc, pdf)
+
+Photos (jpg, png)
+
+Music (mp3, wav)
+
+Videos (mp4, mkv)
+
+Programs (exe, bin, scripts)
+
+Games (large, multi‑file, high value)
+
+System Files (OS components, drivers, configs)
+
+Schemas (data structures, blueprints, API specs)
+
+Tables (csv, structured data)
+
+Full Databases (sql, nosql, proprietary formats)
+
+Encrypted Files
+
+Personal
+
+Organization
+
+Government
+
+Spy / Intelligence
+
+Occult / Forbidden
+
+Unknown (highest rarity)
+
+This gives you a 12‑tier rarity system with sub‑rarities inside the encrypted tier.
+
+ Core Stats Every File Has
+Each file instance should carry these stats:
+
+size (KB → TB)
+
+moneyValue (sell price)
+
+researchValue (XP, tech unlocks, lore)
+
+compressionLevel (0 → N times compressed)
+
+quality (0–100 or letter grade)
+
+isCorrupted (boolean, chance increases with rarity/age)
+
+isInfected (boolean, contains virus payload)
+
+Optional advanced stats:
+
+origin (city, server, faction, brand)
+
+permissions (read/write/execute)
+
+fileAge (affects corruption chance)
+
+fileSignature (used for detection, quests, or hacking)
+
+ How to Scale These Stats (Mathematical Model)
+1. Size Scaling
+Each file type has a size range:
+
+HTML: 
+10
+1
+–
+10
+3
+ bytes
+
+Documents: 
+10
+3
+–
+10
+5
+ bytes
+
+Photos: 
+10
+5
+–
+10
+7
+ bytes
+
+Music: 
+10
+6
+–
+10
+8
+ bytes
+
+Videos: 
+10
+7
+–
+10
+10
+ bytes
+
+Programs/Games: 
+10
+6
+–
+10
+10
+ bytes
+
+Databases: 
+10
+8
+–
+10
+12
+ bytes
+
+Encrypted: variable, but usually 2×–10× larger than unencrypted equivalents
+
+Formula for random size inside a tier:
+
+size
+=
+minSize
+×
+𝑟
+𝑘
+Where:
+
+𝑟
+ = random number 1–3
+
+𝑘
+ = tier index (0–12)
+
+This gives exponential size growth across tiers.
+
+2. Money Value Scaling
+Money value should scale with:
+
+file type rarity
+
+size
+
+quality
+
+corruption
+
+infection
+
+compression
+
+Base formula:
+
+value
+=
+(
+size
+𝛼
+)
+⋅
+𝑅
+⋅
+𝑄
+⋅
+𝐶
+Where:
+
+𝛼
+ = 0.6–0.9 (sub‑linear so huge files don’t break economy)
+
+𝑅
+ = rarity multiplier (1 → 1000+)
+
+𝑄
+=
+1
++
+quality
+100
+
+𝐶
+=
+1
+−
+0.2
+⋅
+compressionLevel
+
+Corruption penalty:
+
+value
+=
+value
+⋅
+(
+0.5
+ if corrupted
+)
+Infection penalty or bonus (depending on gameplay):
+
+value
+=
+value
+⋅
+(
+1.5
+ if infected and you sell to black market
+)
+3. Research Value Scaling
+Research value should scale faster than money value to encourage scanning instead of selling.
+
+researchValue
+=
+size
+𝛽
+⋅
+𝑅
+Where:
+
+𝛽
+=
+0.8
+–
+1.2
+ depending on how fast you want tech progression
+
+𝑅
+ = rarity multiplier
+
+Encrypted files get a huge bonus:
+
+researchValue
+=
+researchValue
+⋅
+(
+2
+–
+20
+)
+4. Corruption Chance
+Lower tiers rarely corrupt, higher tiers often corrupt.
+
+𝑃
+(
+corrupt
+)
+=
+0.01
+⋅
+𝑇
+1.3
+Where:
+
+𝑇
+ = tier index (1–12)
+
+Examples:
+
+Tier 1 (HTML): 1%
+
+Tier 6 (Programs): ~15%
+
+Tier 12 (Unknown encrypted): ~40%
+
+5. Infection Chance
+Viruses appear more often in:
+
+programs
+
+games
+
+system files
+
+encrypted intelligence files
+
+Formula:
+
+𝑃
+(
+infected
+)
+=
+𝐵
++
+0.02
+⋅
+𝑇
+Where:
+
+𝐵
+ = base infection chance by file type (e.g., programs = 10%, photos = 1%)
+
+𝑇
+ = tier index
+
+ Compression System
+Each compression pass reduces size but also reduces value.
+
+size
+𝑛
+=
+size
+0
+⋅
+(
+0.7
+)
+𝑛
+value
+𝑛
+=
+value
+0
+⋅
+(
+0.85
+)
+𝑛
+This creates a strategic choice:
+
+compress to save storage
+
+but lose money value
+
+ Virus System Integration
+If a file is infected:
+
+it can spread to other files
+
+it can damage your system
+
+it can be extracted and sold
+
+it can be researched for virus XP
+
+Virus severity tiers:
+
+Low: slows system
+
+Medium: corrupts files
+
+High: steals money
+
+Critical: rootkits, worms, trojans
+
+Legendary: movie‑style viruses (your earlier request)
+
+ How This Scales to Millions of Files
+This model is built for mass generation:
+
+rarity controls frequency
+
+exponential size scaling prevents overflow
+
+sub‑linear value scaling prevents economy inflation
+
+corruption/infection add variance
+
+compression adds strategy
+
+research value encourages scanning
+
+encrypted tiers create ultra‑rare jackpot moments
+
+You can generate:
+
+10,000 common files
+
+1,000 mid‑tier files
+
+10–50 encrypted files
+
+1–3 “unknown” files per entire playthrough
+
+…and the system stays stable.
+
+
+
+----------------------------------------------------------------------------------------
+
+
+
+now we need to decide industrys and skill paths, money tree, branches<crypto or paper money > merge back to banking or loan sharking, next is security branchs to 3 < personal, orgs, or gov, with a secret spy path here, personal has research boost to certian things later, biz too, gov too, gov endgame is managing a city, org endgame is indusrty titan publicly, personal end game can lead to strang sureal shit planed for later, next is virus/scripting, branches to 3, fight, create, steal, steal is money for risk, fight is minigames to fight other hackers, create endgame is to build fun custom visuals for your viruse, next is transport, this forks to be a mix of good evil and nutral paths, no real endgame, research is what ulocks pm everything so research tab it to incress the rates and methods of researching, next, energy productin from small to large scale, oil power water, end game are just mainly story, along with other story line paths like drugselling making, hobby paths for story, and raceing paths for crime boost and other story stuff, next is buying selling homes, end game is owning sats in space, last, all of these trees are about hacking these things places or ppl, so you may be able to steal a home, or bankrupt a org and buy it, bet agenst markets and crash them, manipulate industrys to make more money or to complet missions, either way everything is played as the user hacking to gain, find, and learn.
+
+
+1. Industry Domains (the “world pillars”)
+These are the major sectors the player can hack, infiltrate, exploit, or master. Each one has its own economy, missions, and endgame.
+
+Core industries
+Banking & Finance
+
+Security & Intelligence
+
+Software / Virus / Scripting
+
+Transport & Logistics
+
+Research & Academia
+
+Energy Production
+
+Drugs & Black Markets
+
+Hobbies / Lifestyle / Story Paths
+
+Racing & Crime Mobility
+
+Real Estate & Property
+
+Space & Satellites
+
+Each industry becomes a skill tree with branches and endgames.
+
+2. Banking & Money Tree
+This is the economic backbone. It splits early and merges later.
+
+Branch A — Crypto
+Mining
+
+Wallet cracking
+
+Chain analysis
+
+Market manipulation
+
+Token forging
+
+Smart contract exploits
+
+Endgame:  
+Merge into Banking or Loan Sharking with crypto‑based leverage systems.
+
+Branch B — Paper Money / Traditional Finance
+ATM exploits
+
+Bank account siphoning
+
+Credit fraud
+
+Market betting
+
+Corporate accounting hacks
+
+Endgame:  
+Become a banking titan or merge into loan sharking.
+
+Branch C — Loan Sharking
+Debt buying
+
+Blackmail economics
+
+Interest manipulation
+
+Dark credit scores
+
+Endgame:  
+Control entire neighborhoods or merge into organized crime finance.
+
+3. Security & Intelligence Tree
+This is the “alignment” tree: personal, business, government, and a hidden spy path.
+
+Branch A — Personal Security
+Identity protection
+
+Password cracking
+
+Device infiltration
+
+Social graph mapping
+
+Endgame:  
+Unlock surreal, personal‑reality‑breaking storylines.
+
+Branch B — Organization Security
+Corporate espionage
+
+Insider threat detection
+
+Server infiltration
+
+Data exfiltration
+
+Endgame:  
+Become a public industry titan.
+
+Branch C — Government Security
+Surveillance systems
+
+Census and citizen data
+
+Infrastructure control
+
+Emergency systems
+
+Endgame:  
+Manage an entire city (budget, crime, infrastructure).
+
+Hidden Branch — Spy / Intelligence
+Unlocked by crossing all three branches.
+
+Endgame:  
+Black‑ops missions, deep lore, occult files, unknown encrypted data.
+
+4. Virus / Scripting Tree
+This is the “combat” and “tool creation” tree.
+
+Branch A — Steal
+Keyloggers
+
+Wallet stealers
+
+File siphons
+
+Data harvesting
+
+Endgame:  
+High‑risk, high‑reward money engines.
+
+Branch B — Fight
+PvP hacker duels
+
+Defense scripts
+
+Counter‑intrusion
+
+Firewall bypass minigames
+
+Endgame:  
+Arena‑style hacker tournaments.
+
+Branch C — Create
+Custom virus visuals
+
+Payload design
+
+Modular script engines
+
+AI‑driven malware
+
+Endgame:  
+Build your own signature virus family.
+
+5. Transport & Logistics Tree
+This is the morality‑mixed tree.
+
+Branches
+Good: delivery networks, supply chain optimization
+
+Neutral: smuggling, grey‑market logistics
+
+Evil: trafficking, black‑route networks
+
+Endgame:  
+No fixed endgame—this tree feeds money, influence, and access.
+
+6. Research Tree (the universal unlocker)
+Research is the meta‑progression that powers everything.
+
+Research unlocks:
+faster scanning
+
+better file analysis
+
+new hacking methods
+
+new industries
+
+new storylines
+
+new virus modules
+
+new energy systems
+
+Endgame:  
+Infinite scaling through research labs, think tanks, and AI assistants.
+
+7. Energy Production Tree
+This is the infrastructure tree.
+
+Branches
+Small scale: generators, solar, batteries
+
+Medium scale: water, wind, geothermal
+
+Large scale: oil, nuclear, fusion
+
+Endgame:  
+Mostly story‑driven—control regions, influence markets, trigger crises.
+
+8. Drugs & Black Market Tree
+This is a story‑heavy, risk‑heavy tree.
+
+Branches
+Selling
+
+Manufacturing
+
+Distribution networks
+
+Cartel infiltration
+
+Endgame:  
+Unlocks unique crime boosts, story arcs, and black‑market missions.
+
+9. Hobbies / Lifestyle / Story Paths
+These are optional but unlock unique perks.
+
+Examples
+music production
+
+art forgery
+
+underground clubs
+
+occult research
+
+conspiracy boards
+
+Endgame:  
+Lore, surreal events, and personal‑reality‑breaking content.
+
+10. Racing & Crime Mobility Tree
+This is the movement and chase tree.
+
+Branches
+street racing
+
+getaway driving
+
+courier missions
+
+vehicle hacking
+
+Endgame:  
+Crime boosts, special missions, and unique mobility perks.
+
+11. Real Estate & Property Tree
+This is the ownership tree.
+
+Branches
+buying homes
+
+stealing homes (digital identity takeover)
+
+flipping properties
+
+landlord systems
+
+corporate real estate
+
+Endgame:  
+Own satellites in space (ties into Space tree).
+
+12. Space & Satellite Tree
+This is the late‑late game.
+
+Branches
+satellite hacking
+
+orbital data markets
+
+space‑based surveillance
+
+asteroid mining data
+
+deep‑space signals
+
+Endgame:  
+Cosmic‑scale storylines, unknown encrypted files, occult tech.
+
+13. How All Trees Connect (the key design principle)
+Everything is ultimately hacking:
+
+Hack a home → steal it
+
+Hack a bank → bankrupt it
+
+Hack an org → buy it cheap
+
+Hack markets → crash them
+
+Hack industries → manipulate prices
+
+Hack transport → reroute shipments
+
+Hack energy → cause blackouts
+
+Hack satellites → unlock cosmic lore
+
+Every industry is a playground for hacking actions.
+
+14. The Unified Progression Loop
+All trees feed into each other:
+
+Research unlocks new industries
+
+Industries unlock new money paths
+
+Money unlocks new hacking tools
+
+Tools unlock new missions
+
+Missions unlock new files
+
+Files unlock new research
+
+Repeat
+
+This creates infinite replayability.
+
+
+---------------------------------
+
+
+1. Money Tree
+Branches: Crypto, Paper Money, Loan Sharking  
+Endgame: Banking Titan or Crime Financier
+
+Crypto Branch
+Node 1: Wallet Sniffer
+
+Node 2: Chain Analyzer
+
+Node 3: Miner Optimization
+
+Node 4: Smart Contract Exploits
+
+Node 5: Token Forgery
+
+Node 6: Market Manipulation
+
+Endgame Node: Crypto Syndicate
+
+Paper Money Branch
+Node 1: ATM Skimmer
+
+Node 2: Bank Account Mapper
+
+Node 3: Credit Fraud Toolkit
+
+Node 4: Market Betting Algorithms
+
+Node 5: Corporate Accounting Exploits
+
+Endgame Node: Banking Titan
+
+Loan Sharking Branch
+Node 1: Dark Credit Scores
+
+Node 2: Debt Buying
+
+Node 3: Interest Manipulation
+
+Node 4: Blackmail Economics
+
+Endgame Node: Crime Financier
+
+2. Security & Intelligence Tree
+Branches: Personal, Organization, Government, Spy (Hidden)  
+Endgames: Surreal Personal Arc, Industry Titan, City Manager, Black Ops
+
+Personal Security Branch
+Node 1: Identity Mapper
+
+Node 2: Device Infiltration
+
+Node 3: Social Graph Cracker
+
+Node 4: Personal Data Reconstruction
+
+Node 5: Reality Distortion Files
+
+Endgame Node: Surreal Personal Arc
+
+Organization Security Branch
+Node 1: Employee Credential Harvest
+
+Node 2: Server Room Mapping
+
+Node 3: Insider Threat Engine
+
+Node 4: Corporate Espionage Suite
+
+Node 5: Boardroom Manipulation
+
+Endgame Node: Industry Titan
+
+Government Security Branch
+Node 1: Citizen Database Access
+
+Node 2: Infrastructure Control
+
+Node 3: Surveillance Grid Override
+
+Node 4: Emergency System Hijack
+
+Node 5: Policy Manipulation
+
+Endgame Node: City Manager
+
+Spy Branch (Hidden)
+Unlocks when all three above reach Node 3.
+
+Node 1: Black Ops Access
+
+Node 2: Deep Cover Identity
+
+Node 3: Unknown Encrypted Files
+
+Node 4: Occult Intelligence
+
+Endgame Node: Shadow Architect
+
+3. Virus / Scripting Tree
+Branches: Steal, Fight, Create  
+Endgames: High-Risk Money Engine, Hacker Arena Champion, Custom Virus Family
+
+Steal Branch
+Node 1: Keylogger
+
+Node 2: Wallet Stealer
+
+Node 3: File Siphon
+
+Node 4: Data Harvesting
+
+Node 5: Identity Theft Engine
+
+Endgame Node: High-Risk Money Engine
+
+Fight Branch
+Node 1: Firewall Bypass
+
+Node 2: Counter-Intrusion
+
+Node 3: PvP Duel Scripts
+
+Node 4: Defense AI
+
+Node 5: Arena Protocols
+
+Endgame Node: Hacker Arena Champion
+
+Create Branch
+Node 1: Payload Builder
+
+Node 2: Modular Script Engine
+
+Node 3: Visual Virus Editor
+
+Node 4: AI Malware Architect
+
+Endgame Node: Custom Virus Family
+
+4. Transport & Logistics Tree
+Branches: Good, Neutral, Evil  
+Endgame: None (feeds other trees)
+
+Good Branch
+Node 1: Delivery Network Mapping
+
+Node 2: Supply Chain Optimization
+
+Node 3: Fleet Routing AI
+
+Neutral Branch
+Node 1: Grey-Market Logistics
+
+Node 2: Smuggling Routes
+
+Node 3: Cargo Manipulation
+
+Evil Branch
+Node 1: Black Routes
+
+Node 2: Human Movement Data
+
+Node 3: Trafficking Networks
+
+5. Research Tree
+Branches: Speed, Methods, AI  
+Endgame: Infinite Scaling
+
+Speed Branch
+Node 1: Faster Scanning
+
+Node 2: Parallel Analysis
+
+Node 3: Quantum Sorting
+
+Methods Branch
+Node 1: Pattern Recognition
+
+Node 2: File Reconstruction
+
+Node 3: Deep Data Mining
+
+AI Branch
+Node 1: Research Assistant
+
+Node 2: Autonomous Lab
+
+Node 3: Recursive Research
+
+6. Energy Production Tree
+Branches: Small, Medium, Large  
+Endgame: Story Arcs
+
+Small Scale
+Node 1: Solar
+
+Node 2: Batteries
+
+Node 3: Microgrids
+
+Medium Scale
+Node 1: Wind
+
+Node 2: Water
+
+Node 3: Geothermal
+
+Large Scale
+Node 1: Oil
+
+Node 2: Nuclear
+
+Node 3: Fusion
+
+7. Drugs & Black Market Tree
+Branches: Sell, Make, Distribute  
+Endgame: Crime Empire
+
+Sell Branch
+Node 1: Street Sales
+
+Node 2: Online Markets
+
+Node 3: Darknet Stores
+
+Make Branch
+Node 1: Chemistry Basics
+
+Node 2: Lab Setup
+
+Node 3: High-End Product
+
+Distribute Branch
+Node 1: Local Networks
+
+Node 2: Regional Routes
+
+Node 3: International Cartels
+
+8. Hobbies & Lifestyle Tree
+Branches: Music, Art, Occult, Conspiracy  
+Endgame: Lore Unlocks
+
+9. Racing & Crime Mobility Tree
+Branches: Street, Courier, Getaway  
+Endgame: Crime Boosts
+
+10. Real Estate & Property Tree
+Branches: Buy, Steal, Flip, Corporate  
+Endgame: Space Ownership
+
+11. Space & Satellite Tree
+Branches: Satellites, Signals, Mining, Surveillance  
+Endgame: Cosmic Lore
+
+12. Meta-Hacking Tree
+Branches: Reality, Simulation, Unknown  
+Endgame: Game-Wide Effects
+
+
+
+ROOT: HACKING
+│
+├── MONEY TREE
+│   ├── CRYPTO
+│   │   ├─ [Wallet Sniffer]
+│   │   ├─ [Chain Analyzer]
+│   │   ├─ [Miner Optimization]
+│   │   ├─ [Smart Contract Exploits]
+│   │   ├─ [Token Forgery]
+│   │   ├─ [Market Manipulation]
+│   │   └─ (Crypto Syndicate END)
+│   │
+│   ├── PAPER MONEY
+│   │   ├─ [ATM Skimmer]
+│   │   ├─ [Bank Account Mapper]
+│   │   ├─ [Credit Fraud Toolkit]
+│   │   ├─ [Market Betting Algorithms]
+│   │   ├─ [Corporate Accounting Exploits]
+│   │   └─ (Banking Titan END)
+│   │
+│   └── LOAN SHARKING
+│       ├─ [Dark Credit Scores]
+│       ├─ [Debt Buying]
+│       ├─ [Interest Manipulation]
+│       ├─ [Blackmail Economics]
+│       └─ (Crime Financier END)
+│
+├── SECURITY & INTELLIGENCE TREE
+│   ├── PERSONAL SECURITY
+│   │   ├─ [Identity Mapper]
+│   │   ├─ [Device Infiltration]
+│   │   ├─ [Social Graph Cracker]
+│   │   ├─ [Personal Data Reconstruction]
+│   │   ├─ [Reality Distortion Files]
+│   │   └─ (Surreal Personal Arc END)
+│   │
+│   ├── ORGANIZATION SECURITY
+│   │   ├─ [Employee Credential Harvest]
+│   │   ├─ [Server Room Mapping]
+│   │   ├─ [Insider Threat Engine]
+│   │   ├─ [Corporate Espionage Suite]
+│   │   ├─ [Boardroom Manipulation]
+│   │   └─ (Industry Titan END)
+│   │
+│   ├── GOVERNMENT SECURITY
+│   │   ├─ [Citizen Database Access]
+│   │   ├─ [Infrastructure Control]
+│   │   ├─ [Surveillance Grid Override]
+│   │   ├─ [Emergency System Hijack]
+│   │   ├─ [Policy Manipulation]
+│   │   └─ (City Manager END)
+│   │
+│   └── SPY PATH {HIDDEN}
+│       ├─ [Black Ops Access]
+│       ├─ [Deep Cover Identity]
+│       ├─ [Unknown Encrypted Files]
+│       ├─ [Occult Intelligence]
+│       └─ (Shadow Architect END)
+│
+├── VIRUS / SCRIPTING TREE
+│   ├── STEAL
+│   │   ├─ [Keylogger]
+│   │   ├─ [Wallet Stealer]
+│   │   ├─ [File Siphon]
+│   │   ├─ [Data Harvesting]
+│   │   ├─ [Identity Theft Engine]
+│   │   └─ (High-Risk Money Engine END)
+│   │
+│   ├── FIGHT
+│   │   ├─ [Firewall Bypass]
+│   │   ├─ [Counter-Intrusion]
+│   │   ├─ [PvP Duel Scripts]
+│   │   ├─ [Defense AI]
+│   │   ├─ [Arena Protocols]
+│   │   └─ (Hacker Arena Champion END)
+│   │
+│   └── CREATE
+│       ├─ [Payload Builder]
+│       ├─ [Modular Script Engine]
+│       ├─ [Visual Virus Editor]
+│       ├─ [AI Malware Architect]
+│       └─ (Custom Virus Family END)
+│
+├── TRANSPORT & LOGISTICS TREE
+│   ├── GOOD
+│   │   ├─ [Delivery Network Mapping]
+│   │   ├─ [Supply Chain Optimization]
+│   │   └─ [Fleet Routing AI]
+│   │
+│   ├── NEUTRAL
+│   │   ├─ [Grey-Market Logistics]
+│   │   ├─ [Smuggling Routes]
+│   │   └─ [Cargo Manipulation]
+│   │
+│   └── EVIL
+│       ├─ [Black Routes]
+│       ├─ [Human Movement Data]
+│       └─ [Trafficking Networks]
+│
+├── RESEARCH TREE
+│   ├── SPEED
+│   │   ├─ [Faster Scanning]
+│   │   ├─ [Parallel Analysis]
+│   │   └─ [Quantum Sorting]
+│   │
+│   ├── METHODS
+│   │   ├─ [Pattern Recognition]
+│   │   ├─ [File Reconstruction]
+│   │   └─ [Deep Data Mining]
+│   │
+│   └── AI
+│       ├─ [Research Assistant]
+│       ├─ [Autonomous Lab]
+│       └─ [Recursive Research]
+│
+├── ENERGY PRODUCTION TREE
+│   ├── SMALL
+│   │   ├─ [Solar]
+│   │   ├─ [Batteries]
+│   │   └─ [Microgrids]
+│   │
+│   ├── MEDIUM
+│   │   ├─ [Wind]
+│   │   ├─ [Water]
+│   │   └─ [Geothermal]
+│   │
+│   └── LARGE
+│       ├─ [Oil]
+│       ├─ [Nuclear]
+│       └─ [Fusion]
+│
+├── DRUGS & BLACK MARKET TREE
+│   ├── SELL
+│   │   ├─ [Street Sales]
+│   │   ├─ [Online Markets]
+│   │   └─ [Darknet Stores]
+│   │
+│   ├── MAKE
+│   │   ├─ [Chemistry Basics]
+│   │   ├─ [Lab Setup]
+│   │   └─ [High-End Product]
+│   │
+│   └── DISTRIBUTE
+│       ├─ [Local Networks]
+│       ├─ [Regional Routes]
+│       └─ [International Cartels]
+│
+├── HOBBIES & LIFESTYLE TREE
+│   ├─ [Music Production]
+│   ├─ [Art Forgery]
+│   ├─ [Occult Research]
+│   └─ [Conspiracy Boards]
+│
+├── RACING & CRIME MOBILITY TREE
+│   ├─ [Street Racing]
+│   ├─ [Courier Missions]
+│   └─ [Getaway Driving]
+│
+├── REAL ESTATE & PROPERTY TREE
+│   ├─ [Buy Homes]
+│   ├─ [Steal Homes]
+│   ├─ [Flip Properties]
+│   └─ [Corporate Real Estate]
+│
+└── SPACE & SATELLITE TREE
+    ├─ [Satellite Hacking]
+    ├─ [Orbital Data Markets]
+    ├─ [Space Surveillance]
+    ├─ [Asteroid Mining Data]
+    └─ (Cosmic Lore END)
+
+
+full tree sofar: <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Duality Engine – Karma & Hacking Wheel</title>
+  <style>
+    :root {
+      --bg: #05060a;
+      --fg: #f5f5f7;
+      --good: #4fd1ff;
+      --neutral: #c0c0c0;
+      --evil: #ff4b6a;
+      --research: #ffdd57;
+      --industry: #9b5cff;
+      --ascendancy: #00ffb3;
+      --center: #ffffff;
+      --tooltip-bg: #11131a;
+      --tooltip-border: #3b3f4f;
+      --tooltip-shadow: 0 0 12px rgba(0,0,0,0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #151827 0, #05060a 55%, #020308 100%);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 1100px;
+      height: 1100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--fg);
+    }
+
+    .wheel-bg {
+      position: absolute;
+      inset: 10%;
+      border-radius: 50%;
+      background: radial-gradient(circle, #151827 0, #05060a 60%, #020308 100%);
+      box-shadow:
+        0 0 40px rgba(0,0,0,0.9),
+        0 0 120px rgba(0,0,0,0.9);
+    }
+
+    .ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.06);
+      pointer-events: none;
+    }
+
+    .ring-inner   { width: 260px; height: 260px; }
+    .ring-mid     { width: 520px; height: 520px; }
+    .ring-outer   { width: 800px; height: 800px; }
+    .ring-extreme { width: 980px; height: 980px; }
+
+    .ring-inner,
+    .ring-mid,
+    .ring-outer,
+    .ring-extreme {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .center-node {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 0, #c0d0ff 30%, #151827 100%);
+      box-shadow:
+        0 0 20px rgba(255,255,255,0.4),
+        0 0 60px rgba(80,120,255,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #05060a;
+      cursor: default;
+      z-index: 5;
+    }
+
+    .node {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #666;
+      box-shadow: 0 0 10px rgba(0,0,0,0.7);
+      cursor: pointer;
+      transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+    }
+
+    .node::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.9) 0, transparent 70%);
+      opacity: 0.7;
+    }
+
+    .node:hover {
+      transform: scale(1.25);
+      box-shadow:
+        0 0 14px rgba(255,255,255,0.7),
+        0 0 28px rgba(255,255,255,0.4);
+      z-index: 10;
+    }
+
+    .node.good       { background: var(--good); }
+    .node.neutral    { background: var(--neutral); }
+    .node.evil       { background: var(--evil); }
+    .node.research   { background: var(--research); }
+    .node.industry   { background: var(--industry); }
+    .node.ascendancy { background: var(--ascendancy); }
+
+    .node-line {
+      position: absolute;
+      width: 2px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.25), rgba(255,255,255,0.02));
+      transform-origin: top center;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .tooltip {
+      position: fixed;
+      max-width: 260px;
+      background: var(--tooltip-bg);
+      border-radius: 8px;
+      border: 1px solid var(--tooltip-border);
+      padding: 10px 12px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--fg);
+      box-shadow: var(--tooltip-shadow);
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+    }
+
+    .tooltip-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .tooltip-meta {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+
+    .tooltip-meta span {
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    .tooltip-desc {
+      font-size: 12px;
+      opacity: 0.95;
+    }
+
+    .legend {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.good       { background: var(--good); }
+    .legend-dot.neutral    { background: var(--neutral); }
+    .legend-dot.evil       { background: var(--evil); }
+    .legend-dot.research   { background: var(--research); }
+    .legend-dot.industry   { background: var(--industry); }
+    .legend-dot.ascendancy { background: var(--ascendancy); }
+
+    .legend-label {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+  <div class="wheel-container">
+    <div class="wheel-bg"></div>
+
+    <div class="ring-inner"></div>
+    <div class="ring-mid"></div>
+    <div class="ring-outer"></div>
+    <div class="ring-extreme"></div>
+
+    <div class="center-node">
+      ROOT<br>HACKING
+    </div>
+
+    <!-- INNER RING – RESEARCH -->
+    <div class="node research"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(0, -130px);"
+         data-title="Faster Scanning"
+         data-meta="Type: Research • Tier I • Karma: Any"
+         data-desc="Boosts all discovery speed for targets and systems. Unlocks higher‑tier research and early reconnaissance perks.">
+    </div>
+
+    <div class="node research"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(112px, -65px);"
+         data-title="Pattern Recognition"
+         data-meta="Type: Research • Tier II • Karma: Any"
+         data-desc="Enables advanced correlation of logs, transactions, and signals. Required for financial, security, and data‑oriented branches.">
+    </div>
+
+    <div class="node research"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(112px, 65px);"
+         data-title="Deep Data Mining"
+         data-meta="Type: Research • Tier III • Karma: Any"
+         data-desc="Unlocks large‑scale analysis of complex datasets. Bridges into high‑level finance, surveillance, and intelligence paths.">
+    </div>
+
+    <div class="node research"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(0, 130px);"
+         data-title="Autonomous Lab"
+         data-meta="Type: Research • Tier III • Karma: Any"
+         data-desc="Automates experimentation and simulation. Required for advanced scripting, AI‑driven tools, and custom payload families.">
+    </div>
+
+    <div class="node research"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(-112px, 65px);"
+         data-title="Recursive Research"
+         data-meta="Type: Research • Tier IV • Karma: Any"
+         data-desc="Self‑improving research loops. Unlocks late‑game AI, strategic planning, and multiple endgame specializations.">
+    </div>
+
+    <div class="node research"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(-112px, -65px);"
+         data-title="Quantum Sorting"
+         data-meta="Type: Research • Tier IV • Karma: Any"
+         data-desc="Near‑instant sorting of massive datasets. Required for top‑tier government, space, and global‑scale systems branches.">
+    </div>
+
+    <!-- MIDDLE RING – INDUSTRY SPOKES (SAMPLE NODES) -->
+
+    <!-- MONEY – CRYPTO -->
+    <div class="node industry"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(0, -260px);"
+         data-title="Crypto Operations"
+         data-meta="Tree: Money • Tier I • Karma: Neutral / Slightly Negative"
+         data-desc="Foundational skills for interacting with digital assets, tracing flows, and understanding on‑chain behavior in a fictional setting.">
+    </div>
+
+    <div class="node industry"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(60px, -310px);"
+         data-title="Chain Analyzer"
+         data-meta="Tree: Money • Tier II • Requires: Faster Scanning"
+         data-desc="Advanced visualization and analysis of fictional blockchain activity. Enables deeper financial investigation and strategic planning.">
+    </div>
+
+    <!-- SECURITY & INTELLIGENCE -->
+    <div class="node industry"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(260px, 0);"
+         data-title="Organization Security"
+         data-meta="Tree: Security • Tier I • Karma: Any"
+         data-desc="Core understanding of how organizations protect infrastructure, staff, and data. Gateway to defensive and intelligence‑focused paths.">
+    </div>
+
+    <div class="node industry"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(310px, 60px);"
+         data-title="Server Room Mapping"
+         data-meta="Tree: Security • Tier II • Requires: Pattern Recognition"
+         data-desc="Models critical infrastructure layouts and dependencies. Unlocks higher‑tier corporate and government security branches.">
+    </div>
+
+    <!-- VIRUS / SCRIPTING -->
+    <div class="node industry"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(0, 260px);"
+         data-title="Script Foundations"
+         data-meta="Tree: Scripting • Tier I • Karma: Any"
+         data-desc="Basic automation and tooling. Required for all later paths: Steal, Fight, and Create in the fictional environment.">
+    </div>
+
+    <div class="node industry"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(-60px, 310px);"
+         data-title="Modular Script Engine"
+         data-meta="Tree: Scripting • Tier II • Requires: Autonomous Lab"
+         data-desc="Builds reusable, modular tools. Unlocks complex payload design and custom behavior trees for in‑game systems.">
+    </div>
+
+    <!-- SPACE & SATELLITE -->
+    <div class="node industry"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(-260px, 0);"
+         data-title="Orbital Data Networks"
+         data-meta="Tree: Space • Tier I • Karma: Any"
+         data-desc="Introduces satellite‑level data flows and observation. Required for space surveillance and cosmic‑scale lore branches.">
+    </div>
+
+    <div class="node industry"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(-310px, -60px);"
+         data-title="Space Surveillance"
+         data-meta="Tree: Space • Tier II • Requires: Quantum Sorting"
+         data-desc="High‑level monitoring of fictional orbital assets. Bridges into late‑game strategic and narrative paths.">
+    </div>
+
+    <!-- OUTER RING – KARMA CONSTELLATIONS (SAMPLE NODES) -->
+
+    <!-- GOOD – WHITE HAT / TECH FOR GOOD -->
+    <div class="node good"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(0, -400px);"
+         data-title="Ethical Hacking"
+         data-meta="Karma: +10 • Path: White Hat Security"
+         data-desc="Focuses on responsible testing and reporting in a fictional world. Increases reputation with protective and civic‑minded factions.">
+    </div>
+
+    <div class="node good"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(80px, -430px);"
+         data-title="Responsible Disclosure"
+         data-meta="Karma: +15 • Requires: Ethical Hacking"
+         data-desc="Formalizes safe reporting channels. Unlocks access to cooperative organizations and advanced defensive contracts.">
+    </div>
+
+    <div class="node good"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(260px, -300px);"
+         data-title="Tech for Good"
+         data-meta="Karma: +20 • Path: Corporate Redemption"
+         data-desc="Directs technical skill toward humanitarian and public‑benefit projects. Increases access to supportive institutions and resources.">
+    </div>
+
+    <!-- NEUTRAL – GREY HAT / ANARCHIST -->
+    <div class="node neutral"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(400px, 0);"
+         data-title="Grey Hat Mercenary"
+         data-meta="Karma: –10 to +10 • Path: Neutral"
+         data-desc="Operates in ambiguous territory, taking contracts from multiple sides. Keeps options open for future alignment shifts.">
+    </div>
+
+    <div class="node neutral"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(430px, 80px);"
+         data-title="Information Brokerage"
+         data-meta="Karma: Variable • Requires: Grey Hat Mercenary"
+         data-desc="Trades in knowledge and leverage. A flexible node that can tilt toward good, neutral, or darker paths depending on choices.">
+    </div>
+
+    <!-- EVIL – BLACK HAT / SHADOW OPS (ABSTRACTED) -->
+    <div class="node evil"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(0, 400px);"
+         data-title="Black Network Architect"
+         data-meta="Karma: –50 • Path: Shadow Operations"
+         data-desc="Designs covert infrastructures in a fictional underworld. Greatly boosts access to hidden markets and secretive factions.">
+    </div>
+
+    <div class="node evil"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(-80px, 430px);"
+         data-title="Obscured Syndicate Ties"
+         data-meta="Karma: –75 • Requires: Black Network Architect"
+         data-desc="Deepens connections with clandestine groups. Strong bonuses to influence and reach, at the cost of intense scrutiny.">
+    </div>
+
+    <!-- EXTREME RING – ASCENDANCIES (ENDGAME) -->
+
+    <div class="node ascendancy"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(0, -490px);"
+         data-title="Digital Saint"
+         data-meta="Karma: +200 • Endgame Ascendancy"
+         data-desc="Embodies ultimate protective alignment. Shapes global‑scale policy and safeguards in the fictional setting. Grants powerful defensive and support bonuses.">
+    </div>
+
+    <div class="node ascendancy"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(490px, 0);"
+         data-title="Vigilante Coder"
+         data-meta="Karma: +50 to –50 • Endgame Ascendancy"
+         data-desc="Walks the line between order and rebellion. Gains unique tools that blend exposure, disruption, and targeted justice.">
+    </div>
+
+    <div class="node ascendancy"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(0, 490px);"
+         data-title="Shadow Architect"
+         data-meta="Karma: –150 • Endgame Ascendancy"
+         data-desc="Master of hidden systems and unseen influence in a fictional world. Controls deep networks and long‑term strategic levers.">
+    </div>
+
+    <div class="node ascendancy"
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%) translate(-490px, 0);"
+         data-title="Cosmic Lore Keeper"
+         data-meta="Karma: Any • Endgame Ascendancy"
+         data-desc="Ties together space, data, and mythic knowledge. Unlocks unique narrative routes and high‑level observational abilities.">
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend">
+      <div class="legend-row">
+        <div class="legend-dot research"></div>
+        <div class="legend-label">Research</div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot industry"></div>
+        <div class="legend-label">Industry / Skill</div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot good"></div>
+        <div class="legend-label">Good Alignment</div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot neutral"></div>
+        <div class="legend-label">Neutral Alignment</div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot evil"></div>
+        <div class="legend-label">Evil Alignment</div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot ascendancy"></div>
+        <div class="legend-label">Ascendancy / Endgame</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tooltip" id="tooltip">
+    <div class="tooltip-title" id="tooltip-title"></div>
+    <div class="tooltip-meta" id="tooltip-meta"></div>
+    <div class="tooltip-desc" id="tooltip-desc"></div>
+  </div>
+
+  <script>
+    const tooltip = document.getElementById('tooltip');
+    const tTitle = document.getElementById('tooltip-title');
+    const tMeta  = document.getElementById('tooltip-meta');
+    const tDesc  = document.getElementById('tooltip-desc');
+
+    function showTooltip(e) {
+      const node = e.currentTarget;
+      tTitle.textContent = node.getAttribute('data-title') || '';
+      tMeta.textContent  = node.getAttribute('data-meta') || '';
+      tDesc.textContent  = node.getAttribute('data-desc') || '';
+
+      tooltip.style.display = 'block';
+      positionTooltip(e);
+    }
+
+    function hideTooltip() {
+      tooltip.style.display = 'none';
+    }
+
+    function positionTooltip(e) {
+      const padding = 12;
+      let x = e.clientX + 16;
+      let y = e.clientY + 16;
+
+      const rect = tooltip.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      if (x + rect.width + padding > vw) {
+        x = e.clientX - rect.width - 16;
+      }
+      if (y + rect.height + padding > vh) {
+        y = e.clientY - rect.height - 16;
+      }
+
+      tooltip.style.left = x + 'px';
+      tooltip.style.top  = y + 'px';
+    }
+
+    document.querySelectorAll('.node').forEach(node => {
+      node.addEventListener('mouseenter', showTooltip);
+      node.addEventListener('mouseleave', hideTooltip);
+      node.addEventListener('mousemove', positionTooltip);
+    });
+  </script>
+</body>
+</html>
+

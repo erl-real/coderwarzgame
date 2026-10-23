@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEURAL STACK // CORE_STABILITY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+        body { font-family: 'JetBrains Mono', monospace; background: #064e3b; color: #fff; overflow: hidden; }
+        .win-dark { background: rgba(10, 11, 14, 0.9); border: 1px solid rgba(255,255,255,0.1); color: #fff; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .card { width: 80px; height: 120px; background: #fff; border-radius: 8px; border: 1px solid #333; position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; user-select: none; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .card.back { background: repeating-linear-gradient(45deg, #1e293b, #1e293b 10px, #0f172a 10px, #0f172a 20px); border: 2px solid #3b82f6; }
+        .card.back::after { content: 'SYN'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 900; color: rgba(59, 130, 246, 0.2); font-size: 20px; }
+        .slot { width: 80px; height: 120px; border: 2px dashed rgba(255,255,255,0.1); border-radius: 8px; }
+        .red { color: #ef4444; }
+        .black { color: #000; }
+        .crt::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02)); z-index: 50; background-size: 100% 2px, 3px 100%; pointer-events: none; }
+    </style>
+</head>
+<body x-data="gameEngine()" x-init="init()" class="h-screen flex flex-col p-4 md:p-8 crt">
+
+    <!-- Header HUD -->
+    <div class="h-16 shrink-0 flex items-center justify-between px-6 win-dark border-b border-blue-500/20 mb-6 rounded-2xl bg-black/80 backdrop-blur-xl">
+        <div class="flex items-center gap-8">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                    <i data-lucide="layers" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black italic tracking-tighter text-blue-400 uppercase">Neural_Stack_Pro</h1>
+                    <p class="text-[8px] text-white/30 uppercase tracking-[0.4em]">Core-Integrity-Stabilizer</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-10">
+                <div class="flex flex-col">
+                    <span class="text-[8px] uppercase font-black text-white/30">Stability_Rating</span>
+                    <span class="text-sm font-bold text-emerald-400" x-text="calculateStability() + '%'">100%</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[8px] uppercase font-black text-white/30">Data_Recovered</span>
+                    <span class="text-sm font-bold text-blue-400" x-text="score">0</span>
+                </div>
+            </div>
+        </div>
+
+        <button @click="reset()" class="h-10 px-8 bg-blue-500 text-black font-black text-[10px] uppercase tracking-widest hover:bg-blue-400 transition-all active:scale-95">
+            RE-STACK_KERNEL
+        </button>
+    </div>
+
+    <!-- Main Table Area -->
+    <div class="flex-1 flex flex-col gap-8">
+        
+        <!-- Top Row (Foundation & Stock) -->
+        <div class="flex justify-between items-start px-12">
+            <div class="flex gap-4">
+                <div @click="drawCard()" class="card back"></div>
+                <div id="waste-pile" class="relative">
+                    <template x-for="(c, i) in waste">
+                        <div class="card absolute top-0" :class="c.color" :style="'left: ' + (i*2) + 'px;'">
+                            <div class="absolute top-1 left-1 font-bold text-xs" x-text="c.label"></div>
+                            <div class="absolute top-1 right-1 text-xs" x-text="c.suitChar"></div>
+                            <div class="absolute inset-0 flex items-center justify-center text-2xl" x-text="c.suitChar"></div>
+                        </div>
+                    </template>
+                    <div x-show="waste.length === 0" class="slot"></div>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <template x-for="i in 4">
+                    <div class="slot flex items-center justify-center relative">
+                        <i data-lucide="shield" class="text-white/5 w-8 h-8"></i>
+                        <template x-for="c in foundation[i-1]">
+                            <div class="card absolute inset-0" :class="c.color">
+                                <div class="absolute top-1 left-1 font-bold text-xs" x-text="c.label"></div>
+                                <div class="absolute top-1 right-1 text-xs" x-text="c.suitChar"></div>
+                                <div class="absolute inset-0 flex items-center justify-center text-2xl" x-text="c.suitChar"></div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Tableau Row -->
+        <div class="flex-1 flex justify-center gap-6 px-4">
+            <template x-for="(stack, sIdx) in tableau">
+                <div class="w-20 relative">
+                    <template x-for="(c, cIdx) in stack">
+                        <div class="card absolute" 
+                             :class="[c.revealed ? c.color : 'back']"
+                             :style="'top: ' + (cIdx * 25) + 'px;'"
+                             @click="handleCardClick(sIdx, cIdx)">
+                            <template x-if="c.revealed">
+                                <div>
+                                    <div class="absolute top-1 left-1 font-bold text-xs" x-text="c.label"></div>
+                                    <div class="absolute top-1 right-1 text-xs" x-text="c.suitChar"></div>
+                                    <div class="absolute inset-0 flex items-center justify-center text-2xl" x-text="c.suitChar"></div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <div x-show="stack.length === 0" class="slot" @click="handleStackClick(sIdx)"></div>
+                </div>
+            </template>
+        </div>
+
+    </div>
+
+    <!-- Ticker Footer -->
+    <div class="h-8 win-dark border-t border-white/10 flex items-center px-6 overflow-hidden">
+        <div class="text-[9px] font-black text-blue-400/60 uppercase tracking-widest italic" x-text="tickerMsg">SYNCHRONIZING_STACK_PROTOCOLS...</div>
+    </div>
+
+    <script>
+        function gameEngine() {
+            return {
+                data: { suits: [], rewards: {} },
+                deck: [],
+                waste: [],
+                foundation: [[], [], [], []],
+                tableau: [[], [], [], [], [], [], []],
+                score: 0,
+                tickerMsg: "READY FOR KERNEL STABILIZATION.",
+                
+                async init() {
+                    const res = await fetch('gamedata.json');
+                    this.data = await res.json();
+                    this.reset();
+                    lucide.createIcons();
+                },
+
+                reset() {
+                    this.setupDeck();
+                    this.setupTableau();
+                    this.waste = [];
+                    this.foundation = [[], [], [], []];
+                    this.tickerMsg = "NEW_STACK_GENERATED. PROCEED WITH DECRYPTION.";
+                },
+
+                setupDeck() {
+                    const suits = [
+                        { id: 'spades', char: '♠', color: 'black' },
+                        { id: 'hearts', char: '♥', color: 'red' },
+                        { id: 'diamonds', char: '♦', color: 'red' },
+                        { id: 'clubs', char: '♣', color: 'black' }
+                    ];
+                    const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+                    
+                    this.deck = [];
+                    suits.forEach(s => {
+                        values.forEach((v, i) => {
+                            this.deck.push({ 
+                                suit: s.id, 
+                                suitChar: s.char, 
+                                color: s.color, 
+                                label: v, 
+                                val: i + 1,
+                                revealed: false 
+                            });
+                        });
+                    });
+                    this.deck.sort(() => Math.random() - 0.5);
+                },
+
+                setupTableau() {
+                    this.tableau = [[], [], [], [], [], [], []];
+                    for(let i=0; i<7; i++) {
+                        for(let j=0; j<=i; j++) {
+                            const c = this.deck.pop();
+                            if (j === i) c.revealed = true;
+                            this.tableau[i].push(c);
+                        }
+                    }
+                },
+
+                drawCard() {
+                    if (this.deck.length === 0) {
+                        this.deck = [...this.waste].reverse().map(c => ({ ...c, revealed: false }));
+                        this.waste = [];
+                        return;
+                    }
+                    const c = this.deck.pop();
+                    c.revealed = true;
+                    this.waste.push(c);
+                },
+
+                handleCardClick(sIdx, cIdx) {
+                    // Logic for moving cards...
+                    const card = this.tableau[sIdx][cIdx];
+                    this.tickerMsg = `NODE_SELECTED: ${card.label}${card.suitChar}. ANALYZING PATHS...`;
+                },
+
+                calculateStability() {
+                    const placed = this.foundation.reduce((a, b) => a + b.length, 0);
+                    return Math.floor((placed / 52) * 100);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

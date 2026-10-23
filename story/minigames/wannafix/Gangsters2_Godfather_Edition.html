@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NET-LORD: GLOBAL DOMINANCE</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #050505; --panel: #0a0a0a; --text: #00ff66; --danger: #ff3300; --border: #1a1a1a;
+            --dim: #004411; --gold: #ffcc00;
+        }
+        * { box-sizing: border-box; user-select: none; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+        body { background: var(--bg); color: var(--text); margin: 0; overflow: hidden; height: 100vh; text-transform: uppercase; }
+        #root { display: flex; height: 100%; flex-direction: column; background: radial-gradient(circle at center, #001100 0%, #050505 100%); }
+
+        /* --- UI THEME: CYBER OPS --- */
+        .top-bar { 
+            height: 60px; background: #000; border-bottom: 2px solid var(--text); 
+            display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 0 20px rgba(0,255,102,0.2); z-index: 10;
+        }
+        .logo { font-size: 1.2rem; color: var(--text); letter-spacing: 5px; font-weight: bold; text-shadow: 0 0 10px var(--text); }
+        
+        .main-stage { flex: 1; display: grid; grid-template-columns: 320px 1fr 380px; overflow: hidden; }
+        .sidebar { background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 5; }
+        .right-panel { background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; z-index: 5; }
+        
+        .map-container { position: relative; background: #000; overflow: hidden; cursor: crosshair; }
+        .map-grid-bg { position: absolute; inset: 0; background-image: linear-gradient(var(--dim) 1px, transparent 1px), linear-gradient(90deg, var(--dim) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.2; }
+        
+        /* --- COMPONENTS --- */
+        .btn { 
+            background: transparent; border: 1px solid var(--text); color: var(--text);
+            padding: 8px 15px; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px;
+            transition: 0.2s; font-weight: bold;
+        }
+        .btn:hover { background: var(--text); color: #000; box-shadow: 0 0 15px var(--text); }
+        .btn.danger { border-color: var(--danger); color: var(--danger); }
+        .btn.danger:hover { background: var(--danger); color: #fff; box-shadow: 0 0 15px var(--danger); }
+        .btn:disabled { opacity: 0.2; cursor: not-allowed; border-color: var(--dim); color: var(--dim); }
+
+        .stat-pill { 
+            background: #000; padding: 5px 12px; border: 1px solid var(--dim);
+            display: flex; gap: 10px; align-items: center; font-size: 0.8rem;
+        }
+
+        .card { background: rgba(0,0,0,0.5); border: 1px solid var(--border); margin: 10px; }
+        .card-header { 
+            background: var(--dim); padding: 8px; border-bottom: 1px solid var(--text); 
+            color: #fff; font-weight: bold; font-size: 0.7rem;
+            display: flex; justify-content: space-between;
+        }
+        .card-body { padding: 10px; }
+
+        /* --- CREW MANAGEMENT --- */
+        .portrait { width: 45px; height: 45px; border: 1px solid var(--dim); background: #000; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--dim); }
+        .member-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; background: rgba(0,255,102,0.02); padding: 8px; border: 1px solid transparent; cursor: pointer; }
+        .member-row:hover { border-color: var(--text); background: rgba(0,255,102,0.05); }
+        .role-badge { font-size: 0.6rem; padding: 2px 6px; background: #000; color: var(--text); border: 1px solid var(--dim); }
+
+        /* --- MAP ELEMENTS --- */
+        .biz-node { 
+            position: absolute; width: 34px; height: 34px; transform: translate(-50%, -50%);
+            border: 1px solid var(--dim); background: rgba(0,0,0,0.8); color: var(--dim); display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; cursor: pointer; transition: 0.2s; z-index: 10;
+        }
+        .biz-node:hover { transform: translate(-50%, -50%) scale(1.2); z-index: 20; border-color: #fff; color: #fff; }
+        .biz-node.owned { border-color: var(--text); color: var(--text); box-shadow: 0 0 10px var(--text); }
+        .biz-node.rival { border-color: var(--danger); color: var(--danger); box-shadow: 0 0 10px var(--danger); }
+        
+        .unit-marker {
+            position: absolute; width: 8px; height: 8px; background: #fff; border-radius: 50%;
+            transform: translate(-50%, -50%); z-index: 15; pointer-events: none;
+            box-shadow: 0 0 10px #fff;
+        }
+
+        .ticker { position: absolute; bottom: 0; width: 100%; background: #000; color: var(--text); padding: 6px 20px; font-size: 0.7rem; border-top: 1px solid var(--border); z-index: 50; }
+        
+        /* --- MODAL --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .dossier { 
+            width: 700px; padding: 40px; background: #000; color: var(--text); 
+            border: 2px solid var(--text); position: relative; box-shadow: 0 0 50px rgba(0,255,102,0.3);
+        }
+        .stamp { 
+            position: absolute; top: 20px; right: 20px; border: 3px solid var(--danger); color: var(--danger); 
+            padding: 10px; font-weight: bold; font-size: 1.2rem; transform: rotate(-15deg); opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // ==========================================
+        // CYBER DATABASE (SYCHRONIZED WITH GAME DATA)
+        // ==========================================
+        const ROLES = ['Script Kiddie', 'SysAdmin', 'Net-Runner', 'Net-Lord'];
+        const BUSINESS_TYPES = {
+            'proxy': { name: 'Proxy Node', cost: 5000, type: 'FRONT', income: 300, heat: 2 },
+            'server': { name: 'Server Farm', cost: 25000, type: 'FRONT', income: 1200, heat: 8 },
+            'exchange': { name: 'Crypto Exchange', cost: 150000, type: 'ILLEGAL', income: 8000, heat: 25 },
+            'dark-hub': { name: 'Dark Web Hub', cost: 75000, type: 'ILLEGAL', income: 4500, heat: 20 },
+            'botnet': { name: 'Botnet Hive', cost: 45000, type: 'ILLEGAL', income: 3000, heat: 15 },
+            'relay': { name: 'VPN Relay', cost: 120000, type: 'LAUNDRY', income: 1500, heat: -12 } // Reduces trace
+        };
+
+        const NAMES = {
+            first: ['Zero', 'Neo', 'Dax', 'Cipher', 'Vortex', 'Echo', 'Glitch', 'Binary'],
+            last: ['X', 'Null', 'Void', 'Root', 'Shell', 'Buffer', 'Stack', 'Main']
+        };
+
+        const App = () => {
+            const [loading, setLoading] = useState(true);
+            const [cityData, setCityData] = useState(null);
+            
+            // Economy & State
+            const [date, setDate] = useState({ week: 1, year: 2026 });
+            const [crypto, setCrypto] = useState({ dirty: 5000, washed: 10000 });
+            const [traceLevel, setTraceLevel] = useState(5);
+            
+            // Game Entities
+            const [crew, setCrew] = useState([]);
+            const [nodes, setNodes] = useState([]);
+            const [squads, setSquads] = useState([]);
+            
+            // UI
+            const [view, setView] = useState('MAP');
+            const [selectedNode, setSelectedNode] = useState(null);
+            const [ticker, setTicker] = useState("Establishing connection to Global Node Network...");
+            const [modal, setModal] = useState(null);
+
+            // --- LOAD EXTERNAL DATA ---
+            useEffect(() => {
+                const load = async () => {
+                    const res = await fetch('../../data/cities.json');
+                    const data = await res.json();
+                    setCityData(data);
+                    
+                    // Init Crew
+                    setCrew([
+                        createMember('Net-Runner'),
+                        createMember('SysAdmin'), createMember('SysAdmin'),
+                        createMember('Script Kiddie'), createMember('Script Kiddie')
+                    ]);
+
+                    // Init Global Nodes (distributed across your cities)
+                    const initialNodes = [];
+                    const allCities = [...data.starter_cities, ...data.travel_destinations];
+                    
+                    for(let i=0; i<40; i++) {
+                        const city = allCities[Math.floor(Math.random() * allCities.length)];
+                        initialNodes.push({
+                            id: i,
+                            city: city,
+                            x: Math.random() * 80 + 10, // Percent based for responsive
+                            y: Math.random() * 80 + 10,
+                            type: Object.keys(BUSINESS_TYPES)[Math.floor(Math.random() * 3)],
+                            owner: Math.random() < 0.1 ? 1 : Math.random() < 0.2 ? 2 : 0, // 1=Player, 2=Rival
+                            level: 1
+                        });
+                    }
+                    setNodes(initialNodes);
+                    setLoading(false);
+                };
+                load();
+            }, []);
+
+            function createMember(role) {
+                return {
+                    id: Math.random().toString(36).substr(2, 5),
+                    name: `${NAMES.first[Math.floor(Math.random()*NAMES.first.length)]}_${NAMES.last[Math.floor(Math.random()*NAMES.last.length)]}`,
+                    role,
+                    stats: { muscle: 40+Math.random()*60, smarts: 60+Math.random()*40, loyalty: 100 },
+                    status: 'IDLE',
+                    wage: role === 'Script Kiddie' ? 400 : role === 'SysAdmin' ? 1500 : 4000
+                };
+            }
+
+            // --- MAIN GAME LOOP ---
+            useEffect(() => {
+                if (loading) return;
+                const timer = setInterval(() => {
+                    let weeklyDirty = 0;
+                    let weeklyWashed = 0;
+                    let weeklyTrace = 0;
+
+                    nodes.forEach(n => {
+                        if (n.owner === 1) {
+                            const config = BUSINESS_TYPES[n.type];
+                            const profile = cityData.city_data[n.city]?.profile || 'standard';
+                            const multiplier = 1.0; // Could use cities.json multipliers here
+
+                            if (config.type === 'ILLEGAL') {
+                                weeklyDirty += config.income * n.level;
+                                weeklyTrace += config.heat;
+                            } else if (config.type === 'LAUNDRY') {
+                                const washAmount = Math.min(crypto.dirty, 3000 * n.level);
+                                weeklyWashed += washAmount * 0.85;
+                                weeklyDirty -= washAmount;
+                                weeklyTrace += config.heat; // Usually negative
+                            } else {
+                                weeklyWashed += config.income * n.level;
+                                weeklyTrace += config.heat;
+                            }
+                        }
+                    });
+
+                    const wages = crew.reduce((a, m) => a + m.wage, 0);
+                    
+                    setCrypto(prev => ({
+                        dirty: Math.max(0, prev.dirty + weeklyDirty),
+                        washed: Math.max(0, prev.washed + weeklyWashed - wages)
+                    }));
+
+                    setTraceLevel(prev => Math.max(0, Math.min(100, prev + (weeklyTrace / 50))));
+
+                    if (traceLevel > 95 && Math.random() < 0.15) {
+                        setModal({ type: 'RICO', reason: 'GLOBAL RICO.EXE TRACEBACK SUCCESSFUL' });
+                    }
+
+                    setDate(d => {
+                        const w = d.week + 1;
+                        return { week: w > 52 ? 1 : w, year: w > 52 ? d.year + 1 : d.year };
+                    });
+                }, 3000);
+                return () => clearInterval(timer);
+            }, [nodes, crew, crypto, traceLevel, loading]);
+
+            // --- ACTIONS ---
+            const captureNode = (node) => {
+                const config = BUSINESS_TYPES[node.type];
+                if (crypto.washed < config.cost) return setTicker("INSUFFICIENT WASHED CRYPTO FOR ACQUISITION.");
+                
+                setCrypto(c => ({ ...c, washed: c.washed - config.cost }));
+                setNodes(prev => prev.map(n => n.id === node.id ? { ...n, owner: 1 } : n));
+                setTicker(`NODE ${node.id} IN ${node.city} SECURED. INTEGRATING TO BOTNET.`);
+                setSelectedNode(null);
+            };
+
+            const runOperation = (target, type) => {
+                const activeUnits = crew.filter(m => m.status === 'IDLE').slice(0, 3);
+                if (activeUnits.length === 0) return setTicker("NO OPERATIVES AVAILABLE.");
+
+                setCrew(prev => prev.map(m => activeUnits.includes(m) ? { ...m, status: type } : m));
+                
+                const opId = Date.now();
+                setSquads(prev => [...prev, { id: opId, target, type }]);
+
+                setTimeout(() => {
+                    const power = activeUnits.reduce((a,b) => a + b.stats.smarts, 0);
+                    const success = power > Math.random() * 250;
+
+                    if (success) {
+                        if (type === 'INFILTRATE') {
+                            setNodes(prev => prev.map(n => n.id === target.id ? { ...n, owner: 1, type: 'proxy' } : n));
+                            setTicker(`INFILTRATION SUCCESSFUL: ${target.city} NODE COMPROMISED.`);
+                        } else {
+                            setNodes(prev => prev.map(n => n.id === target.id ? { ...n, owner: 0, type: 'proxy' } : n));
+                            setTicker(`DDOS SUCCESSFUL: ${target.city} RIVAL NODE OFFLINE.`);
+                        }
+                    } else {
+                        setTicker(`OPERATION FAILED: RIVAL FIREWALL REPELLED ATTACK.`);
+                    }
+
+                    setCrew(prev => prev.map(m => activeUnits.includes(m) ? { ...m, status: 'IDLE' } : m));
+                    setSquads(prev => prev.filter(s => s.id !== opId));
+                }, 4000);
+            };
+
+            if (loading) return <div style={{display:'flex', height:'100vh', alignItems:'center', justifyContent:'center'}}>INITIALIZING NEURAL LINK...</div>;
+
+            return (
+                <div id="root">
+                    <header className="top-bar">
+                        <div className="logo">NET-LORD // OS v4.2</div>
+                        <div style={{display:'flex', gap:'20px'}}>
+                            <div className="stat-pill"><i className="fas fa-clock"></i> WK {date.week} // {date.year}</div>
+                            <div className="stat-pill" style={{color:'var(--text)'}}>
+                                <i className="fas fa-shield-halved"></i> ${crypto.washed.toLocaleString()}
+                            </div>
+                            <div className="stat-pill" style={{color: 'var(--gold)'}}>
+                                <i className="fas fa-skull"></i> ${crypto.dirty.toLocaleString()}
+                            </div>
+                            <div className="stat-pill" style={{color: traceLevel > 70 ? 'var(--danger)' : 'var(--text)'}}>
+                                <i className="fas fa-satellite-dish"></i> TRACE: {traceLevel.toFixed(1)}%
+                            </div>
+                        </div>
+                    </header>
+
+                    <div className="main-stage">
+                        <aside className="sidebar">
+                            <div style={{padding:15}}>
+                                <button className="btn" style={{width:'100%', marginBottom:10}} onClick={()=>setView('MAP')}>GLOBAL MAP</button>
+                                <button className="btn" style={{width:'100%', marginBottom:10}} onClick={()=>setView('CREW')}>CREW MANIFEST</button>
+                                <button className="btn danger" style={{width:'100%', marginBottom:10}} onClick={()=>setTraceLevel(t => Math.max(0, t-15))}>PURGE LOGS ($5k)</button>
+                            </div>
+                            <div className="card">
+                                <div className="card-header">ENCRYPTED COMMS</div>
+                                <div className="card-body" style={{fontSize:'0.65rem', color:'#00ff66', opacity:0.8}}>
+                                    {traceLevel > 50 && <div style={{color:'var(--danger)', fontWeight:'bold'}}>! WARNING: HIGH TRACEBACK DETECTED !</div>}
+                                    <div style={{marginTop:8}}>> {ticker}</div>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <div className="map-container">
+                            <div className="map-grid-bg"></div>
+                            {squads.map(s => (
+                                <div key={s.id} className="unit-marker" style={{
+                                    left: s.target.x + '%', top: s.target.y + '%', 
+                                    transition: 'left 4s linear, top 4s linear'
+                                }} />
+                            ))}
+                            {nodes.map(n => (
+                                <div key={n.id} 
+                                    className={`biz-node ${n.owner === 1 ? 'owned' : n.owner === 2 ? 'rival' : ''}`}
+                                    style={{left: n.x + '%', top: n.y + '%'}}
+                                    onClick={() => setSelectedNode(n)}
+                                    title={`${n.city} // ${BUSINESS_TYPES[n.type].name}`}
+                                >
+                                    <i className={`fas ${n.type === 'exchange' ? 'fa-bitcoin-sign' : n.type === 'server' ? 'fa-server' : n.type === 'relay' ? 'fa-link' : n.type === 'dark-hub' ? 'fa-user-secret' : 'fa-network-wired'}`}></i>
+                                </div>
+                            ))}
+                        </div>
+
+                        <aside className="right-panel">
+                            {selectedNode ? (
+                                <div className="card">
+                                    <div className="card-header">
+                                        <span>NODE INFO: {selectedNode.city}</span>
+                                        <span>#{selectedNode.id}</span>
+                                    </div>
+                                    <div className="card-body">
+                                        <div style={{fontSize:'1.1rem', color:'#fff', marginBottom:10}}>{BUSINESS_TYPES[selectedNode.type].name}</div>
+                                        <div style={{fontSize:'0.7rem', color:'#888', marginBottom:15}}>SEC LEVEL: {selectedNode.level}</div>
+                                        
+                                        {selectedNode.owner === 0 && (
+                                            <button className="btn" style={{width:'100%'}} onClick={() => captureNode(selectedNode)}>ACQUIRE NODE (${BUSINESS_TYPES[selectedNode.type].cost})</button>
+                                        )}
+
+                                        {selectedNode.owner === 1 && (
+                                            <div style={{display:'flex', flexDirection:'column', gap:8}}>
+                                                <div style={{fontSize:'0.6rem', color: 'var(--text)'}}>RE-CONFIGURE NODE:</div>
+                                                <button className="btn" onClick={()=>setNodes(ns=>ns.map(n=>n.id===selectedNode.id?{...n,type:'exchange'}:n))}>CRYPTO EXCHANGE</button>
+                                                <button className="btn" onClick={()=>setNodes(ns=>ns.map(n=>n.id===selectedNode.id?{...n,type:'relay'}:n))}>VPN RELAY</button>
+                                            </div>
+                                        )}
+
+                                        {selectedNode.owner === 2 && (
+                                            <div style={{display:'flex', flexDirection:'column', gap:8}}>
+                                                <button className="btn danger" onClick={()=>runOperation(selectedNode, 'INFILTRATE')}>INFILTRATE NODE</button>
+                                                <button className="btn danger" onClick={()=>runOperation(selectedNode, 'DDOS')}>DDOS ATTACK</button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div style={{padding:20, color: 'var(--dim)', fontSize:'0.8rem', textAlign:'center'}}>SELECT A GLOBAL NODE FOR INTERACTION</div>
+                            )}
+                        </aside>
+                    </div>
+
+                    <div className="ticker">
+                        SYSTEM_LOG :: {ticker}
+                    </div>
+
+                    {modal && (
+                        <div className="modal-overlay">
+                            <div className="dossier">
+                                <h1 style={{fontSize:'2.5rem', color:'var(--danger)', borderBottom:'2px solid var(--danger)', paddingBottom:15}}>TRACEBACK SUCCESSFUL</h1>
+                                <div className="stamp">RICO.EXE</div>
+                                <div style={{marginTop:30, fontSize:'1rem', lineHeight:'1.8'}}>
+                                    <p>SYSTEM COMPROMISED BY GLOBAL COALITION</p>
+                                    <p>OPERATOR IDENTIFIED: [ REDACTED ]</p>
+                                    <p>ALL CRYPTO ASSETS FROZEN BY INTERPOL</p>
+                                    <br/>
+                                    <p style={{color:'var(--danger)', fontWeight:'bold'}}>> STATUS: INCARCERATED</p>
+                                    <button className="btn danger" style={{marginTop:40, padding:15}} onClick={()=>window.location.reload()}>REBOOT SYSTEM (RESET)</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

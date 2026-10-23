@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLITAIRE // CORE_STABILITY</title>
+    <style>
+        body { margin: 0; background: #064e3b; color: #fff; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .table { display: flex; gap: 10px; margin-bottom: 20px; }
+        .card { width: 60px; height: 90px; background: #fff; color: #000; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; border: 1px solid #333; }
+        .slot { width: 60px; height: 90px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 5px; }
+        .red { color: #ef4444; }
+        .ui { margin-bottom: 20px; font-size: 14px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="ui">STACK_INTEGRITY: 100%</div>
+    <div class="table">
+        <div class="card">A♠</div>
+        <div class="card red">K♥</div>
+        <div class="card">Q♣</div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+    </div>
+    <div style="font-size:10px; color:rgba(255,255,255,0.4)">SIMULATED ENGINE // AWAITING INPUT</div>
+    <button onclick="location.reload()" style="margin-top:20px; background:rgba(0,0,0,0.2); color:#fff; border:1px solid #fff; padding:5px 15px; cursor:pointer">Shuffle</button>
+</body>
+</html>

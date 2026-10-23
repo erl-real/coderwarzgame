@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEALER CORE // LOGIC_LINK_21</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+        body { font-family: 'JetBrains Mono', monospace; background: #020305; color: #fff; overflow: hidden; }
+        .win-dark { background: #0a0b0e; border: 1px solid rgba(255,255,255,0.1); color: #fff; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .card { width: 100px; height: 140px; background: #fff; border-radius: 10px; color: #000; position: relative; font-weight: 800; animation: deal 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; transform: translateY(-200px) rotate(20deg); opacity: 0; }
+        @keyframes deal { to { transform: translateY(0) rotate(0); opacity: 1; } }
+        .card.back { background: #1e293b; border: 2px solid #3b82f6; }
+        .card.back::after { content: 'SYN'; color: rgba(59, 130, 246, 0.2); font-size: 24px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .crt::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); z-index: 50; background-size: 100% 2px, 3px 100%; pointer-events: none; }
+    </style>
+</head>
+<body x-data="gameEngine()" x-init="init()" class="h-screen flex flex-col p-4 md:p-8 crt">
+
+    <!-- Header Stats -->
+    <div class="h-16 shrink-0 flex items-center justify-between px-6 win-dark border-b border-blue-500/20 mb-6 rounded-2xl bg-black/80 backdrop-blur-xl">
+        <div class="flex items-center gap-8">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                    <i data-lucide="shield-check" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black italic tracking-tighter text-blue-400 uppercase">Dealer_Core</h1>
+                    <p class="text-[8px] text-white/30 uppercase tracking-[0.4em]">Logic-Link-21-v4.0</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-10">
+                <div class="flex flex-col">
+                    <span class="text-[8px] uppercase font-black text-white/30">Total_Credits</span>
+                    <span class="text-sm font-bold text-emerald-400" x-text="'$' + credits.toLocaleString()">$0</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[8px] uppercase font-black text-white/30">Current_Bet</span>
+                    <span class="text-sm font-bold text-blue-400" x-text="'$' + currentBet.toLocaleString()">$0</span>
+                </div>
+            </div>
+        </div>
+
+        <button @click="reset()" class="h-10 px-8 bg-blue-500 text-black font-black text-[10px] uppercase tracking-widest hover:bg-blue-400 transition-all active:scale-95">
+            REBOOT_DECK
+        </button>
+    </div>
+
+    <!-- Main Game Area -->
+    <div class="flex-1 flex flex-col items-center justify-center gap-12 relative">
+        
+        <!-- Dealer Hand -->
+        <div class="flex flex-col items-center gap-4">
+            <div class="flex gap-4 min-h-[140px]">
+                <template x-for="(card, i) in dealerHand">
+                    <div class="card p-2" :class="(i === 1 && !gameOver) ? 'back' : 'flex flex-col'">
+                        <template x-if="i !== 1 || gameOver">
+                            <div>
+                                <div class="flex justify-between items-start">
+                                    <span class="text-lg" x-text="card.label"></span>
+                                    <span class="text-lg" x-text="card.suit"></span>
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center text-4xl" x-text="card.suit"></div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+            <div class="text-[10px] font-black uppercase text-white/20 tracking-[0.5em]" x-text="'Dealer Node: ' + (gameOver ? getSum(dealerHand) : '?')"></div>
+        </div>
+
+        <!-- Player Hand -->
+        <div class="flex flex-col items-center gap-4">
+            <div class="flex gap-4 min-h-[140px]">
+                <template x-for="card in playerHand">
+                    <div class="card p-2 flex flex-col">
+                        <div class="flex justify-between items-start">
+                            <span class="text-lg" x-text="card.label"></span>
+                            <span class="text-lg" x-text="card.suit"></span>
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center text-4xl" x-text="card.suit"></div>
+                    </div>
+                </template>
+            </div>
+            <div class="text-[10px] font-black uppercase text-blue-400 tracking-[0.5em]" x-text="'User Node: ' + getSum(playerHand)"></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="absolute bottom-0 flex gap-4">
+            <button @click="hit()" class="h-14 px-12 win-dark border-blue-500/40 text-blue-400 font-black uppercase tracking-widest hover:bg-blue-500/10 transition-all active:scale-95" :disabled="gameOver">HIT_DATA</button>
+            <button @click="stand()" class="h-14 px-12 win-dark border-emerald-500/40 text-emerald-400 font-black uppercase tracking-widest hover:bg-emerald-500/10 transition-all active:scale-95" :disabled="gameOver">STAND_STABLE</button>
+            <button @click="newGame()" class="h-14 px-12 win-dark border-white/10 text-white/40 font-black uppercase tracking-widest hover:bg-white/5 transition-all" x-show="gameOver">NEXT_HAND</button>
+        </div>
+
+    </div>
+
+    <!-- Ticker Overlay -->
+    <div class="h-8 shrink-0 flex items-center px-6 border-t border-white/5 bg-black/40 overflow-hidden">
+        <div class="text-[9px] font-black text-blue-400/60 uppercase tracking-widest italic" x-text="tickerMsg">AWAITING_INPUT_SIGNAL...</div>
+    </div>
+
+    <script>
+        function gameEngine() {
+            return {
+                data: { tables: [], rewards: {} },
+                credits: 10000,
+                currentBet: 100,
+                playerHand: [],
+                dealerHand: [],
+                deck: [],
+                gameOver: false,
+                tickerMsg: "CONNECTION_STABLE.",
+
+                async init() {
+                    const res = await fetch('gamedata.json');
+                    this.data = await res.json();
+                    this.newGame();
+                    lucide.createIcons();
+                },
+
+                newGame() {
+                    this.setupDeck();
+                    this.playerHand = [this.deck.pop(), this.deck.pop()];
+                    this.dealerHand = [this.deck.pop(), this.deck.pop()];
+                    this.gameOver = false;
+                    this.tickerMsg = "NEW_HAND_INITIALIZED.";
+                },
+
+                setupDeck() {
+                    const suits = ['♠', '♣', '♥', '♦'];
+                    const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+                    this.deck = [];
+                    suits.forEach(s => values.forEach(v => this.deck.push({ suit: s, label: v, val: this.getVal(v) })));
+                    this.deck.sort(() => Math.random() - 0.5);
+                },
+
+                getVal(label) {
+                    if (['J', 'Q', 'K'].includes(label)) return 10;
+                    if (label === 'A') return 11;
+                    return parseInt(label);
+                },
+
+                getSum(hand) {
+                    let sum = hand.reduce((a, b) => a + b.val, 0);
+                    let aces = hand.filter(c => c.label === 'A').length;
+                    while (sum > 21 && aces > 0) { sum -= 10; aces--; }
+                    return sum;
+                },
+
+                hit() {
+                    this.playerHand.push(this.deck.pop());
+                    if (this.getSum(this.playerHand) > 21) this.endHand("USER_BUFFER_OVERFLOW.");
+                },
+
+                stand() {
+                    while (this.getSum(this.dealerHand) < 17) this.dealerHand.push(this.deck.pop());
+                    
+                    const p = this.getSum(this.playerHand);
+                    const d = this.getSum(this.dealerHand);
+
+                    if (d > 21) this.endHand("DEALER_BUFFER_OVERFLOW. USER_WIN.");
+                    else if (d > p) this.endHand("DEALER_LINK_DOMINANT. USER_LOSS.");
+                    else if (p > d) this.endHand("USER_LINK_DOMINANT. USER_WIN.");
+                    else this.endHand("LINK_SYNC_STABLE. PUSH.");
+                },
+
+                endHand(msg) {
+                    this.gameOver = true;
+                    this.tickerMsg = msg;
+                },
+
+                reset() { location.reload(); }
+            }
+        }
+    </script>
+</body>
+</html>

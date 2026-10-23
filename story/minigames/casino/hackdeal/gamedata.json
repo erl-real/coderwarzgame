@@ -1,0 +1,11 @@
+{
+  "tables": [
+    { "id": "standard", "name": "Mainframe Deck", "min_bet": 100, "max_bet": 1000, "decks": 1 },
+    { "id": "high_stakes", "name": "Darknet Vault", "min_bet": 5000, "max_bet": 50000, "decks": 6 }
+  ],
+  "rewards": {
+    "blackjack": 2.5,
+    "win": 2.0,
+    "push": 1.0
+  }
+}

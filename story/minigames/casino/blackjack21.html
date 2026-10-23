@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-21 // BLACKJACK ENGINE</title>
+    <style>
+        body { margin: 0; background: #0a0a0a; color: #fff; font-family: 'JetBrains Mono', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .table { width: 500px; height: 350px; background: radial-gradient(circle, #1a3a3a 0%, #050505 100%); border: 2px solid #333; border-radius: 200px 200px 20px 20px; position: relative; padding: 40px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        .hand { display: flex; justify-content: center; gap: 10px; height: 100px; margin: 20px 0; }
+        .card { width: 60px; height: 90px; background: #fff; color: #000; border-radius: 5px; display: flex; flex-direction: column; padding: 5px; font-weight: 800; font-size: 14px; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); animation: deal 0.3s ease-out forwards; }
+        @keyframes deal { from { transform: translateY(-200px) rotate(20deg); opacity: 0; } to { transform: translateY(0) rotate(0); opacity: 1; } }
+        .red { color: #ef4444; }
+        .controls { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { background: #222; border: 1px solid #444; color: #eee; padding: 10px 20px; cursor: pointer; text-transform: uppercase; font-size: 12px; transition: all 0.2s; }
+        .btn:hover:not(:disabled) { background: #444; border-color: #666; }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .status { font-size: 14px; color: #aaa; margin-bottom: 10px; height: 20px; }
+        .score { position: absolute; font-size: 10px; color: #555; font-weight: bold; }
+        .dealer-score { top: 20px; left: 50%; transform: translateX(-50%); }
+        .player-score { bottom: 20px; left: 50%; transform: translateX(-50%); }
+    </style>
+</head>
+<body>
+    <div class="status" id="status">INIT_M21_CORE...</div>
+    <div class="table">
+        <div class="score dealer-score">DEALER: <span id="dealerSum">0</span></div>
+        <div class="hand" id="dealerHand"></div>
+        
+        <div class="hand" id="playerHand"></div>
+        <div class="score player-score">PLAYER: <span id="playerSum">0</span></div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" id="hitBtn" onclick="hit()">Hit</button>
+        <button class="btn" id="standBtn" onclick="stand()">Stand</button>
+        <button class="btn" id="newBtn" onclick="newGame()">New Game</button>
+    </div>
+
+    <script>
+        let deck = [];
+        let playerHand = [];
+        let dealerHand = [];
+        let gameOver = false;
+
+        function createDeck() {
+            const suits = ['♠', '♣', '♥', '♦'];
+            const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            deck = [];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({ suit, value });
+                }
+            }
+            deck.sort(() => Math.random() - 0.5);
+        }
+
+        function getVal(card) {
+            if (['J', 'Q', 'K'].includes(card.value)) return 10;
+            if (card.value === 'A') return 11;
+            return parseInt(card.value);
+        }
+
+        function calculateSum(hand) {
+            let sum = hand.reduce((s, c) => s + getVal(c), 0);
+            let aces = hand.filter(c => c.value === 'A').length;
+            while (sum > 21 && aces > 0) {
+                sum -= 10;
+                aces--;
+            }
+            return sum;
+        }
+
+        function renderCard(card, container, hidden = false) {
+            const el = document.createElement('div');
+            el.className = 'card' + (['♥', '♦'].includes(card.suit) ? ' red' : '');
+            if (hidden) {
+                el.style.background = '#222';
+                el.innerHTML = '';
+            } else {
+                el.innerHTML = `<div>${card.value}</div><div style="flex:1; display:flex; align-items:center; justify-content:center; font-size:24px;">${card.suit}</div><div style="text-align:right">${card.value}</div>`;
+            }
+            container.appendChild(el);
+        }
+
+        function hit() {
+            if (gameOver) return;
+            playerHand.push(deck.pop());
+            update();
+            if (calculateSum(playerHand) > 21) {
+                endGame('PLAYER_BUSTED');
+            }
+        }
+
+        function stand() {
+            if (gameOver) return;
+            gameOver = true;
+            document.getElementById('hitBtn').disabled = true;
+            document.getElementById('standBtn').disabled = true;
+
+            const deal = () => {
+                if (calculateSum(dealerHand) < 17) {
+                    dealerHand.push(deck.pop());
+                    update();
+                    setTimeout(deal, 500);
+                } else {
+                    const p = calculateSum(playerHand);
+                    const d = calculateSum(dealerHand);
+                    if (d > 21) endGame('DEALER_BUSTED');
+                    else if (d > p) endGame('DEALER_WINS');
+                    else if (p > d) endGame('PLAYER_WINS');
+                    else endGame('PUSH_DETECTED');
+                }
+            };
+            deal();
+        }
+
+        function update() {
+            const dh = document.getElementById('dealerHand');
+            const ph = document.getElementById('playerHand');
+            dh.innerHTML = ''; ph.innerHTML = '';
+            
+            dealerHand.forEach((c, i) => renderCard(c, dh, !gameOver && i === 1));
+            playerHand.forEach(c => renderCard(c, ph));
+
+            document.getElementById('playerSum').textContent = calculateSum(playerHand);
+            document.getElementById('dealerSum').textContent = gameOver ? calculateSum(dealerHand) : '?';
+        }
+
+        function endGame(msg) {
+            gameOver = true;
+            document.getElementById('status').textContent = msg;
+            document.getElementById('hitBtn').disabled = true;
+            document.getElementById('standBtn').disabled = true;
+            update();
+        }
+
+        function newGame() {
+            createDeck();
+            playerHand = [deck.pop(), deck.pop()];
+            dealerHand = [deck.pop(), deck.pop()];
+            gameOver = false;
+            document.getElementById('hitBtn').disabled = false;
+            document.getElementById('standBtn').disabled = false;
+            document.getElementById('status').textContent = 'CORE_LOADED // AWAITING_INPUT';
+            update();
+        }
+
+        newGame();
+    </script>
+</body>
+</html>

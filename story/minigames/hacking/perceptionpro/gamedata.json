@@ -1,0 +1,12 @@
+{
+  "sets": [
+    { "id": "basic", "name": "Basic Logic", "symbols": ["@", "#", "$", "%", "&"] },
+    { "id": "crypto", "name": "Crypto Hashes", "symbols": ["0x", "f4", "a8", "3b", "10"] },
+    { "id": "neural", "name": "Neural Nodes", "symbols": ["●", "○", "■", "□", "▲"] }
+  ],
+  "multipliers": [
+    { "combo": 5, "mult": 1.5 },
+    { "combo": 10, "mult": 2.0 },
+    { "combo": 20, "mult": 5.0 }
+  ]
+}

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DATA TRAIL // SURVIVAL_SIM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+        body { font-family: 'JetBrains Mono', monospace; background: #020305; color: #fff; overflow: hidden; }
+        .crt::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); z-index: 50; background-size: 100% 2px, 3px 100%; pointer-events: none; }
+        .win-95 { background: #0a0b0e; border: 1px solid rgba(255,255,255,0.1); color: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .progress-bar { height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+        .progress-fill { height: 100%; transition: width 0.5s ease; }
+        .log-entry { animation: slideIn 0.3s ease-out forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+    </style>
+</head>
+<body x-data="gameEngine()" x-init="init()" class="h-screen flex flex-col p-4 md:p-8 crt">
+
+    <div class="max-w-5xl mx-auto w-full h-full flex flex-col gap-6">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-end border-b border-white/10 pb-4">
+            <div>
+                <h1 class="text-3xl font-black italic tracking-tighter text-blue-400">DATA TRAIL v4.0</h1>
+                <p class="text-[10px] text-white/30 uppercase tracking-[0.3em]">Neural Migration Protocol // Oregon Sector</p>
+            </div>
+            <div class="text-right">
+                <div class="text-[10px] text-white/30 uppercase font-black mb-1">Mission Clock</div>
+                <div class="text-sm font-bold" x-text="formattedDate">OCT 12, 2026</div>
+            </div>
+        </div>
+
+        <!-- Main Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="win-95 p-4 rounded-2xl">
+                <div class="text-[8px] text-white/30 uppercase font-black mb-1">Distance</div>
+                <div class="text-xl font-bold text-blue-400" x-text="state.distance + ' Mi'">2000 Mi</div>
+            </div>
+            <div class="win-95 p-4 rounded-2xl">
+                <div class="text-[8px] text-white/30 uppercase font-black mb-1">System Integrity</div>
+                <div class="text-xl font-bold" :class="state.health > 50 ? 'text-emerald-400' : 'text-rose-500'" x-text="state.health + '%'">100%</div>
+            </div>
+            <div class="win-95 p-4 rounded-2xl">
+                <div class="text-[8px] text-white/30 uppercase font-black mb-1">Power Cells</div>
+                <div class="text-xl font-bold text-amber-400" x-text="state.food + ' Unit'">500 Unit</div>
+            </div>
+            <div class="win-95 p-4 rounded-2xl">
+                <div class="text-[8px] text-white/30 uppercase font-black mb-1">Crypto_Credits</div>
+                <div class="text-xl font-bold text-blue-400" x-text="'$' + state.cash">$1,200</div>
+            </div>
+            <div class="win-95 p-4 rounded-2xl">
+                <div class="text-[8px] text-white/30 uppercase font-black mb-1">Nodes Active</div>
+                <div class="text-xl font-bold text-purple-400" x-text="state.party.filter(p => p.alive).length">5</div>
+            </div>
+        </div>
+
+        <!-- content -->
+        <div class="flex-1 flex gap-6 overflow-hidden">
+            <!-- Visual / Map Area -->
+            <div class="flex-1 flex flex-col gap-4 min-w-0">
+                <div class="flex-1 win-95 rounded-3xl relative overflow-hidden flex flex-col p-8 items-center justify-center bg-black/40">
+                    <!-- Progress visualization -->
+                    <div class="w-full max-w-md space-y-8">
+                        <div class="relative h-2 bg-white/5 rounded-full overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400" :style="'width: ' + ((2000 - state.distance) / 20) + '%'"></div>
+                        </div>
+                        <div class="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/20">
+                            <span>Departure: NYC_HUB</span>
+                            <span class="text-blue-400">Oregon_Server</span>
+                        </div>
+                        
+                        <div class="flex flex-col items-center gap-4 py-8">
+                            <div class="w-20 h-20 rounded-full border-4 border-blue-500/20 flex items-center justify-center animate-pulse">
+                                <i data-lucide="server" class="w-10 h-10 text-blue-400"></i>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-black italic uppercase" x-text="state.status">Stationary</div>
+                                <div class="text-[10px] text-white/20 mt-1 uppercase" x-text="'Next Landmark: ' + state.nextLandmark.name">Substation Alpha</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Log -->
+                <div id="log" class="h-48 win-95 rounded-3xl p-6 overflow-y-auto custom-scrollbar flex flex-col gap-2 bg-black/60">
+                    <template x-for="log in state.logs">
+                        <div class="log-entry text-[10px] font-medium leading-relaxed" :class="log.type === 'error' ? 'text-rose-400' : (log.type === 'success' ? 'text-emerald-400' : 'text-white/40')">
+                            <span class="font-black mr-2" x-text="'[' + log.time + ']'"></span>
+                            <span x-text="log.msg"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Side Controls -->
+            <div class="w-72 shrink-0 flex flex-col gap-4">
+                <div class="flex-1 win-95 rounded-3xl p-6 flex flex-col gap-4">
+                    <h3 class="text-[10px] font-black uppercase text-blue-400 tracking-widest italic border-b border-blue-500/20 pb-2">Command Center</h3>
+                    
+                    <button @click="travel()" class="h-12 w-full win-95 rounded-xl border-blue-500/40 text-blue-400 font-black text-[10px] uppercase tracking-widest hover:bg-blue-500/10 transition-all flex items-center justify-center gap-3">
+                        <i data-lucide="play" class="w-4 h-4"></i> Continue Migration
+                    </button>
+                    
+                    <button @click="hunt()" class="h-12 w-full win-95 rounded-xl border-emerald-500/40 text-emerald-400 font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500/10 transition-all flex items-center justify-center gap-3">
+                        <i data-lucide="database" class="w-4 h-4"></i> Scavenge Data
+                    </button>
+
+                    <button @click="rest()" class="h-12 w-full win-95 rounded-xl border-amber-500/40 text-amber-400 font-black text-[10px] uppercase tracking-widest hover:bg-amber-500/10 transition-all flex items-center justify-center gap-3">
+                        <i data-lucide="battery-charging" class="w-4 h-4"></i> Maintenance Rest
+                    </button>
+
+                    <div class="mt-auto space-y-4">
+                        <h4 class="text-[8px] font-black text-white/20 uppercase tracking-widest">Active Cluster</h4>
+                        <div class="space-y-2">
+                            <template x-for="p in state.party">
+                                <div class="flex justify-between items-center bg-white/[0.02] border border-white/5 p-2 rounded-lg">
+                                    <span class="text-[10px] font-bold" :class="!p.alive && 'text-rose-500 line-through'" x-text="p.name"></span>
+                                    <div x-show="p.alive" class="w-8 h-1 progress-bar"><div class="progress-fill bg-blue-500" :style="'width: ' + p.health + '%'"></div></div>
+                                    <span x-show="!p.alive" class="text-[8px] font-black text-rose-900 uppercase">OFFLINE</span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modals (Store, Events, etc) -->
+    <div x-show="state.modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-6 pointer-events-auto">
+        <div class="win-95 w-full max-w-lg rounded-3xl p-8 flex flex-col items-center text-center gap-6">
+            <div class="w-20 h-20 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                <i :data-lucide="state.modalIcon" class="w-10 h-10"></i>
+            </div>
+            <div>
+                <h3 class="text-2xl font-black uppercase italic tracking-tighter" x-text="state.modalTitle"></h3>
+                <p class="text-xs text-white/40 mt-2 uppercase font-bold leading-relaxed" x-text="state.modalMsg"></p>
+            </div>
+            <button @click="state.modal = false" class="h-12 px-12 bg-blue-500 text-black font-black text-[10px] uppercase tracking-widest hover:bg-blue-400 transition-all">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+    <script>
+        function gameEngine() {
+            return {
+                state: {
+                    distance: 2000,
+                    health: 100,
+                    food: 500,
+                    cash: 1200,
+                    day: 1,
+                    status: 'STATIONARY',
+                    logs: [],
+                    party: [
+                        { name: 'NODE_ALPHA', health: 100, alive: true },
+                        { name: 'NODE_BETA', health: 100, alive: true },
+                        { name: 'NODE_GAMMA', health: 100, alive: true },
+                        { name: 'NODE_DELTA', health: 100, alive: true },
+                        { name: 'NODE_EPSILON', health: 100, alive: true }
+                    ],
+                    nextLandmark: { name: 'Substation Alpha', dist: 250 },
+                    modal: false,
+                    modalTitle: '',
+                    modalMsg: '',
+                    modalIcon: 'info'
+                },
+                date: new Date(2026, 9, 12),
+
+                init() {
+                    this.pushLog("SYSTEM INITIALIZED. READY TO START MIGRATION.");
+                    lucide.createIcons();
+                },
+
+                get formattedDate() {
+                    return this.date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
+                },
+
+                travel() {
+                    if (this.state.distance <= 0) return;
+                    
+                    const move = 30 + Math.floor(Math.random() * 50);
+                    this.state.distance = Math.max(0, this.state.distance - move);
+                    this.state.food -= (15 + this.state.party.filter(p => p.alive).length * 2);
+                    this.date.setDate(this.date.getDate() + 1);
+                    
+                    this.pushLog(`Traveled ${move} miles. System drain: 25 units.`);
+                    
+                    this.checkRandomEvent();
+                    this.updatePartyHealth(-2);
+                    this.checkGameOver();
+                    
+                    this.$nextTick(() => lucide.createIcons());
+                },
+
+                hunt() {
+                    const found = 50 + Math.floor(Math.random() * 100);
+                    this.state.food += found;
+                    this.pushLog(`Scavenged ${found} power units from abandoned relay.`, 'success');
+                    this.date.setDate(this.date.getDate() + 1);
+                    this.checkRandomEvent();
+                },
+
+                rest() {
+                    this.state.health = Math.min(100, this.state.health + 10);
+                    this.state.food -= 10;
+                    this.updatePartyHealth(15);
+                    this.pushLog("Maintenance rest complete. Node integrity restored.");
+                    this.date.setDate(this.date.getDate() + 1);
+                },
+
+                checkRandomEvent() {
+                    const roll = Math.random();
+                    if (roll < 0.15) {
+                        const events = [
+                            { t: 'Bit Rot Detected', m: 'One of your nodes suffered a memory leak.', i: 'alert-triangle', action: () => this.damageRandomNode(30) },
+                            { t: 'Packet Storm', m: 'Aggressive network noise damaged system integrity.', i: 'wind', action: () => this.state.health -= 15 },
+                            { t: 'Cache Bounty', m: 'Found a stash of crypto-credits in a ghost server.', i: 'database', action: () => this.state.cash += 250 },
+                            { t: 'Firewall Breach', m: 'The police tracked your signal. Lost time while rerouting.', i: 'shield-off', action: () => this.date.setDate(this.date.getDate() + 3) }
+                        ];
+                        const ev = events[Math.floor(Math.random() * events.length)];
+                        this.triggerModal(ev.t, ev.m, ev.i);
+                        ev.action();
+                    }
+                },
+
+                damageRandomNode(amt) {
+                    const alive = this.state.party.filter(p => p.alive);
+                    if (alive.length > 0) {
+                        const node = alive[Math.floor(Math.random() * alive.length)];
+                        node.health -= amt;
+                        if (node.health <= 0) {
+                            node.alive = false;
+                            this.pushLog(`CRITICAL: ${node.name} IS OFFLINE.`, 'error');
+                        }
+                    }
+                },
+
+                updatePartyHealth(amt) {
+                    this.state.party.forEach(p => {
+                        if (p.alive) p.health = Math.min(100, Math.max(0, p.health + amt));
+                    });
+                },
+
+                checkGameOver() {
+                    if (this.state.distance <= 0) {
+                        this.triggerModal("MISSION SUCCESS", "The Oregon Server has been reached. All data successfully migrated.", "check-circle");
+                        this.reset();
+                    } else if (this.state.health <= 0 || this.state.food <= 0 || this.state.party.every(p => !p.alive)) {
+                        this.triggerModal("MISSION FAILURE", "System total collapse. Data lost in the void.", "x-circle");
+                        this.reset();
+                    }
+                },
+
+                pushLog(msg, type = 'info') {
+                    const time = this.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                    this.state.logs.unshift({ time, msg, type });
+                    if (this.state.logs.length > 50) this.state.logs.pop();
+                },
+
+                triggerModal(title, msg, icon) {
+                    this.state.modalTitle = title;
+                    this.state.modalMsg = msg;
+                    this.state.modalIcon = icon;
+                    this.state.modal = true;
+                    this.$nextTick(() => lucide.createIcons());
+                },
+
+                reset() {
+                    // Logic to reset state...
+                }
+            }
+        }
+    </script>
+</body>
+</html>

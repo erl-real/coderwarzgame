@@ -1,0 +1,245 @@
+virus builder
+
+
+Core Concept: A “Virus” as a Multi‑Layer Generative Object
+Your virus isn’t biological — it’s a bundle of generative systems:
+
+Wireplane lifeform → the genome (stats, traits, behaviors)
+
+2D plane mutator → the phenotype (visual identity)
+
+Particle‑life sandbox → the ecosystem where viruses compete, evolve, or fight
+
+Node‑based editor → the modifier system (music, images, text, triggers, effects)
+
+A virus becomes a data object with:
+
+Base stats (speed, aggression, replication, defense, etc.)
+
+Visual form (wireframe + 2D plane)
+
+Behavioral rules (from the particle system)
+
+External reactivity (music, images, text)
+
+Evolution history (mutations, parents, generation number)
+
+Exportable “virus card” for battles or world hacking
+
+ How Your Existing Apps Fit Together
+1. Wireplane Generator → Virus Genome
+This becomes the stat seed.
+
+Each vertex, edge, or animation parameter can map to:
+
+Attack strength
+
+Movement pattern
+
+Replication rate
+
+Resistance
+
+Special abilities
+
+You can treat the wireplane as a procedural DNA string:
+
+Vertex count → complexity
+
+Edge angles → aggression vs defense
+
+Animation frequency → metabolism
+
+Symmetry → stability vs mutation rate
+
+2. 2D Plane Mutator → Virus Skin / Visual Identity
+This gives each virus a recognizable “look”:
+
+Color fields
+
+Distortion patterns
+
+Motion textures
+
+“Aura” effects
+
+This is what players will see in battles or music videos.
+
+3. Particle Life Sandbox → Virus Ecology
+This is where viruses:
+
+Compete
+
+Eat particles
+
+Infect nodes
+
+Grow or die
+
+Level up
+
+You can treat each particle as:
+
+Nutrients
+
+Host cells
+
+Antibodies
+
+Environmental hazards
+
+The sandbox becomes the training ground for evolution.
+
+4. Node‑Based Editor → Virus Behavior & Reactivity
+This is the most powerful part.
+
+Nodes can connect:
+
+Music → Virus stats (bass boosts aggression, melody boosts speed)
+
+Images → Virus filters (color extraction, shape matching)
+
+Text → Behavior modifiers (keywords trigger abilities)
+
+Game events → Virus reactions (enemy nearby → split, flee, attack)
+
+This turns viruses into audiovisual creatures that can be used in:
+
+Music videos
+
+PvP battles
+
+World hacking puzzles
+
+Evolution experiments
+
+ Music‑Reactive Viruses
+You can map music features to virus traits:
+
+Beat detection → pulse animation
+
+Frequency bands → stat modulation
+
+Volume → size or aggression
+
+Tempo → movement speed
+
+Waveform → mutation triggers
+
+This makes each virus feel alive and rhythmic.
+
+Players can “compose” a virus by linking:
+
+A song
+
+A node graph
+
+A visual skin
+
+A wireframe genome
+
+ Evolution & Mutation Loop
+A clean loop could look like:
+
+Generate base virus (wireplane)
+
+Mutate appearance (2D plane)
+
+Assign behaviors (node editor)
+
+Test in sandbox (particle life)
+
+Level up (stats increase based on performance)
+
+Save virus (export card)
+
+Use virus (battles, hacking, videos)
+
+You can even add:
+
+Random mutations
+
+Cross‑breeding (combine two viruses)
+
+Environmental evolution (sandbox conditions shape traits)
+
+ Saving & Sharing Viruses
+A virus can be saved as a JSON object containing:
+
+Genome parameters
+
+Visual parameters
+
+Node graph
+
+Music link
+
+Evolution history
+
+Stats
+
+Players can:
+
+Trade viruses
+
+Battle viruses
+
+Use viruses to hack areas of the game world
+
+Create “eVirus music videos”
+
+ PvP or World‑Hacking Gameplay
+Viruses could be used to:
+
+Attack enemy nodes
+
+Infect structures
+
+Disable shields
+
+Spread through networks
+
+Fight other viruses in real‑time
+
+Each virus’s behavior is determined by:
+
+Genome (base stats)
+
+Node graph (logic)
+
+Music (reactivity)
+
+Evolution (experience)
+
+This creates infinite replayability because every virus is unique.
+
+ Why This System Works
+You’re essentially building a creative evolution engine where:
+
+Art
+
+Music
+
+Code
+
+Physics
+
+AI
+
+Player choice
+
+…all merge into one generative creature.
+
+It’s like:
+
+Spore (creature creation)
+
+Noita (simulation)
+
+ZGameEditor (nodes)
+
+Audio‑reactive VJ tools
+
+Genetic algorithms
+
+…combined into a single feature.

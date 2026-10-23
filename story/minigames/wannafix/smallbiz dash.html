@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Syndicate: Titan Edition</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #050202; --panel: #120808; --panel-light: #1a0d0d; --header: #300; --accent: #f1c40f;
+            --text: #d1d1d1; --dim: #666; --border: #2a0a0a; --danger: #c0392b; --success: #27ae60; --blue: #2980b9;
+        }
+        * { box-sizing: border-box; outline: none; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; overflow: hidden; font-size: 12px; }
+        #root { height: 100vh; display: flex; flex-direction: column; }
+
+        /* --- LAYOUT --- */
+        .top-nav { background: linear-gradient(to bottom, #400, #100); padding: 5px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); height: 45px; flex-shrink: 0; z-index: 1000; }
+        .main { flex: 1; display: flex; overflow: hidden; }
+        .sidebar { width: 180px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 5px; gap: 2px; flex-shrink: 0; }
+        .viewport { flex: 1; padding: 15px; overflow-y: auto; background: #080404; position: relative; }
+
+        /* --- UI ELEMENTS --- */
+        .stat-bar { display: flex; gap: 8px; }
+        .pill { background: #000; padding: 2px 10px; border: 1px solid var(--border); border-radius: 2px; font-size: 0.7rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .pill.gold { color: var(--accent); border-color: var(--accent); }
+        .pill.danger { color: var(--danger); border-color: var(--danger); }
+
+        .nav-item { background: transparent; border: none; color: var(--dim); padding: 8px 12px; text-align: left; cursor: pointer; border-radius: 2px; display: flex; align-items: center; gap: 8px; transition: 0.2s; width: 100%; }
+        .nav-item:hover { background: rgba(255,255,255,0.03); color: #fff; }
+        .nav-item.active { background: var(--accent); color: #000; font-weight: bold; }
+
+        .card { background: var(--panel-light); border: 1px solid var(--border); padding: 12px; border-radius: 3px; margin-bottom: 12px; position: relative; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+        h2 { margin: 0 0 10px 0; color: var(--accent); font-size: 0.9rem; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 4px; letter-spacing: 1px; }
+        
+        .btn { background: var(--accent); color: #000; border: none; padding: 6px 10px; font-weight: bold; border-radius: 2px; cursor: pointer; font-size: 0.75rem; width: 100%; transition: 0.1s; }
+        .btn:hover { background: #fff; }
+        .btn.red { background: var(--danger); color: #fff; }
+        .btn:disabled { background: #222; color: #444; cursor: not-allowed; }
+
+        /* --- PIZZA DESIGNER --- */
+        .designer-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
+        .pizza-preview { width: 220px; height: 220px; background: #8d4925; border-radius: 50%; border: 6px solid #e67e22; position: relative; margin: 0 auto; box-shadow: 0 5px 15px #000; overflow: hidden; }
+        .sauce-layer { position: absolute; inset: 8px; background: #c0392b; border-radius: 50%; opacity: 0.8; }
+        .cheese-layer { position: absolute; inset: 12px; background: #f1c40f; border-radius: 50%; opacity: 0.6; }
+        .ing-dot { position: absolute; width: 10px; height: 10px; border-radius: 50%; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        /* --- SHIFT BOARD --- */
+        .shift-cell { background: #000; border: 1px solid var(--border); padding: 8px; border-radius: 2px; text-align: center; }
+        .shift-head { font-size: 0.65rem; color: var(--dim); text-transform: uppercase; margin-bottom: 4px; }
+
+        /* --- DATA TABLES --- */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: var(--accent); padding: 5px; border-bottom: 1px solid var(--border); font-size: 0.7rem; }
+        td { padding: 5px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+
+        .meter-bg { height: 4px; background: #000; border-radius: 2px; overflow: hidden; margin: 2px 0; }
+        .meter-fill { height: 100%; transition: width 0.3s; }
+
+        .log-box { position: fixed; bottom: 10px; right: 10px; width: 300px; background: rgba(0,0,0,0.95); border: 1px solid var(--border); padding: 8px; max-height: 120px; overflow-y: auto; z-index: 1000; font-family: monospace; font-size: 0.7rem; }
+        .log-item { border-left: 2px solid var(--accent); padding-left: 5px; margin-bottom: 3px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // ==========================================
+        // DATA CONSTANTS
+        // ==========================================
+
+        const INGREDIENTS = [
+            { id: 't', name: 'Tomato', cost: 0.1, sweet: 10, salt: 2, sour: 5, umami: 2, color: '#c0392b', risk: 0 },
+            { id: 'z', name: 'Mozzarella', cost: 0.3, sweet: 2, salt: 10, sour: 0, umami: 15, color: '#f1c40f', risk: 2 },
+            { id: 's', name: 'Salami', cost: 0.6, sweet: 0, salt: 20, sour: 5, umami: 25, color: '#e74c3c', risk: 5 },
+            { id: 'h', name: 'Ham', cost: 0.5, sweet: 5, salt: 15, sour: 0, umami: 15, color: '#ff9ff3', risk: 4 },
+            { id: 'm', name: 'Mushroom', cost: 0.4, sweet: 0, salt: 5, sour: 0, umami: 35, color: '#95a5a6', risk: 8 },
+            { id: 'p', name: 'Peppers', cost: 0.2, sweet: 15, salt: 0, sour: 10, umami: 0, color: '#2ecc71', risk: 3 },
+            { id: 'o', name: 'Onion', cost: 0.1, sweet: 15, salt: 0, sour: 2, umami: 5, color: '#ecf0f1', risk: 1 },
+            { id: 'a', name: 'Anchovy', cost: 0.8, sweet: 0, salt: 45, sour: 10, umami: 40, color: '#34495e', risk: 15 },
+            { id: 'g', name: 'Garlic', cost: 0.1, sweet: 5, salt: 0, sour: 0, umami: 15, color: '#ffffff', risk: 0 },
+            { id: 'c', name: 'Chili', cost: 0.2, sweet: 0, salt: 5, sour: 25, umami: 5, color: '#ff0000', risk: 0 },
+            { id: 'x', name: 'Truffle', cost: 5.0, sweet: 0, salt: 10, sour: 0, umami: 80, color: '#2c3e50', risk: 0, locked: true },
+            { id: 'k', name: 'Caviar', cost: 8.0, sweet: 0, salt: 50, sour: 10, umami: 40, color: '#000000', risk: 20, locked: true },
+        ];
+
+        const DEMOGRAPHICS = {
+            'Kids': { sweet: 90, salt: 50, sour: 10, umami: 5, budget: 10 },
+            'Teens': { sweet: 60, salt: 80, sour: 20, umami: 20, budget: 15 },
+            'Workers': { sweet: 20, salt: 90, sour: 10, umami: 60, budget: 20 },
+            'Yuppies': { sweet: 10, salt: 30, sour: 70, umami: 90, budget: 50 },
+            'Seniors': { sweet: 40, salt: 20, sour: 50, umami: 40, budget: 30 },
+            'Mafia': { sweet: 10, salt: 70, sour: 20, umami: 100, budget: 120 }
+        };
+
+        const CITY_SECTORS = [
+            { id: 'ny1', name: 'Wall Street', rent: 20000, traffic: 250, demos: ['Yuppies', 'Workers'], comp: 90 },
+            { id: 'ny2', name: 'Little Italy', rent: 6000, traffic: 120, demos: ['Seniors', 'Mafia'], comp: 50 },
+            { id: 'ny3', name: 'The Bronx', rent: 1200, traffic: 80, demos: ['Workers', 'Teens'], comp: 10 },
+            { id: 'ny4', name: 'Staten Is.', rent: 2000, traffic: 60, demos: ['Kids', 'Seniors'], comp: 5 },
+            { id: 'ny5', name: 'Harlem', rent: 3000, traffic: 150, demos: ['Students', 'Teens'], comp: 30 }
+        ];
+
+        const INITIAL_STAFF = [
+            { id: 's1', name: 'Adine Anna', speed: 85, quality: 70, honesty: 95, salary: 1800, role: 'Cook' },
+            { id: 's2', name: 'Bodo Brian', speed: 60, quality: 90, honesty: 40, salary: 1200, role: 'Waiter' },
+            { id: 's3', name: 'Cora Cindy', speed: 95, quality: 50, honesty: 100, salary: 2600, role: 'Manager' },
+            { id: 's4', name: 'Dirk David', speed: 75, quality: 75, honesty: 80, salary: 2000, role: 'Cook' },
+            { id: 's5', name: 'Elena Evi', speed: 55, quality: 100, honesty: 90, salary: 1600, role: 'Waiter' },
+            { id: 's6', name: 'Felix Fritz', speed: 80, quality: 65, honesty: 15, salary: 1100, role: 'Waiter' },
+        ];
+
+        const TECH_TREE = [
+            { id: 't1', name: 'Dough Fermentation', cost: 50, desc: 'Unlocks +10% Pizza Quality' },
+            { id: 't2', name: 'High-Temp Stones', cost: 100, desc: 'Ovens cook 20% faster' },
+            { id: 't3', name: 'Exotic Sourcing', cost: 250, desc: 'Unlocks Truffles & Caviar' }
+        ];
+
+        // ==========================================
+        // MAIN APPLICATION ENGINE
+        // ==========================================
+
+        const App = () => {
+            const [view, setView] = useState('Overview');
+            const [cash, setCash] = useState(80000);
+            const [day, setDay] = useState(1);
+            const [heat, setHeat] = useState(0);
+            const [researchPoints, setResearchPoints] = useState(0);
+            const [unlockedTechs, setTechs] = useState([]);
+            
+            const [recipes, setRecipes] = useState([{ id: 'r1', name: 'Syndicate Signature', toppings: ['t','z','s'], price: 15, flavor: { sweet: 12, salt: 32, umami: 42, cost: 2.5 } }]);
+            const [branches, setBranches] = useState([]);
+            const [inventory, setInventory] = useState({ t: 500, z: 500, s: 500, h: 500, m: 500 });
+            const [logs, setLogs] = useState(["Titan Core v6.0 Online. Fixed ReferenceError."]);
+
+            // Designer State
+            const [dName, setDName] = useState("Titan Pie 1");
+            const [dToppings, setDToppings] = useState(['t', 'z']);
+            const [dPrice, setDPrice] = useState(16);
+
+            const addLog = (m) => setLogs(p => [`[D${day}] ${m}`, ...p].slice(0, 20));
+
+            // --- CALCULATE DESIGNER ---
+            const dFlavor = useMemo(() => {
+                const f = { sweet: 0, salt: 0, sour: 0, umami: 0, cost: 3.00 };
+                dToppings.forEach(tid => {
+                    const ing = INGREDIENTS.find(i => i.id === tid);
+                    f.sweet += ing.sweet; f.salt += ing.salt; f.sour += ing.sour; f.umami += ing.umami;
+                    f.cost += ing.cost;
+                });
+                return f;
+            }, [dToppings]);
+
+            // --- MAIN TICK: END DAY ---
+            const nextDay = () => {
+                let dailyProfit = 0;
+                let totalServed = 0;
+                let theftLoss = 0;
+
+                const newBranches = branches.map(br => {
+                    if (!br.shifts.Morning || !br.shifts.Afternoon) { addLog(`BRANCH: ${br.name} closed - Missing shifts!`); return br; }
+
+                    const sector = CITY_SECTORS.find(s => s.id === br.sectorId);
+                    const traffic = sector.traffic * (br.rating / 50);
+                    let branchServed = 0;
+                    let branchRev = 0;
+
+                    for(let i=0; i<traffic; i++) {
+                        const recipe = recipes[0];
+                        const canMake = recipe.toppings.every(t => inventory[t] > 0);
+                        if(canMake) {
+                            branchRev += recipe.price;
+                            branchServed++;
+                            recipe.toppings.forEach(t => setInventory(prev => ({ ...prev, [t]: Math.max(0, prev[t]-1) })));
+                        }
+                    }
+
+                    // Theft Logic
+                    const honestyArray = Object.values(br.shifts).filter(id => id).map(id => INITIAL_STAFF.find(s => s.id === id)?.honesty || 100);
+                    const avgHonesty = honestyArray.length ? (honestyArray.reduce((a,b)=>a+b, 0) / honestyArray.length) : 100;
+                    const theft = branchRev * (Math.max(0, 100 - avgHonesty) / 1000);
+                    theftLoss += theft;
+
+                    const costs = (sector.rent / 30) + (br.staffCount * 110);
+                    dailyProfit += (branchRev - theft - costs);
+                    totalServed += branchServed;
+
+                    return { ...br, lastInc: branchRev - theft, rating: Math.min(100, br.rating + 0.4) };
+                });
+
+                setBranches(newBranches);
+                setCash(c => c + dailyProfit);
+                setDay(d => d + 1);
+                setHeat(h => Math.max(0, h - 2));
+                setResearchPoints(rp => rp + 10);
+
+                // Warehouse spoilage
+                setInventory(prev => {
+                    const nextInv = { ...prev };
+                    Object.keys(nextInv).forEach(key => nextInv[key] = Math.floor(nextInv[key] * 0.95));
+                    return nextInv;
+                });
+
+                addLog(`FISCAL: Served ${totalServed} customers. Net Profit: $${dailyProfit.toFixed(0)}. Theft: $${theftLoss.toFixed(0)}`);
+            };
+
+            const rentSite = (sec) => {
+                if (cash < sec.rent) return alert("Insufficient Capital.");
+                setCash(prev => prev - sec.rent);
+                const nr = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    sectorId: sec.id,
+                    name: sec.name.split(' ')[0] + " Pizza",
+                    rating: 50,
+                    staffCount: 4,
+                    shifts: { Morning: 's1', Afternoon: 's2', Night: null },
+                    lastInc: 0
+                };
+                setBranches([...branches, nr]);
+                addLog(`REAL ESTATE: Renting ${sec.name}. Branch operational.`);
+            };
+
+            const assignToStaff = (brId, sId, shift) => {
+                setBranches(prev => prev.map(r => r.id === brId ? { ...r, shifts: { ...r.shifts, [shift]: sId } } : r));
+                addLog(`HR: Shift board updated.`);
+            };
+
+            const saveRecipe = () => {
+                setRecipes([...recipes, { id: Date.now().toString(), name: dName, toppings: [...dToppings], price: dPrice, flavor: { ...dFlavor } }]);
+                addLog(`LAB: Formula "${dName}" authorized.`);
+                setView('Menu');
+            };
+
+            return (
+                <div id="root">
+                    <header className="top-nav">
+                        <div style={{display:'flex', gap:'15px', alignItems:'center'}}>
+                            <h1 style={{margin:0, fontSize:'1.1rem'}}><i className="fas fa-pizza-slice"></i> PIZZA SYNDICATE: TITAN</h1>
+                            <div className="stat-bar">
+                                <div className="pill gold">💰 ${cash.toLocaleString()}</div>
+                                <div className="pill">📅 DAY {day}</div>
+                                <div className="pill danger">🔥 HEAT {heat}%</div>
+                                <div className="pill" style={{color:'var(--blue)'}}>🧪 RES: {researchPoints}</div>
+                            </div>
+                        </div>
+                        <button className="btn" onClick={nextDay} style={{width:'auto', padding:'0 25px', height:'30px', borderRadius:'15px', border:'2px solid white'}}>PROCESS CYCLE <i className="fas fa-forward"></i></button>
+                    </header>
+
+                    <div className="main">
+                        <aside className="sidebar">
+                            <button className={`nav-item ${view==='Overview'?'active':''}`} onClick={()=>setView('Overview')}><i className="fas fa-map"></i> Expansion</button>
+                            <button className={`nav-item ${view==='Kitchen'?'active':''}`} onClick={()=>setView('Kitchen')}><i className="fas fa-flask"></i> Pizza Lab</button>
+                            <button className={`nav-item ${view==='Menu'?'active':''}`} onClick={()=>setView('Menu')}><i className="fas fa-scroll"></i> Secret Menu</button>
+                            <button className={`nav-item ${view==='Logistics'?'active':''}`} onClick={()=>setView('Logistics')}><i className="fas fa-truck"></i> Warehouse</button>
+                            <button className={`nav-item ${view==='Shifts'?'active':''}`} onClick={()=>setView('Shifts')}><i className="fas fa-clock"></i> Shift Board</button>
+                            <button className={`nav-item ${view==='Syndicate'?'active':''}`} onClick={()=>setView('Syndicate')}><i className="fas fa-user-secret"></i> Syndicate</button>
+                            <div style={{flex:1}}></div>
+                            <div className="pill" style={{margin:'10px', fontSize:'0.6rem'}}>SYSTEM: V6.0-TITAN</div>
+                        </aside>
+
+                        <main className="viewport">
+                            
+                            {/* --- VIEW: MAP --- */}
+                            {view === 'Overview' && (
+                                <div className="fade">
+                                    <h2>Urban Territorial Access</h2>
+                                    <div className="grid">
+                                        {CITY_SECTORS.map(sec => {
+                                            const owned = branches.find(b => b.sectorId === sec.id);
+                                            return (
+                                                <div key={sec.id} className="card">
+                                                    <h3>{sec.name}</h3>
+                                                    <p style={{color:'var(--dim)', fontSize:'0.7rem'}}>{(sec.demos || []).join(' • ')}</p>
+                                                    <div style={{display:'flex', justifyContent:'space-between', margin:'8px 0'}}>
+                                                        <span>Rent: <b style={{color:'var(--danger)'}}>${sec.rent}</b></span>
+                                                        <span>Traffic: <b>{sec.traffic}</b></span>
+                                                    </div>
+                                                    <div className="meter-bg"><div className="meter-fill" style={{width:`${sec.comp}%`, background:'var(--danger)'}}></div></div>
+                                                    {owned ? (
+                                                        <div style={{color:'var(--success)', fontWeight:'bold', marginTop:'15px'}}>OPERATIONAL [Yesterday: ${owned.lastInc.toFixed(0)}]</div>
+                                                    ) : (
+                                                        <button className="btn" style={{marginTop:'15px'}} onClick={()=>rentSite(sec)}>RENT LOCATION</button>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- VIEW: KITCHEN --- */}
+                            {view === 'Kitchen' && (
+                                <div className="fade designer-layout">
+                                    <div className="card">
+                                        <h3>Prototype Designer</h3>
+                                        <div className="pizza-preview">
+                                            <div className="sauce-layer"></div>
+                                            <div className="cheese-layer"></div>
+                                            {dToppings.map((tid, i) => {
+                                                const ing = INGREDIENTS.find(x => x.id === tid);
+                                                return [1,2,3,4].map(n => (
+                                                    <div key={tid+n} className="ing-dot" style={{
+                                                        background: ing.color,
+                                                        top: `${15 + Math.random()*70}%`, left: `${15 + Math.random()*70}%`
+                                                    }}></div>
+                                                ));
+                                            })}
+                                        </div>
+                                        <div style={{marginTop:'20px'}}>
+                                            <label>Recipe Name: </label>
+                                            <input value={dName} onChange={e=>setDName(e.target.value)} style={{width:'100%', padding:'6px', background:'#000', border:'1px solid var(--border)', color:'#fff', marginBottom:'10px'}} />
+                                            <div style={{display:'flex', justifyContent:'space-between', marginBottom:'10px'}}>
+                                                <span>Unit Cost: <b style={{color:'var(--danger)'}}>${dFlavor.cost.toFixed(2)}</b></span>
+                                                <span>Price: <input type="number" value={dPrice} onChange={e=>setDPrice(Number(e.target.value))} style={{width:45, background:'#000', color:'#fff', border:'1px solid #444'}} /></span>
+                                            </div>
+                                            <button className="btn" onClick={saveRecipe}>AUTHORIZE PRODUCTION</button>
+                                        </div>
+                                    </div>
+                                    <div className="card">
+                                        <h3>Ingredient Matrix</h3>
+                                        <div style={{display:'grid', gridTemplateColumns:'1.2fr 1fr', gap:'20px'}}>
+                                            <div style={{maxHeight:350, overflowY:'auto'}}>
+                                                {INGREDIENTS.filter(i => !i.locked || unlockedTechs.includes('t3')).map(ing => (
+                                                    <div key={ing.id} style={{display:'flex', justifyContent:'space-between', padding:'6px', borderBottom:'1px solid #222', cursor:'pointer', background: dToppings.includes(ing.id)?'rgba(241, 196, 15, 0.1)':'transparent'}} onClick={()=>{
+                                                        if(dToppings.includes(ing.id)) setDToppings(dToppings.filter(x=>x!==ing.id));
+                                                        else setDToppings([...dToppings, ing.id]);
+                                                    }}>
+                                                        <span>{ing.name}</span> <span style={{color:'var(--accent)'}}>${ing.cost}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div>
+                                                <h4>Market Alignment</h4>
+                                                {Object.entries(DEMOGRAPHICS).map(([name, pref]) => (
+                                                    <div key={name} style={{marginBottom:'6px'}}>
+                                                        <div style={{display:'flex', justifyContent:'space-between', fontSize:'0.7rem'}}><span>{name}</span></div>
+                                                        <div className="meter-bg"><div className="meter-fill" style={{width:`${Math.random()*40 + 40}%`, background: 'var(--success)'}}></div></div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- VIEW: LOGISTICS --- */}
+                            {view === 'Logistics' && (
+                                <div className="fade card">
+                                    <h2>Stockpile Management</h2>
+                                    <table>
+                                        <thead><tr><th>Ingredient</th><th>Inventory</th><th>Order (50 units)</th></tr></thead>
+                                        <tbody>
+                                            {INGREDIENTS.filter(i => !i.locked || unlockedTechs.includes('t3')).map(ing => (
+                                                <tr key={ing.id}>
+                                                    <td><b>{ing.name}</b></td>
+                                                    <td><div className="meter-bg" style={{width:'80px', display:'inline-block', marginRight:'10px'}}><div className="meter-fill" style={{width:`${(inventory[ing.id]||0)/5}%`, background:'var(--accent)'}}></div></div> {(inventory[ing.id]||0)}</td>
+                                                    <td><button className="btn" style={{width:'80px'}} onClick={()=>{ if(cash >= ing.cost*50) { setCash(c=>c-ing.cost*50); setInventory(prev=>({...prev, [ing.id]: (prev[ing.id]||0)+50})); } }}>ORDER</button></td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+
+                            {/* --- VIEW: SHIFTS --- */}
+                            {view === 'Shifts' && (
+                                <div className="fade card">
+                                    <h2>Operational Shift Scheduling</h2>
+                                    {branches.map(res => (
+                                        <div key={res.id} style={{marginBottom:'20px', borderBottom:'1px solid #333', paddingBottom:'10px'}}>
+                                            <h3 style={{color:'var(--accent)'}}>{res.name}</h3>
+                                            <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'8px'}}>
+                                                {['Morning', 'Afternoon', 'Night'].map(shift => (
+                                                    <div key={shift} className="shift-cell">
+                                                        <div className="shift-head">{shift}</div>
+                                                        <select style={{width:'100%', background:'#000', color:'#fff', fontSize:'0.7rem'}} value={res.shifts[shift] || ''} onChange={(e)=>assignToStaff(res.id, e.target.value, shift)}>
+                                                            <option value="">VACANT</option>
+                                                            {INITIAL_STAFF.map(s => <option key={s.id} value={s.id}>{s.name} ({s.role})</option>)}
+                                                        </select>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {branches.length === 0 && <p>No operational branches. Visit Expansion first.</p>}
+                                </div>
+                            )}
+
+                        </main>
+                    </div>
+
+                    <div className="log-box">
+                        {logs.map((l, i) => <div key={i} className="log-item">{l}</div>)}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

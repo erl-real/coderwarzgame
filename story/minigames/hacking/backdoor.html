@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BACKDOOR // LOGIC BYPASS</title>
+    <style>
+        body { margin: 0; background: #050505; color: #fff; font-family: 'JetBrains Mono', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; background: rgba(225, 29, 72, 0.05); border: 1px solid rgba(225, 29, 72, 0.2); padding: 20px; border-radius: 12px; }
+        .cell { width: 50px; height: 50px; border: 1px solid rgba(225, 29, 72, 0.3); border-radius: 4px; cursor: pointer; transition: all 0.3s; }
+        .cell.on { background: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); border-color: #f87171; }
+        .status { margin-bottom: 20px; font-size: 14px; font-weight: 800; color: #ef4444; letter-spacing: 4px; text-transform: uppercase; }
+        .msg { margin-top: 20px; font-size: 10px; color: #475569; max-width: 300px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="status" id="status">SECURITY_GRID_LOCKED</div>
+    <div class="grid" id="grid"></div>
+    <div class="msg">TOGGLE ALL NODES TO OFF STATE TO BYPASS FIREWALL. CLICKING A NODE TOGGLES ADJACENTS.</div>
+
+    <script>
+        const gridEl = document.getElementById('grid');
+        const statusEl = document.getElementById('status');
+        let size = 5;
+        let board = Array(size).fill().map(() => Array(size).fill(false));
+
+        function init() {
+            gridEl.innerHTML = '';
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.onclick = () => toggle(r, c);
+                    gridEl.appendChild(cell);
+                }
+            }
+            // Scramble
+            for (let i = 0; i < 15; i++) {
+                toggle(Math.floor(Math.random()*size), Math.floor(Math.random()*size), false);
+            }
+            render();
+        }
+
+        function toggle(r, c, check = true) {
+            const pts = [[r,c], [r-1,c], [r+1,c], [r,c-1], [r,c+1]];
+            pts.forEach(([pr, pc]) => {
+                if (pr>=0 && pr<size && pc>=0 && pc<size) {
+                    board[pr][pc] = !board[pr][pc];
+                }
+            });
+            if (check) {
+                render();
+                if (board.every(row => row.every(cell => !cell))) {
+                    statusEl.textContent = 'FIREWALL_BYPASSED';
+                    statusEl.style.color = '#10b981';
+                    setTimeout(() => location.reload(), 2000);
+                }
+            }
+        }
+
+        function render() {
+            const cells = document.querySelectorAll('.cell');
+            board.forEach((row, r) => {
+                row.forEach((val, c) => {
+                    cells[r * size + c].className = 'cell' + (val ? ' on' : '');
+                });
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>

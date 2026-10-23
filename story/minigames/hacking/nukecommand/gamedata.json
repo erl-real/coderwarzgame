@@ -1,0 +1,11 @@
+{
+  "systems": [
+    { "id": "nav", "name": "Inertial Nav", "status": 100, "desc": "Current position tracking accuracy." },
+    { "id": "ecm", "name": "Jamming Suite", "status": 100, "desc": "Electronic counter-measures against SAMs." },
+    { "id": "fuel", "name": "Fuel Management", "status": 100, "desc": "Remaining propellant levels." }
+  ],
+  "targets": [
+    { "id": "t1", "name": "Moscow Hub", "dist": 5000, "defense": 80 },
+    { "id": "t2", "name": "Kiev Relay", "dist": 3000, "defense": 40 }
+  ]
+}
