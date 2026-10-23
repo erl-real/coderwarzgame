@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Infrastructure</title>
+</head>
+<body>
+    <h1>Critical Infrastructure: Cell Towers</h1>
+    <p>This document lists the primary cellular nodes providing network coverage to urban areas. All towers are connected to the regional server backbone.</p>
+
+    <div class="infrastructure-list">
+        <!-- New York -->
+        <h2>New York, USA</h2>
+        <div class="property-entry">
+            <h3>NYC-CELL-01 (Liberty Tower)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $15,000,000</li>
+                <li><strong>Network:</strong> 5G / LTE-Advanced</li>
+                <li><strong>Coverage:</strong> Manhattan High-Density</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("CELL_BACKHAUL_01", "MAINTENANCE_TUNNEL")</li>
+                <li><strong>Description:</strong> Primary cellular relay for the financial district.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>NYC-CELL-02 (Empire Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $12,000,000</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>Coverage:</strong> Midtown/Uptown</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("CELL_BACKHAUL_02")</li>
+                <li><strong>Description:</strong> High-altitude relay station.</li>
+            </ul>
+        </div>
+
+        <!-- London -->
+        <h2>London, UK</h2>
+        <div class="property-entry">
+            <h3>LDN-CELL-01 (Shard Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $18,000,000</li>
+                <li><strong>Network:</strong> 5G / SAT-Link</li>
+                <li><strong>Coverage:</strong> Central London / City</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("THAMES_NET_CELL", "BT_BACKBONE")</li>
+                <li><strong>Description:</strong> Flagship cellular node for the UK region.</li>
+            </ul>
+        </div>
+
+        <!-- Tokyo -->
+        <h2>Tokyo, Japan</h2>
+        <div class="property-entry">
+            <h3>TKY-CELL-01 (Shinjuku Array)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $20,000,000</li>
+                <li><strong>Network:</strong> 6G Prototype / 5G</li>
+                <li><strong>Coverage:</strong> Shinjuku/Shibuya Core</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to TKY_MAIN ("CORE_CELL_ARRAY", "NTT_PROTO")</li>
+                <li><strong>Description:</strong> Next-gen cellular node with massive throughput.</li>
+            </ul>
+        </div>
+    
+        <!-- Seoul -->
+        <h2>Seoul</h2>
+        <div class="property-entry">
+            <h3>S-CELL-01 (Seoul Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $10,383,120</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("CELL_NODE_S_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>S-CELL-02 (Seoul Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $5,288,444</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("CELL_NODE_S_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Singapore -->
+        <h2>Singapore</h2>
+        <div class="property-entry">
+            <h3>S-CELL-01 (Singapore Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $12,433,786</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("CELL_NODE_S_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>S-CELL-02 (Singapore Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $12,345,297</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("CELL_NODE_S_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Sydney -->
+        <h2>Sydney</h2>
+        <div class="property-entry">
+            <h3>S-CELL-01 (Sydney Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $5,165,478</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SYD_REG ("CELL_NODE_S_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>S-CELL-02 (Sydney Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $7,439,121</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SYD_REG ("CELL_NODE_S_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Austin -->
+        <h2>Austin</h2>
+        <div class="property-entry">
+            <h3>A-CELL-01 (Austin Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $5,830,844</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to ATX_REG ("CELL_NODE_A_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Phoenix -->
+        <h2>Phoenix</h2>
+        <div class="property-entry">
+            <h3>P-CELL-01 (Phoenix Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $8,302,896</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to PHX_REG ("CELL_NODE_P_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Mexico City -->
+        <h2>Mexico City</h2>
+        <div class="property-entry">
+            <h3>MC-CELL-01 (Mexico City Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $7,641,600</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to MEX_REG ("CELL_NODE_MC_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- São Paulo -->
+        <h2>São Paulo</h2>
+        <div class="property-entry">
+            <h3>SP-CELL-01 (São Paulo Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $13,742,799</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SP_REG ("CELL_NODE_SP_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Berlin -->
+        <h2>Berlin</h2>
+        <div class="property-entry">
+            <h3>B-CELL-01 (Berlin Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $7,713,965</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("CELL_NODE_B_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Manchester -->
+        <h2>Manchester</h2>
+        <div class="property-entry">
+            <h3>M-CELL-01 (Manchester Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $12,027,147</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to MCR_REG ("CELL_NODE_M_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>M-CELL-02 (Manchester Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $7,090,634</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to MCR_REG ("CELL_NODE_M_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Vancouver -->
+        <h2>Vancouver</h2>
+        <div class="property-entry">
+            <h3>V-CELL-01 (Vancouver Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $14,286,537</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to YVR_REG ("CELL_NODE_V_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>V-CELL-02 (Vancouver Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $9,653,490</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to YVR_REG ("CELL_NODE_V_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Detroit -->
+        <h2>Detroit</h2>
+        <div class="property-entry">
+            <h3>D-CELL-01 (Detroit Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $12,321,916</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("CELL_NODE_D_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Charlotte -->
+        <h2>Charlotte</h2>
+        <div class="property-entry">
+            <h3>C-CELL-01 (Charlotte Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $10,942,100</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("CELL_NODE_C_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>C-CELL-02 (Charlotte Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $9,711,727</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("CELL_NODE_C_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Columbus -->
+        <h2>Columbus</h2>
+        <div class="property-entry">
+            <h3>C-CELL-01 (Columbus Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $11,238,634</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("CELL_NODE_C_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Tampa -->
+        <h2>Tampa</h2>
+        <div class="property-entry">
+            <h3>T-CELL-01 (Tampa Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $13,692,852</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("CELL_NODE_T_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Istanbul -->
+        <h2>Istanbul</h2>
+        <div class="property-entry">
+            <h3>I-CELL-01 (Istanbul Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $9,299,968</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("CELL_NODE_I_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Manila -->
+        <h2>Manila</h2>
+        <div class="property-entry">
+            <h3>M-CELL-01 (Manila Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $12,365,900</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to TKY_MAIN ("CELL_NODE_M_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Jakarta -->
+        <h2>Jakarta</h2>
+        <div class="property-entry">
+            <h3>J-CELL-01 (Jakarta Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $11,313,731</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to TKY_MAIN ("CELL_NODE_J_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Lagos -->
+        <h2>Lagos</h2>
+        <div class="property-entry">
+            <h3>L-CELL-01 (Lagos Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $8,961,338</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("CELL_NODE_L_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>L-CELL-02 (Lagos Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $8,028,756</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("CELL_NODE_L_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Dhaka -->
+        <h2>Dhaka</h2>
+        <div class="property-entry">
+            <h3>D-CELL-01 (Dhaka Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $6,771,157</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("CELL_NODE_D_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>D-CELL-02 (Dhaka Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $6,691,429</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("CELL_NODE_D_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Karachi -->
+        <h2>Karachi</h2>
+        <div class="property-entry">
+            <h3>K-CELL-01 (Karachi Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $14,324,137</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("CELL_NODE_K_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Cairo -->
+        <h2>Cairo</h2>
+        <div class="property-entry">
+            <h3>C-CELL-01 (Cairo Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $10,662,215</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("CELL_NODE_C_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>C-CELL-02 (Cairo Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $6,241,693</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("CELL_NODE_C_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Oslo -->
+        <h2>Oslo</h2>
+        <div class="property-entry">
+            <h3>O-CELL-01 (Oslo Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $5,188,939</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("CELL_NODE_O_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>O-CELL-02 (Oslo Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $11,147,649</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("CELL_NODE_O_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Katowice -->
+        <h2>Katowice</h2>
+        <div class="property-entry">
+            <h3>K-CELL-01 (Katowice Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $9,704,372</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("CELL_NODE_K_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>K-CELL-02 (Katowice Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $6,638,008</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("CELL_NODE_K_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Tbilisi -->
+        <h2>Tbilisi</h2>
+        <div class="property-entry">
+            <h3>T-CELL-01 (Tbilisi Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $14,040,972</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("CELL_NODE_T_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Reykjavik -->
+        <h2>Reykjavik</h2>
+        <div class="property-entry">
+            <h3>R-CELL-01 (Reykjavik Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $12,422,368</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to FAR_REMOTE ("CELL_NODE_R_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Tallinn -->
+        <h2>Tallinn</h2>
+        <div class="property-entry">
+            <h3>T-CELL-01 (Tallinn Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $11,432,204</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("CELL_NODE_T_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>T-CELL-02 (Tallinn Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $10,829,403</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("CELL_NODE_T_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Svalbard -->
+        <h2>Svalbard</h2>
+        <div class="property-entry">
+            <h3>S-CELL-01 (Svalbard Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $8,283,145</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SVB_REMOTE ("CELL_NODE_S_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>S-CELL-02 (Svalbard Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $9,056,423</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SVB_REMOTE ("CELL_NODE_S_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Guam -->
+        <h2>Guam</h2>
+        <div class="property-entry">
+            <h3>G-CELL-01 (Guam Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $7,659,871</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to GUM_REMOTE ("CELL_NODE_G_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Faroe Islands -->
+        <h2>Faroe Islands</h2>
+        <div class="property-entry">
+            <h3>FI-CELL-01 (Faroe Islands Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $7,804,928</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to FAR_REMOTE ("CELL_NODE_FI_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Anchorage -->
+        <h2>Anchorage</h2>
+        <div class="property-entry">
+            <h3>A-CELL-01 (Anchorage Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $13,250,071</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to ANC_REMOTE ("CELL_NODE_A_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Puerto Rico -->
+        <h2>Puerto Rico</h2>
+        <div class="property-entry">
+            <h3>PR-CELL-01 (Puerto Rico Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $11,616,818</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to PR_REMOTE ("CELL_NODE_PR_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>PR-CELL-02 (Puerto Rico Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $5,184,112</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to PR_REMOTE ("CELL_NODE_PR_2")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+        <!-- Greenland -->
+        <h2>Greenland</h2>
+        <div class="property-entry">
+            <h3>G-CELL-01 (Greenland Relay)</h3>
+            <ul>
+                <li><strong>Type:</strong> Cell Tower</li>
+                <li><strong>Price:</strong> $6,515,187</li>
+                <li><strong>Network:</strong> 5G</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to GRL_REMOTE ("CELL_NODE_G_1")</li>
+                <li><strong>Description:</strong> Regional cellular relay node.</li>
+            </ul>
+        </div>
+    
+        <!-- New York Utilities -->
+        <h2>New York</h2>
+        <div class="property-entry">
+            <h3>New York Nuclear Fission Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the New York regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>New York Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>New York General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- London Utilities -->
+        <h2>London</h2>
+        <div class="property-entry">
+            <h3>London Nuclear Fission Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the London regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>London Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>London General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Tokyo Utilities -->
+        <h2>Tokyo</h2>
+        <div class="property-entry">
+            <h3>Tokyo Nuclear Fusion Reactor</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to TKY_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Tokyo regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Tokyo Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to TKY_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Tokyo General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to TKY_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Seoul Utilities -->
+        <h2>Seoul</h2>
+        <div class="property-entry">
+            <h3>Seoul Nuclear Fusion Reactor</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Seoul regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Seoul Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Seoul General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Singapore Utilities -->
+        <h2>Singapore</h2>
+        <div class="property-entry">
+            <h3>Singapore Nuclear Fusion Reactor</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Singapore regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Singapore Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Singapore General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Sydney Utilities -->
+        <h2>Sydney</h2>
+        <div class="property-entry">
+            <h3>Sydney Nuclear Fission Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SYD_REG ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Sydney regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Sydney Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SYD_REG ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Sydney General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SYD_REG ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Austin Utilities -->
+        <h2>Austin</h2>
+        <div class="property-entry">
+            <h3>Austin Nuclear Fusion Reactor</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to ATX_REG ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Austin regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Austin Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to ATX_REG ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Austin General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to ATX_REG ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Phoenix Utilities -->
+        <h2>Phoenix</h2>
+        <div class="property-entry">
+            <h3>Phoenix Nuclear Fusion Reactor</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to PHX_REG ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Phoenix regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Phoenix Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to PHX_REG ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Phoenix General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to PHX_REG ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Mexico City Utilities -->
+        <h2>Mexico City</h2>
+        <div class="property-entry">
+            <h3>Mexico City Solar Array</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to MEX_REG ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Mexico City regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Mexico City Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to MEX_REG ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Mexico City General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to MEX_REG ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- São Paulo Utilities -->
+        <h2>São Paulo</h2>
+        <div class="property-entry">
+            <h3>São Paulo Gas-Turbine Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SP_REG ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the São Paulo regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>São Paulo Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SP_REG ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>São Paulo General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SP_REG ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Berlin Utilities -->
+        <h2>Berlin</h2>
+        <div class="property-entry">
+            <h3>Berlin Gas-Turbine Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Berlin regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Berlin Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Berlin General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Manchester Utilities -->
+        <h2>Manchester</h2>
+        <div class="property-entry">
+            <h3>Manchester Coal Power Station</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to MCR_REG ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Manchester regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Manchester Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to MCR_REG ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Manchester General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to MCR_REG ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Vancouver Utilities -->
+        <h2>Vancouver</h2>
+        <div class="property-entry">
+            <h3>Vancouver Nuclear Fission Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to YVR_REG ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Vancouver regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Vancouver Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to YVR_REG ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Vancouver General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to YVR_REG ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Detroit Utilities -->
+        <h2>Detroit</h2>
+        <div class="property-entry">
+            <h3>Detroit Coal Power Station</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Detroit regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Detroit Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Detroit General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Charlotte Utilities -->
+        <h2>Charlotte</h2>
+        <div class="property-entry">
+            <h3>Charlotte Nuclear Fission Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Charlotte regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Charlotte Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Charlotte General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Columbus Utilities -->
+        <h2>Columbus</h2>
+        <div class="property-entry">
+            <h3>Columbus Coal Power Station</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Columbus regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Columbus Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Columbus General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Tampa Utilities -->
+        <h2>Tampa</h2>
+        <div class="property-entry">
+            <h3>Tampa Gas-Turbine Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Tampa regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Tampa Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Tampa General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to NYC_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Istanbul Utilities -->
+        <h2>Istanbul</h2>
+        <div class="property-entry">
+            <h3>Istanbul Gas-Turbine Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Istanbul regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Istanbul Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Istanbul General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Manila Utilities -->
+        <h2>Manila</h2>
+        <div class="property-entry">
+            <h3>Manila Solar Array</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to TKY_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Manila regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Manila Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to TKY_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Manila General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to TKY_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Jakarta Utilities -->
+        <h2>Jakarta</h2>
+        <div class="property-entry">
+            <h3>Jakarta Gas-Turbine Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to TKY_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Jakarta regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Jakarta Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to TKY_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Jakarta General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to TKY_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Lagos Utilities -->
+        <h2>Lagos</h2>
+        <div class="property-entry">
+            <h3>Lagos Coal Power Station</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Lagos regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Lagos Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Lagos General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Dhaka Utilities -->
+        <h2>Dhaka</h2>
+        <div class="property-entry">
+            <h3>Dhaka Coal Power Station</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Dhaka regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Dhaka Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Dhaka General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Karachi Utilities -->
+        <h2>Karachi</h2>
+        <div class="property-entry">
+            <h3>Karachi Coal Power Station</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Karachi regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Karachi Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Karachi General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SEL_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Cairo Utilities -->
+        <h2>Cairo</h2>
+        <div class="property-entry">
+            <h3>Cairo Solar Array</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Cairo regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Cairo Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Cairo General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Oslo Utilities -->
+        <h2>Oslo</h2>
+        <div class="property-entry">
+            <h3>Oslo Nuclear Fission Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Oslo regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Oslo Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Oslo General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to LDN_MAIN ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Katowice Utilities -->
+        <h2>Katowice</h2>
+        <div class="property-entry">
+            <h3>Katowice Coal Power Station</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Katowice regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Katowice Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Katowice General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Tbilisi Utilities -->
+        <h2>Tbilisi</h2>
+        <div class="property-entry">
+            <h3>Tbilisi Gas-Turbine Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Tbilisi regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Tbilisi Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Tbilisi General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Reykjavik Utilities -->
+        <h2>Reykjavik</h2>
+        <div class="property-entry">
+            <h3>Reykjavik Geothermal Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to FAR_REMOTE ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Reykjavik regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Reykjavik Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to FAR_REMOTE ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Reykjavik General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to FAR_REMOTE ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Tallinn Utilities -->
+        <h2>Tallinn</h2>
+        <div class="property-entry">
+            <h3>Tallinn Nuclear Fusion Reactor</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Tallinn regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Tallinn Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Tallinn General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to BER_REG ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Svalbard Utilities -->
+        <h2>Svalbard</h2>
+        <div class="property-entry">
+            <h3>Svalbard Gas-Turbine Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SVB_REMOTE ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Svalbard regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Svalbard Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SVB_REMOTE ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Svalbard General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to SVB_REMOTE ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Guam Utilities -->
+        <h2>Guam</h2>
+        <div class="property-entry">
+            <h3>Guam Gas-Turbine Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to GUM_REMOTE ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Guam regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Guam Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to GUM_REMOTE ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Guam General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to GUM_REMOTE ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Faroe Islands Utilities -->
+        <h2>Faroe Islands</h2>
+        <div class="property-entry">
+            <h3>Faroe Islands Gas-Turbine Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to FAR_REMOTE ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Faroe Islands regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Faroe Islands Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to FAR_REMOTE ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Faroe Islands General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to FAR_REMOTE ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Anchorage Utilities -->
+        <h2>Anchorage</h2>
+        <div class="property-entry">
+            <h3>Anchorage Hydroelectric Dam</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to ANC_REMOTE ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Anchorage regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Anchorage Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to ANC_REMOTE ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Anchorage General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to ANC_REMOTE ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Puerto Rico Utilities -->
+        <h2>Puerto Rico</h2>
+        <div class="property-entry">
+            <h3>Puerto Rico Gas-Turbine Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to PR_REMOTE ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Puerto Rico regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Puerto Rico Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to PR_REMOTE ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Puerto Rico General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to PR_REMOTE ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+        <!-- Greenland Utilities -->
+        <h2>Greenland</h2>
+        <div class="property-entry">
+            <h3>Greenland Gas-Turbine Plant</h3>
+            <ul>
+                <li><strong>Type:</strong> Power Plant</li>
+                <li><strong>Price:</strong> $45,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to GRL_REMOTE ("GRID_CONTROL_ALPHA", "MAINTENANCE_VPN")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Critical energy infrastructure powering the Greenland regional grid.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Greenland Central Precinct</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $25,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to GRL_REMOTE ("BLUE_SHIELD_NET", "EVIDENCE_DB_LINK")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Regional law enforcement headquarters and data processing center.</li>
+            </ul>
+        </div>
+        <div class="property-entry">
+            <h3>Greenland General Hospital</h3>
+            <ul>
+                <li><strong>Type:</strong> Public Service</li>
+                <li><strong>Price:</strong> $35,000,000</li>
+                <li><strong>WiFi Connectivity:</strong> Linked to GRL_REMOTE ("MEDLINK_SECURE", "PATIENT_CLOUD")</li>
+                <li><strong>Requirement:</strong> Gov Tree Level 4+</li>
+                <li><strong>Description:</strong> Primary medical facility with integrated smart health-monitoring nodes.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
