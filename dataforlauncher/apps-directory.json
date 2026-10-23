@@ -1,0 +1,77 @@
+[
+    {
+        "Name":  ".vite",
+        "Path":  "./.vite",
+        "LastWrite":  "2026-03-13T04:34:09Z"
+    },
+    {
+        "Name":  "backups",
+        "Path":  "./backups",
+        "LastWrite":  "2026-02-26T09:14:57Z"
+    },
+    {
+        "Name":  "CoderWarz",
+        "Path":  "./CoderWarz",
+        "LastWrite":  "2026-03-19T01:49:59Z"
+    },
+    {
+        "Name":  "dataforlauncher",
+        "Path":  "./dataforlauncher",
+        "LastWrite":  "2026-03-14T15:02:28Z"
+    },
+    {
+        "Name":  "endevermeter",
+        "Path":  "./endevermeter",
+        "LastWrite":  "2026-03-13T00:36:00Z"
+    },
+    {
+        "Name":  "endeversocial",
+        "Path":  "./endeversocial",
+        "LastWrite":  "2026-03-13T00:38:02Z"
+    },
+    {
+        "Name":  "endeverstudio",
+        "Path":  "./endeverstudio",
+        "LastWrite":  "2026-03-13T00:37:07Z"
+    },
+    {
+        "Name":  "endevervault",
+        "Path":  "./endevervault",
+        "LastWrite":  "2026-03-13T00:37:30Z"
+    },
+    {
+        "Name":  "musicsearch",
+        "Path":  "./musicsearch",
+        "LastWrite":  "2026-03-13T00:42:55Z"
+    },
+    {
+        "Name":  "NeverEndever-archive-www",
+        "Path":  "./NeverEndever-archive-www",
+        "LastWrite":  "2026-03-13T02:53:03Z"
+    },
+    {
+        "Name":  "node_modules",
+        "Path":  "./node_modules",
+        "LastWrite":  "2026-03-14T06:34:52Z"
+    },
+    {
+        "Name":  "oldversions",
+        "Path":  "./oldversions",
+        "LastWrite":  "2026-03-15T01:11:32Z"
+    },
+    {
+        "Name":  "realnotes",
+        "Path":  "./realnotes",
+        "LastWrite":  "2026-03-13T00:36:17Z"
+    },
+    {
+        "Name":  "sickinkapp",
+        "Path":  "./sickinkapp",
+        "LastWrite":  "2026-03-13T00:36:30Z"
+    },
+    {
+        "Name":  "tourbuilder",
+        "Path":  "./tourbuilder",
+        "LastWrite":  "2026-03-14T07:14:25Z"
+    }
+]
