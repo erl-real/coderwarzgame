@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Server</title>
+<link rel="stylesheet" href="../../../gamemodules/penanceos/penance.css">
+<style>
+  /* The device sits in a chrome-less iframe, so it needs to paint its own
+     background. PenanceOS assumes it owns the whole viewport. */
+  html, body { height: 100%; margin: 0; background: #07070a; overflow: hidden; }
+</style>
+</head>
+<body>
+
+<div class="pane-os-panel" id="pane-panel"></div>
+
+<div class="pane-os-desktop" id="pane-desktop">
+  <div class="pane-desktop" id="pane-desktop-bg"></div>
+</div>
+
+<div class="pane-launcher-overlay" id="pane-launcher"></div>
+
+<div class="pane-notif-container" id="pane-notifications"></div>
+
+<script src="../../../gamemodules/penanceos/core.js"></script>
+<script src="../../../gamemodules/penanceos/wm.js"></script>
+<script src="../../../gamemodules/penanceos/panel.js"></script>
+<script src="../../../gamemodules/penanceos/launcher.js"></script>
+<script src="../../../gamemodules/penanceos/terminal.js"></script>
+<script src="../../../gamemodules/penanceos/desktop.js"></script>
+<script src="../../../gamemodules/penanceos/appstore.js"></script>
+<script src="../../../gamemodules/penanceos/browser.js"></script>
+<script src="../../../gamemodules/penanceos/wallet.js"></script>
+<script src="../../../gamemodules/penanceos/email.js"></script>
+<script src="../../../gamemodules/penanceos/inventory.js"></script>
+
+<script>
+/* PenanceOS as a STANDALONE DEVICE.
+
+   This used to be a $500 app you installed on the PC that swapped the entire
+   desktop for PenanceOS - INSTALL_OS flipped state.player.osType to 'penance'
+   and the CubeOS shell was replaced by an iframe. That was wrong for the online
+   build: the PC is a device you own, and PenanceOS is now its own device that
+   sits alongside it in the Device tab.
+
+   Nothing about the OS itself changed - the same gamemodules/penanceos code,
+   just relocated. What changed is where it runs and what it talks to. */
+(function(){
+  var P = window.PaneOS;
+
+  P.initPanel(document.getElementById('pane-panel'));
+  P.initWM(document.getElementById('pane-desktop'));
+  P.initDesktop(document.getElementById('pane-desktop-bg'));
+  P.initLauncher(document.getElementById('pane-launcher'));
+
+  /* PenanceOS polls the host for state on an interval rather than waiting to be
+     asked. online.html answers REQUEST_SYNC; see serverSyncBridge() there. */
+  P.requestSync();
+  setInterval(function(){ P.requestSync(); }, 3000);
+
+  P.on('notification', renderNotifications);
+  P.on('stateChange', renderNotifications);
+
+  function renderNotifications() {
+    var container = document.getElementById('pane-notifications');
+    var notifs = P.getState().notifications;
+    container.innerHTML = '';
+    notifs.forEach(function(n) {
+      var el = document.createElement('div');
+      el.className = 'pane-notif';
+      el.innerHTML =
+        '<div class="pane-notif-title">' + n.title + '</div>' +
+        (n.body ? '<div class="pane-notif-body">' + n.body + '</div>' : '') +
+        '<button class="pane-notif-close" onclick="PaneOS.dismissNotification(\'' + n.id + '\')">&times;</button>';
+      container.appendChild(el);
+    });
+  }
+
+  setTimeout(function(){
+    P.notify('Server Online', 'Ctrl+Shift+Space to open launcher', { timeout: 5000 });
+  }, 1000);
+
+})();
+</script>
+
+</body>
+</html>
