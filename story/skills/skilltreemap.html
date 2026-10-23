@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Neural Link – Advanced Tech Tree</title>
+  <style>
+    :root {
+      --bg: #0a0b10;
+      --grid: #161821;
+      --panel: #11131a;
+      --border: #2d2f3f;
+      --fg: #e1e1e6;
+      
+      /* Sector Colors */
+      --color-research: #ffcc33;
+      --color-banking: #00d2ff;
+      --color-security: #9d50bb;
+      --color-virus: #ff4b2b;
+      --color-transport: #8e9eab;
+      --color-energy: #00ff87;
+      --color-market: #f09819;
+      --color-life: #ed008d;
+      --color-mobility: #3efcad;
+      --color-property: #ff512f;
+      --color-space: #7303c0;
+      --color-karma: #ffffff;
+
+      --locked: #1a1c26;
+      --available: #2c2e3f;
+      --bought: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* Background Grid */
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background-image: 
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 40px 40px;
+      cursor: grab;
+    }
+
+    #app:active { cursor: grabbing; }
+
+    /* UI Overlay */
+    .ui-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .hud-top {
+      padding: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .stat-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 15px 25px;
+      pointer-events: auto;
+    }
+
+    .points-val {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--color-research);
+    }
+
+    .points-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      opacity: 0.5;
+    }
+
+    .karma-box {
+      text-align: right;
+    }
+
+    .karma-val {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    /* Viewport */
+    .viewport {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6000px;
+      height: 4000px;
+      transform-origin: 0 0;
+    }
+
+    .node-connections {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .connection-line {
+      stroke: rgba(255,255,255,0.02);
+      stroke-width: 1.5;
+      fill: none;
+      transition: all 0.4s ease;
+    }
+
+    .connection-line.available {
+      stroke: rgba(255,255,255,0.15);
+      stroke-width: 2;
+      stroke-dasharray: 5, 5;
+      animation: dash-flow 2s linear infinite;
+    }
+
+    .connection-line.unlocked {
+      stroke: rgba(255,255,255,0.4);
+      stroke-width: 2.5;
+    }
+
+    @keyframes dash-flow {
+      from { stroke-dashoffset: 10; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* Skill Nodes */
+    .node {
+      position: absolute;
+      width: 220px;
+      height: 60px;
+      background: #08090d;
+      border: 1px solid #1a1c26;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      cursor: not-allowed;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: auto;
+      z-index: 10;
+      opacity: 0.15;
+      filter: grayscale(1) blur(0.5px);
+    }
+
+    .node:hover {
+      z-index: 100;
+    }
+
+    .node.available {
+      opacity: 1;
+      filter: grayscale(0.2);
+      border-color: rgba(255,255,255,0.5);
+      background: #11131a;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+      animation: pulse-border 2s infinite;
+    }
+
+    @keyframes pulse-border {
+      0% { border-color: rgba(255,255,255,0.3); box-shadow: 0 0 0px rgba(255,255,255,0); }
+      50% { border-color: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(255,255,255,0.1); }
+      100% { border-color: rgba(255,255,255,0.3); box-shadow: 0 0 0px rgba(255,255,255,0); }
+    }
+
+    .node.available:hover {
+      filter: grayscale(0);
+      border-color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 25px rgba(0,0,0,0.9);
+    }
+
+    .node.bought {
+      opacity: 1;
+      filter: grayscale(0);
+      background: #161821;
+      border-left: 6px solid var(--bought);
+      border-right: 1px solid rgba(255,255,255,0.1);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      cursor: default;
+      box-shadow: 0 0 30px rgba(255,255,255,0.05);
+    }
+
+    .node.bought .node-meta {
+      color: var(--color-energy);
+      font-weight: 900;
+    }
+
+    .node-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .node.available .node-title,
+    .node.bought .node-title {
+      color: #fff;
+    }
+
+    .node-meta {
+      font-size: 9px;
+      opacity: 0.3;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    .node.available .node-meta,
+    .node.bought .node-meta {
+      opacity: 0.7;
+    }
+
+    /* Category Headers */
+    .category-label {
+      position: absolute;
+      left: 40px;
+      font-size: 24px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 5px;
+      opacity: 0.1;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    /* Tooltip */
+    .tooltip {
+      position: fixed;
+      width: 320px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 20px;
+      z-index: 2000;
+      display: none;
+      pointer-events: none;
+      box-shadow: 20px 20px 40px rgba(0,0,0,0.6);
+    }
+
+    .tt-name { font-weight: 900; text-transform: uppercase; margin-bottom: 5px; font-size: 14px; }
+    .tt-cost { color: var(--color-research); font-size: 12px; margin-bottom: 10px; }
+    .tt-desc { font-size: 11px; color: rgba(255,255,255,0.7); line-height: 1.5; margin-bottom: 15px; }
+    .tt-reqs { font-size: 9px; text-transform: uppercase; opacity: 0.6; border-top: 1px solid var(--border); padding-top: 10px; }
+
+    /* Footer Controls */
+    .hud-bottom {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      display: flex;
+      gap: 15px;
+      pointer-events: auto;
+    }
+
+    .btn {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px 20px;
+      font-family: inherit;
+      font-size: 10px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .btn:hover { background: #fff; color: #000; }
+
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="ui-layer">
+      <div class="hud-top">
+        <div class="stat-box">
+          <div class="points-val" id="points-display">000,000</div>
+          <div class="points-label">Research Points (RP)</div>
+        </div>
+        <div class="stat-box karma-box">
+          <div class="karma-val" id="karma-display">Neutral (0)</div>
+          <div class="points-label">Karma Alignment</div>
+        </div>
+      </div>
+
+      <div class="hud-bottom">
+        <button class="btn" id="btn-cheat">+50k RP</button>
+        <button class="btn" id="btn-evil">-20 Karma</button>
+        <button class="btn" id="btn-good">+20 Karma</button>
+        <button class="btn" id="btn-recenter">Recenter</button>
+      </div>
+    </div>
+
+    <div class="viewport" id="viewport">
+      <svg class="node-connections" id="connections-svg"></svg>
+      <div id="categories-container"></div>
+      <div id="nodes-container"></div>
+    </div>
+
+    <div class="tooltip" id="tooltip">
+      <div class="tt-name" id="tt-name">NODE NAME</div>
+      <div class="tt-cost" id="tt-cost">Cost: 1,000 RP</div>
+      <div class="tt-desc" id="tt-desc">Description text goes here.</div>
+      <div class="tt-reqs" id="tt-reqs">Prerequisites: None</div>
+    </div>
+  </div>
+
+  <script>
+    const SKILLS = [
+      // --- 1. RESEARCH (The Universal Unlocker) ---
+      { id: 'res_1', tree: 'Research', tier: 1, title: 'Faster Scanning', cost: 100, requires: [], desc: 'Standard optimization for network discovery.' },
+      { id: 'res_2', tree: 'Research', tier: 2, title: 'Parallel Analysis', cost: 500, requires: ['res_1'], desc: 'Process multiple data streams simultaneously.' },
+      { id: 'res_3', tree: 'Research', tier: 3, title: 'Pattern Recognition', cost: 1200, requires: ['res_2'], desc: 'Identify system vulnerabilities through noise.' },
+      { id: 'res_4', tree: 'Research', tier: 4, title: 'File Reconstruction', cost: 3000, requires: ['res_3'], desc: 'Recover fragments from wiped storage devices.' },
+      { id: 'res_5', tree: 'Research', tier: 5, title: 'Deep Data Mining', cost: 7000, requires: ['res_4'], desc: 'Sift through petabytes of corporate records.' },
+      { id: 'res_6', tree: 'Research', tier: 6, title: 'Autonomous Lab', cost: 15000, requires: ['res_5'], desc: 'Self-operating research environments.' },
+      { id: 'res_7', tree: 'Research', tier: 7, title: 'Recursive Research', cost: 30000, requires: ['res_6'], desc: 'AI loops that improve their own logic.' },
+      { id: 'res_8', tree: 'Research', tier: 8, title: 'Quantum Sorting', cost: 75000, requires: ['res_7'], desc: 'The pinnacle of informational organization.' },
+
+      // --- 2. BANKING & FINANCE ---
+      { id: 'mon_c1', tree: 'Crypto', tier: 1, title: 'Crypto Basics', cost: 200, requires: [], desc: 'Understanding decentralized ledgers.' },
+      { id: 'mon_c2', tree: 'Crypto', tier: 2, title: 'Mining Rigs', cost: 800, requires: ['mon_c1'], desc: 'Custom hardware for coin generation.' },
+      { id: 'mon_c3', tree: 'Crypto', tier: 3, title: 'Chain Analysis', cost: 2000, requires: ['mon_c2'], desc: 'Tracing anonymous transactions.' },
+      { id: 'mon_c4', tree: 'Crypto', tier: 4, title: 'Wallet Cracking', cost: 5000, requires: ['mon_c1'], desc: 'Exploiting private key storage.' },
+      { id: 'mon_c5', tree: 'Crypto', tier: 5, title: 'Smart Contract Exploits', cost: 12000, requires: ['mon_c3', 'res_3'], desc: 'Flaws in automated blockchain logic.' },
+      { id: 'mon_c6', tree: 'Crypto', tier: 6, title: 'Token Forgery', cost: 25000, requires: ['mon_c4', 'mon_c5'], karma: -20, desc: 'Printing digital value from nothing.' },
+      { id: 'mon_c7', tree: 'Crypto', tier: 7, title: 'Market Manipulation', cost: 50000, requires: ['mon_c3', 'mon_c5'], desc: 'Whale-tier influence over asset prices.' },
+      { id: 'mon_c8', tree: 'Crypto', tier: 8, title: 'Crypto Syndicate END', cost: 150000, requires: ['mon_c6', 'mon_c7'], karma: -50, desc: 'Absolute control of the shadow economy.' },
+
+      { id: 'mon_p1', tree: 'Paper Money', tier: 1, title: 'ATM Exploits', cost: 300, requires: [], desc: 'Skimming and hardware backdoors.' },
+      { id: 'mon_p2', tree: 'Paper Money', tier: 2, title: 'Bank Account Mapper', cost: 1000, requires: ['mon_p1'], desc: 'Mapping institutional relationship graphs.' },
+      { id: 'mon_p3', tree: 'Paper Money', tier: 3, title: 'Credit Fraud Toolkit', cost: 4000, requires: ['mon_p2'], desc: 'Mass-scale credential manufacturing.' },
+      { id: 'mon_p4', tree: 'Paper Money', tier: 4, title: 'Market Betting Algos', cost: 12000, requires: ['mon_p3', 'res_3'], desc: 'High-frequency trading exploits.' },
+      { id: 'mon_p5', tree: 'Paper Money', tier: 5, title: 'Corporate Accounting', cost: 35000, requires: ['mon_p4'], desc: 'Cooked books and shell company routing.' },
+      { id: 'mon_p6', tree: 'Paper Money', tier: 6, title: 'Banking Titan END', cost: 120000, requires: ['mon_p5', 'res_5'], desc: 'Institutional capture of global finance.' },
+
+      { id: 'mon_l1', tree: 'Loan Sharking', tier: 1, title: 'Dark Credit Scores', cost: 500, requires: [], desc: 'Alternative metrics for social leverage.' },
+      { id: 'mon_l2', tree: 'Loan Sharking', tier: 2, title: 'Debt Buying', cost: 2500, requires: ['mon_l1'], desc: 'Purchasing leverage over the vulnerable.' },
+      { id: 'mon_l3', tree: 'Loan Sharking', tier: 3, title: 'Interest Manipulation', cost: 8000, requires: ['mon_l2'], desc: 'Automated debt traps.' },
+      { id: 'mon_l4', tree: 'Loan Sharking', tier: 4, title: 'Blackmail Economics', cost: 20000, requires: ['mon_l3'], karma: -30, desc: 'Data-driven extortion models.' },
+      { id: 'mon_l5', tree: 'Loan Sharking', tier: 5, title: 'Crime Financier END', cost: 90000, requires: ['mon_l4', 'mon_c7'], desc: 'Mastermind of underworld funding.' },
+
+      // --- 3. SECURITY & INTELLIGENCE ---
+      { id: 'sec_pers1', tree: 'Personal Sec', tier: 1, title: 'Identity Mapper', cost: 200, requires: [], desc: 'Basic OSINT on individuals.' },
+      { id: 'sec_pers2', tree: 'Personal Sec', tier: 2, title: 'Password Cracking', cost: 800, requires: ['sec_pers1'], desc: 'Brute force and dictionary attacks.' },
+      { id: 'sec_pers3', tree: 'Personal Sec', tier: 3, title: 'Device Infiltration', cost: 2500, requires: ['sec_pers2'], desc: 'Remote access to mobile hardware.' },
+      { id: 'sec_pers4', tree: 'Personal Sec', tier: 4, title: 'Social Graph Mapping', cost: 8000, requires: ['sec_pers3', 'res_3'], desc: 'Visualizing relationship trees.' },
+      { id: 'sec_pers5', tree: 'Personal Sec', tier: 5, title: 'Data Reconstruction', cost: 20000, requires: ['sec_pers4'], desc: 'Piece together a life from digital dust.' },
+      { id: 'sec_pers6', tree: 'Personal Sec', tier: 6, title: 'Surreal Personal Arc END', cost: 75000, requires: ['sec_pers5'], desc: 'Break the barrier of personal reality.' },
+
+      { id: 'sec_org1', tree: 'Org Security', tier: 1, title: 'Credential Harvest', cost: 400, requires: [], desc: 'Phishing and social engineering.' },
+      { id: 'sec_org2', tree: 'Org Security', tier: 2, title: 'Server Room Mapping', cost: 1500, requires: ['sec_org1'], desc: 'Model internal network architecture.' },
+      { id: 'sec_org3', tree: 'Org Security', tier: 3, title: 'Insider Threat Engine', cost: 6000, requires: ['sec_org2', 'res_5'], desc: 'Automated corporate sabotage.' },
+      { id: 'sec_org4', tree: 'Org Security', tier: 4, title: 'Corp Espionage Suite', cost: 18000, requires: ['sec_org3'], desc: 'The tools of the invisible industry spy.' },
+      { id: 'sec_org5', tree: 'Org Security', tier: 5, title: 'Boardroom Manipulation', cost: 45000, requires: ['sec_org4'], desc: 'Hacking the human elements of power.' },
+      { id: 'sec_org6', tree: 'Org Security', tier: 6, title: 'Industry Titan END', cost: 150000, requires: ['sec_org5'], desc: 'Become the invisible CEO.' },
+
+      { id: 'sec_gov1', tree: 'Gov Security', tier: 1, title: 'Citizen DB Access', cost: 1000, requires: [], desc: 'Breach national identity registries.' },
+      { id: 'sec_gov2', tree: 'Gov Security', tier: 2, title: 'Infrastructure Control', cost: 5000, requires: ['sec_gov1'], desc: 'Backdoors in power and water grids.' },
+      { id: 'sec_gov3', tree: 'Gov Security', tier: 3, title: 'Surveillance Override', cost: 15000, requires: ['sec_gov2', 'res_8'], desc: 'Control the eyes of the state.' },
+      { id: 'sec_gov4', tree: 'Gov Security', tier: 4, title: 'Emergency Hijack', cost: 40000, requires: ['sec_gov3'], desc: 'Trigger or suppress city-wide alarms.' },
+      { id: 'sec_gov5', tree: 'Gov Security', tier: 5, title: 'Policy Manipulation', cost: 90000, requires: ['sec_gov4'], desc: 'Alter laws through database injection.' },
+      { id: 'sec_gov6', tree: 'Gov Security', tier: 6, title: 'City Manager END', cost: 250000, requires: ['sec_gov5'], karma: 75, desc: 'Shadow administrator of the metro area.' },
+
+      { id: 'sec_spy1', tree: 'Spy Path', tier: 3, title: 'Black Ops Access', cost: 10000, requires: ['sec_pers3', 'sec_org3', 'sec_gov3'], isHidden: true, desc: 'Deep-state agency credentials.' },
+      { id: 'sec_spy2', tree: 'Spy Path', tier: 4, title: 'Deep Cover Identity', cost: 30000, requires: ['sec_spy1'], isHidden: true, desc: 'An unmaskable secondary existence.' },
+      { id: 'sec_spy3', tree: 'Spy Path', tier: 5, title: 'Unknown Encrypted Files', cost: 75000, requires: ['sec_spy2', 'res_7'], isHidden: true, desc: 'The files that do not exist.' },
+      { id: 'sec_spy4', tree: 'Spy Path', tier: 6, title: 'Occult Intelligence', cost: 150000, requires: ['sec_spy3'], isHidden: true, desc: 'Knowledge beyond the digital realm.' },
+      { id: 'sec_spy5', tree: 'Spy Path', tier: 7, title: 'Shadow Architect END', cost: 500000, requires: ['sec_spy4'], isHidden: true, desc: 'Design the systems of human history.' },
+
+      // --- 4. VIRUS / SCRIPTING ---
+      { id: 'vir_s1', tree: 'Steal Path', tier: 1, title: 'Keylogger', cost: 100, requires: [], desc: 'Capturing keystrokes at the kernel level.' },
+      { id: 'vir_s2', tree: 'Steal Path', tier: 2, title: 'Wallet Stealer', cost: 800, requires: ['vir_s1'], desc: 'Exfiltration of digital currency keys.' },
+      { id: 'vir_s3', tree: 'Steal Path', tier: 3, title: 'File Siphon', cost: 4000, requires: ['vir_s2'], desc: 'Compressed background exfiltration.' },
+      { id: 'vir_s4', tree: 'Steal Path', tier: 4, title: 'Data Harvesting', cost: 15000, requires: ['vir_s3'], desc: 'Automated large-scale scrapers.' },
+      { id: 'vir_s5', tree: 'Steal Path', tier: 5, title: 'Identity Theft Engine', cost: 50000, requires: ['vir_s4'], desc: 'AI-driven persona duplication.' },
+      { id: 'vir_s6', tree: 'Steal Path', tier: 6, title: 'High-Risk Money END', cost: 120000, requires: ['vir_s5'], karma: -50, desc: 'Maximum yield, maximum exposure.' },
+
+      { id: 'vir_f1', tree: 'Fight Path', tier: 1, title: 'Firewall Bypass', cost: 300, requires: [], desc: 'Brute force TCP port manipulation.' },
+      { id: 'vir_f2', tree: 'Fight Path', tier: 2, title: 'Counter-Intrusion', cost: 1200, requires: ['vir_f1'], desc: 'Detect and trap enemy scripts.' },
+      { id: 'vir_f3', tree: 'Fight Path', tier: 3, title: 'PvP Duel Scripts', cost: 5000, requires: ['vir_f2'], desc: 'Real-time offensive packets.' },
+      { id: 'vir_f4', tree: 'Fight Path', tier: 4, title: 'Defense AI', cost: 18000, requires: ['vir_f3', 'res_6'], desc: 'Automated heuristic firewalling.' },
+      { id: 'vir_f5', tree: 'Fight Path', tier: 5, title: 'Arena Protocols', cost: 60000, requires: ['vir_f4'], desc: 'Optimized logic for high-stakes duels.' },
+      { id: 'vir_f6', tree: 'Fight Path', tier: 6, title: 'Arena Champion END', cost: 150000, requires: ['vir_f5'], desc: 'Undefeated master of terminal combat.' },
+
+      { id: 'vir_c1', tree: 'Create Path', tier: 1, title: 'Payload Builder', cost: 400, requires: [], desc: 'Custom assembly of malicious code.' },
+      { id: 'vir_c2', tree: 'Create Path', tier: 2, title: 'Modular Script Engine', cost: 2000, requires: ['vir_c1'], desc: 'Hot-swappable malware components.' },
+      { id: 'vir_c3', tree: 'Create Path', tier: 3, title: 'Visual Virus Editor', cost: 10000, requires: ['vir_c2'], desc: 'GUI-based logic design for infections.' },
+      { id: 'vir_c4', tree: 'Create Path', tier: 4, title: 'AI Malware Architect', cost: 40000, requires: ['vir_c3', 'res_7'], desc: 'Malware that learns and mutates.' },
+      { id: 'vir_c5', tree: 'Create Path', tier: 5, title: 'Custom Virus END', cost: 100000, requires: ['vir_c4'], desc: 'Deploy your own signature infections.' },
+
+      // --- 5. TRANSPORT & LOGISTICS ---
+      { id: 'tra_g1', tree: 'Logistics Good', tier: 1, title: 'Network Mapping', cost: 200, requires: [], desc: 'Optimize regional transit flows.' },
+      { id: 'tra_g2', tree: 'Logistics Good', tier: 2, title: 'Supply Chain Opti', cost: 1500, requires: ['tra_g1'], desc: 'Reduce latency in the physical world.' },
+      { id: 'tra_g3', tree: 'Logistics Good', tier: 3, title: 'Fleet Routing AI', cost: 8000, requires: ['tra_g2'], desc: 'Automated global supply coordination.' },
+
+      { id: 'tra_n1', tree: 'Logistics Neutral', tier: 1, title: 'Grey-Market Logi', cost: 200, requires: [], desc: 'Semi-official routing bypasses.' },
+      { id: 'tra_n2', tree: 'Logistics Neutral', tier: 2, title: 'Smuggling Routes', cost: 2000, requires: ['tra_n1'], desc: 'Avoid customs and surveillance nodes.' },
+      { id: 'tra_n3', tree: 'Logistics Neutral', tier: 3, title: 'Cargo Manipulation', cost: 10000, requires: ['tra_n2'], desc: 'Redirect physical goods silently.' },
+
+      { id: 'tra_e1', tree: 'Logistics Evil', tier: 1, title: 'Black Routes', cost: 500, requires: [], desc: 'Dark-sector movement networks.' },
+      { id: 'tra_e2', tree: 'Logistics Evil', tier: 2, title: 'Movement Data', cost: 5000, requires: ['tra_e1'], desc: 'Tracing human capital flows.' },
+      { id: 'tra_e3', tree: 'Logistics Evil', tier: 3, title: 'Trafficking Networks', cost: 25000, requires: ['tra_e2'], karma: -75, desc: 'Complete control of restricted transit.' },
+
+      // --- 6. ENERGY, DRUGS, HOBBIES, SPACE, ETC. (Condensed for structure) ---
+      { id: 'en_1', tree: 'Energy', tier: 1, title: 'Grid Monitoring', cost: 1000, requires: ['res_2'], desc: 'Solar and battery micro-management.' },
+      { id: 'en_2', tree: 'Energy', tier: 2, title: 'Industrial Power', cost: 10000, requires: ['en_1', 'res_5'], desc: 'Managing geothermal and fission plants.' },
+      { id: 'en_3', tree: 'Energy', tier: 3, title: 'Fusion Mastery', cost: 100000, requires: ['en_2', 'res_8'], desc: 'Hacking the energy of the sun.' },
+
+      { id: 'blk_1', tree: 'Black Market', tier: 1, title: 'Darknet Stores', cost: 5000, requires: ['mon_c3'], desc: 'Establish underground digital storefronts.' },
+      { id: 'blk_2', tree: 'Black Market', tier: 2, title: 'High-End Labs', cost: 25000, requires: ['blk_1', 'res_6'], desc: 'Chemical and hardware fabrication.' },
+      { id: 'blk_3', tree: 'Black Market', tier: 3, title: 'Cartel Integration', cost: 150000, requires: ['blk_2'], karma: -100, desc: 'Merging digital and physical syndicates.' },
+
+      { id: 'spa_1', tree: 'Space', tier: 1, title: 'Satellite Hacking', cost: 20000, requires: ['res_8'], desc: 'Breach orbital relay security.' },
+      { id: 'spa_2', tree: 'Space', tier: 2, title: 'Space Surveillance', cost: 80000, requires: ['spa_1'], desc: 'Eyes in the sky for the entire planet.' },
+      { id: 'spa_3', tree: 'Space', tier: 3, title: 'Cosmic Lore END', cost: 500000, requires: ['spa_2', 'sec_spy4'], desc: 'The truth from beyond the stars.' },
+    ];
+
+    const TREE_ORDER = [
+      'Research', 'Crypto', 'Paper Money', 'Loan Sharking', 
+      'Personal Sec', 'Org Security', 'Gov Security', 'Spy Path',
+      'Steal Path', 'Fight Path', 'Create Path', 
+      'Logistics Good', 'Logistics Neutral', 'Logistics Evil',
+      'Energy', 'Black Market', 'Space'
+    ];
+
+    let state = {
+      rp: 1000,
+      karma: 0,
+      unlocked: [],
+      pan: { x: 50, y: 50 },
+      zoom: 0.8
+    };
+
+    const viewport = document.getElementById('viewport');
+    const nodesContainer = document.getElementById('nodes-container');
+    const catsContainer = document.getElementById('categories-container');
+    const svg = document.getElementById('connections-svg');
+    const pointsDisplay = document.getElementById('points-display');
+    const karmaDisplay = document.getElementById('karma-display');
+    const tooltip = document.getElementById('tooltip');
+
+    function init() {
+      // Setup Pan/Zoom
+      let isDragging = false;
+      let startPos = { x: 0, y: 0 };
+      
+      window.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.node, .btn')) return;
+        isDragging = true;
+        startPos = { x: e.clientX - state.pan.x, y: e.clientY - state.pan.y };
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          state.pan.x = e.clientX - startPos.x;
+          state.pan.y = e.clientY - startPos.y;
+          updateTransform();
+        }
+        if (tooltip.style.display === 'block') {
+          tooltip.style.left = (e.clientX + 20) + 'px';
+          tooltip.style.top = (e.clientY + 20) + 'px';
+        }
+      });
+
+      window.addEventListener('mouseup', () => isDragging = false);
+      window.addEventListener('wheel', (e) => {
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        state.zoom = Math.max(0.3, Math.min(1.5, state.zoom * delta));
+        updateTransform();
+      });
+
+      // Controls
+      document.getElementById('btn-cheat').onclick = () => { state.rp += 50000; updateUI(); render(); };
+      document.getElementById('btn-evil').onclick = () => { state.karma -= 20; updateUI(); render(); };
+      document.getElementById('btn-good').onclick = () => { state.karma += 20; updateUI(); render(); };
+      document.getElementById('btn-recenter').onclick = () => { state.pan = { x: 50, y: 50 }; state.zoom = 0.8; updateTransform(); };
+
+      render();
+      updateUI();
+      updateTransform();
+    }
+
+    function canUnlock(node) {
+      if (state.unlocked.includes(node.id)) return false;
+      
+      const reqsMet = node.requires.every(id => state.unlocked.includes(id));
+      if (!reqsMet) return false;
+
+      if (node.karma !== undefined) {
+        if (node.karma < 0 && state.karma > node.karma) return false;
+        if (node.karma > 0 && state.karma < node.karma) return false;
+      }
+
+      return true;
+    }
+
+    function render() {
+      nodesContainer.innerHTML = '';
+      catsContainer.innerHTML = '';
+      svg.innerHTML = '';
+
+      const X_GAP = 300;
+      const Y_GAP = 120;
+
+      // Render Category Labels
+      TREE_ORDER.forEach((tree, i) => {
+        const label = document.createElement('div');
+        label.className = 'category-label';
+        label.textContent = tree;
+        label.style.top = (i * Y_GAP + 150) + 'px';
+        catsContainer.appendChild(label);
+      });
+
+      SKILLS.forEach(node => {
+        const treeIndex = TREE_ORDER.indexOf(node.tree);
+        const x = (node.tier - 1) * X_GAP + 100;
+        const y = treeIndex * Y_GAP + 120;
+
+        // Draw Connections
+        node.requires.forEach(reqId => {
+          const req = SKILLS.find(s => s.id === reqId);
+          if (req) {
+            const reqIdx = TREE_ORDER.indexOf(req.tree);
+            const x1 = (req.tier - 1) * X_GAP + 320;
+            const y1 = reqIdx * Y_GAP + 150;
+            const x2 = x + 100;
+            const y2 = y + 30;
+
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            // Curved "Sideways" connection
+            const d = `M ${x1} ${y1} C ${x1 + 100} ${y1}, ${x2 - 100} ${y2}, ${x2} ${y2}`;
+            line.setAttribute('d', d);
+            
+            let cls = 'connection-line';
+            if (state.unlocked.includes(node.id)) cls += ' unlocked';
+            else if (canUnlock(node)) cls += ' available';
+            line.setAttribute('class', cls);
+            svg.appendChild(line);
+          }
+        });
+
+        // Hide Hidden nodes unless available or bought
+        if (node.isHidden && !canUnlock(node) && !state.unlocked.includes(node.id)) return;
+
+        // Render Node
+        const el = document.createElement('div');
+        el.className = `node ${state.unlocked.includes(node.id) ? 'bought' : ''} ${canUnlock(node) ? 'available' : ''}`;
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        el.style.borderLeftColor = `var(--color-${node.tree.toLowerCase().split(' ')[0]})`;
+
+        el.innerHTML = `
+          <div class="node-title">${node.title}</div>
+          <div class="node-meta">Tier ${node.tier} • ${node.cost} RP</div>
+        `;
+
+        el.onmouseenter = (e) => showTooltip(node, e);
+        el.onmouseleave = hideTooltip;
+        el.onclick = () => tryUnlock(node);
+
+        nodesContainer.appendChild(el);
+      });
+    }
+
+    function tryUnlock(node) {
+      if (canUnlock(node) && state.rp >= node.cost) {
+        state.rp -= node.cost;
+        state.unlocked.push(node.id);
+        render();
+        updateUI();
+      }
+    }
+
+    function updateUI() {
+      pointsDisplay.textContent = state.rp.toLocaleString();
+      let kText = state.karma === 0 ? "Neutral" : (state.karma > 0 ? "Honorable" : "Notorious");
+      karmaDisplay.textContent = `${kText} (${state.karma})`;
+      karmaDisplay.style.color = state.karma === 0 ? '#fff' : (state.karma > 0 ? 'var(--color-energy)' : 'var(--color-virus)');
+    }
+
+    function updateTransform() {
+      viewport.style.transform = `translate(${state.pan.x}px, ${state.pan.y}px) scale(${state.zoom})`;
+    }
+
+    function showTooltip(node, e) {
+      document.getElementById('tt-name').textContent = node.title;
+      document.getElementById('tt-name').style.color = `var(--color-${node.tree.toLowerCase().split(' ')[0]})`;
+      document.getElementById('tt-cost').textContent = `Cost: ${node.cost.toLocaleString()} RP`;
+      document.getElementById('tt-desc').textContent = node.desc;
+      
+      const reqs = node.requires.length > 0 ? node.requires.map(id => SKILLS.find(s => s.id === id).title).join(', ') : 'None';
+      const karmaText = node.karma !== undefined ? ` • Karma: ${node.karma}` : '';
+      document.getElementById('tt-reqs').textContent = `Requires: ${reqs}${karmaText}`;
+
+      tooltip.style.display = 'block';
+    }
+
+    function hideTooltip() {
+      tooltip.style.display = 'none';
+    }
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+noise generator for a living city. Let’s give your AI a dispatch log schema + a big bank of templates it can remix forever.
+
+Below is a format + lots of example lines.
+Use "random" wherever you want your name generator to plug in.
+
+1. Log line format
+Use something like:
+
+[TIME] [CHANNEL] [CALLTYPE] UNIT: MESSAGE
+
+[TIME] – 02:13:45, 14:09:12
+
+[CHANNEL] – DISP, CAR-1, FIRE-2, MED-3, TAC-1
+
+[CALLTYPE] – INFO, PRIORITY, ROUTINE, ALERT, CODE-3
+
+UNIT – Unit 12, Car 23, Engine 4, Medic 7, SWAT-1
+
+MESSAGE – one of the templates below
+
+2. Template bank (for your AI to remix)
+A. Normal traffic / routine calls
+Caller reports suspicious vehicle parked for 3 hours, black sedan, plates unknown, outside random’s residence.
+
+Noise complaint, apartment above random, loud music and stomping, caller requesting officers “just talk to them.”
+
+Shoplifting report at corner store, suspect left with snacks and drinks, no weapon seen, clerk calm.
+
+Caller from random’s Diner reports dine-and-dash, two subjects, left in older silver hatchback, no further.
+
+Alarm company reports commercial burglary alarm at random Pharmacy, front door motion, no keyholder on scene.
+
+Caller reports possible fraud, unknown charges on card, bank advised to file police report.
+
+Neighbor reports strong odor of marijuana from next door, no disturbance heard, caller wants it “documented.”
+
+Caller reports vehicle break-in overnight, glovebox rifled, loose change taken, no cameras on scene.
+
+Lost property report, caller dropped wallet on bus, wants case number only.
+
+Caller reports dog barking for several hours behind random’s house, no visible distress, wants welfare check.
+
+B. Traffic stuff (lots of these)
+Minor fender-bender, no injuries, two vehicles blocking right lane, random and random involved, requesting traffic unit.
+
+Caller reports reckless driver weaving through lanes, red coupe, partial plate “7KX”, last seen eastbound on freeway.
+
+Disabled vehicle on shoulder, hazard lights on, driver with flat tire, no tow requested yet.
+
+Traffic light out at major intersection, cars treating as four-way stop, no collision reported yet.
+
+Pedestrian almost struck in crosswalk, driver continued, caller wants “someone to talk to them.”
+
+Hit-and-run, parked car struck, caller has doorbell cam footage, suspect vehicle unknown color SUV.
+
+Road rage incident, two vehicles brake-checking each other, caller lost visual near off-ramp.
+
+Debris in roadway, large box in middle lane, multiple callers reporting near-miss.
+
+School zone complaint, vehicles speeding past crossing guard, no plate info, recurring issue.
+
+Bicycle vs car, minor injuries, cyclist upright and talking, EMS requested for evaluation.
+
+C. Wholesome / kid / fluff calls (~10%)
+Child caller on 911 asking if officers like pizza, parent in background apologizing, no emergency.
+
+Caller reports child “practicing calling 911” after school safety lesson, line clear, no assistance needed.
+
+Elderly caller lonely, says “just wanted to hear a human voice,” no emergency, referred to non-emergency line.
+
+Caller reports lost stuffed animal at park, child very upset, caller requesting officer keep an eye out.
+
+Kid calling to report “dad stole my fries,” both laughing in background, advised on proper 911 use.
+
+Caller reports neighbor kids built snowman blocking driveway, wants “official ruling,” resolved with advice.
+
+Child reports they “saw Santa on the roof,” parent confirms no emergency, line disconnected amicably.
+
+Caller reports random officer helped change a tire earlier, calling to say thank you, no incident number.
+
+Caller reports found wallet and turned it in at random Station, wants to make sure owner is contacted.
+
+Child calling to ask if firefighters really slide down poles, transferred to station for tour info.
+
+D. Parody / real-world reference nods (~10%)
+Multiple callers report a group blocking traffic doing “flash mob dance,” no weapons, just bad choreography.
+
+Caller reports neighbor yelling at cloud for 20 minutes, no threats, just “ranting about the algorithm.”
+
+Report of suspicious package that turned out to be a forgotten food delivery, still warm, no hazard.
+
+Caller reports someone flying a drone dressed like a UFO over random Park, kids cheering, no danger.
+
+Noise complaint: neighbor playing the same four-second song loop for an hour, caller “begging for mercy.”
+
+Caller reports person in dinosaur costume chasing joggers as a prank, no injuries, subjects laughing.
+
+Caller reports “mysterious monolith” in field, officers confirm it’s just a metal art project.
+
+Caller reports group filming “prank video” in grocery store, blocking aisles, no weapons, manager wants them gone.
+
+Caller reports someone live-streaming from top of random Bridge, possible stunt, units checking welfare.
+
+Caller reports person arguing with smart speaker loudly, no threats, just technology frustration.
+
+E. Serious calls: SWAT, bank, shots, etc.
+Silent alarm at random Credit Union, multiple interior motion sensors, no answer on callback, units code-3.
+
+Bank robbery in progress, random Bank, suspect with handgun, wearing dark hoodie and mask, cash in bag, fled on foot.
+
+Multiple 911 calls of shots fired near random and 5th, 6–8 shots heard, vehicles leaving area at high speed.
+
+ShotSpotter activation, 5 rounds detected in alley behind random Market, no victims located yet.
+
+Caller reports person down in alley, not breathing, unknown cause, CPR instructions given, EMS and PD en route.
+
+Domestic disturbance, caller reports yelling and items breaking, possible physical fight, children heard crying.
+
+Caller reports ex-partner outside residence, banging on door, protective order on file, units expedite.
+
+Armed carjacking, suspect took vehicle at gunpoint, victim uninjured, vehicle last seen northbound on freeway.
+
+Home invasion in progress, caller hiding in bedroom, multiple suspects heard inside, units stacking.
+
+SWAT activation requested, barricaded subject with firearm, prior threats to law enforcement, perimeter established.
+
+F. Fire / medical / hazard
+Structure fire reported, smoke visible from roof of two-story residence, occupants evacuating, engines en route.
+
+Kitchen fire, grease on stove, caller attempting to extinguish, advised to evacuate, fire units responding.
+
+Vehicle fully engulfed on shoulder, no occupants inside, traffic backing up, fire and PD on scene.
+
+Gas leak reported inside apartment building, strong odor, occupants evacuating, fire and gas company notified.
+
+Overdose call, subject unconscious, not breathing normally, Narcan being administered by bystander.
+
+Person found unresponsive in park, cold to touch, no obvious trauma, EMS priority response.
+
+Elevator stuck between floors with multiple occupants, no injuries, building maintenance en route.
+
+Electrical lines down across roadway after storm, sparking observed, area being blocked off.
+
+Brush fire near freeway, small but spreading, multiple callers, wind picking up.
+
+Carbon monoxide alarm sounding in residence, occupants outside, no symptoms, fire checking.
+
+G. Crime: theft, fraud, drugs, GTA, etc.
+Shoplifting in progress, suspect filling backpack with electronics, still inside random Electronics, staff watching on cameras.
+
+Caller reports catalytic converter theft caught on camera, suspects left in white pickup, no plate.
+
+Fraud report, caller scammed by fake tech support, remote access granted, bank accounts compromised.
+
+Caller reports neighbor selling pills from apartment, short-stay traffic, vehicles coming and going all night.
+
+Drug activity in alley, hand-to-hand transactions observed, suspects on bikes, no weapons seen.
+
+Vehicle theft just occurred, victim left car running at gas pump, suspect jumped in and drove off.
+
+Caller reports package theft from porch, suspect in hoodie on bike, footage available.
+
+Credit card skimmer found on gas pump, clerk removed device, requesting officer for report.
+
+Caller reports group using stolen cards at random Shopnado locker, security watching live.
+
+Suspicious person at ATM, multiple cards and withdrawals, teller concerned about fraud.
+
+H. Rare / high-impact: escaped prisoner, big weird stuff
+Jail reports one inmate unaccounted for after headcount, possible escape, last seen in standard jumpsuit, units notified.
+
+Transport van reports prisoner attempted escape during transfer, now restrained, minor injuries to deputy.
+
+Caller reports person in handcuffs running down street, no officer in sight, units checking area.
+
+Report of large-scale fight at nightclub, 20+ people involved, bottles thrown, possible weapons.
+
+Multiple callers report explosion sound near industrial area, smoke visible, unknown source, fire and PD en route.
+
+Caller reports unknown group in hazmat suits entering abandoned building, no markings, no vehicles identified.

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Global I.T. Network Dashboard – Event Noise Generator</title>
+<style>
+    body { background:#0b0b0b; color:#e6e6e6; font-family:system-ui, sans-serif; margin:0; padding:20px; }
+    h1 { margin:0 0 12px; font-size:20px; }
+    #log { border:1px solid #222; background:#0f0f0f; padding:12px; height:80vh; overflow-y:auto; font-size:13px; line-height:1.4; }
+    .entry { margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #1a1a1a; }
+    .time { color:#9fd3ff; font-family:monospace; }
+    .type { color:#ffd27f; font-weight:bold; }
+    .msg { color:#dcdcdc; }
+</style>
+</head>
+<body>
+
+<h1>Global I.T. Network Dashboard – Live Event Stream</h1>
+<div id="log"></div>
+
+<script>
+// ------------------------------
+// TIME GENERATOR
+// ------------------------------
+function timestamp() {
+    const d = new Date();
+    return d.toISOString().split("T")[1].split(".")[0];
+}
+
+// ------------------------------
+// EVENT CATEGORIES
+// ------------------------------
+const satellites = [
+    "SAT-17 reporting minor attitude drift; auto-correct engaged.",
+    "SAT-33 downlink jitter detected; rerouting through SAT-12.",
+    "SAT-92 timestamp desync by 14 seconds; resync scheduled.",
+    "Orbital relay 4B experiencing intermittent packet loss (0.8%).",
+    "Low-orbit comms node reports micro-debris impacts; no structural damage.",
+    "Weather satellite cluster showing degraded IR sensor resolution."
+];
+
+const subsea = [
+    "Trans-Atlantic Cable T-A03 latency spike (+38ms); probable trawler disturbance.",
+    "Pacific Cable P-7 showing partial fiber attenuation; rerouting 12% of traffic.",
+    "Mediterranean backbone experiencing BGP flap between MX-14 and MX-22.",
+    "Indian Ocean cable reporting power feed irregularities; backup feed engaged.",
+    "Arctic route A-Line degraded due to ice-shear vibrations."
+];
+
+const datacenters = [
+    "DC-Tokyo-Cluster-9: CPU imbalance detected; node 9C running hot.",
+    "DC-London-Rack-44: fan speed anomaly; auto-throttle engaged.",
+    "DC-NewYork-Compute-12: container restart loop detected.",
+    "DC-Berlin-Storage-3: snapshot replication delayed by 14 minutes.",
+    "DC-Charlotte-Edge-Node: memory leak suspected in process chain.",
+    "DC-Phoenix-GPU-Farm: thermal throttling on 2 units."
+];
+
+const routing = [
+    "BGP route leak detected from random ISP; incorrect path propagating.",
+    "DNS propagation delay affecting Berlin → Tokyo path.",
+    "Route poisoning event between Oslo and London; isolating bad prefix.",
+    "Packet duplication detected on Manila backbone; likely misconfigured router.",
+    "Stale DNS records observed on Vancouver edge node."
+];
+
+const auth = [
+    "Credential-stuffing attempt detected; rate-limit engaged.",
+    "Failed login storm on Singapore node; 1,200 attempts in 60 seconds.",
+    "API key leak suspected; regenerating tokens for service group SG-44.",
+    "TLS certificate mismatch on Detroit edge node; auto-renew triggered.",
+    "Unusual SSH handshake pattern from Lagos region; flagged for review."
+];
+
+const environment = [
+    "Solar flare Class C-2 causing mild geomagnetic jitter on SAT-band relays.",
+    "Seoul humidity spike increasing fiber attenuation by 3%.",
+    "Sydney storm cell causing microwave link instability.",
+    "Fog in London reducing optical link efficiency by 2–4%.",
+    "High winds in Mexico City affecting rooftop relay alignment."
+];
+
+const backups = [
+    "Snapshot replication from Detroit to Vancouver delayed by 22 minutes.",
+    "Backup job stalled on Mexico City node; checksum mismatch.",
+    "Incremental backup from Austin cluster skipped due to lock contention.",
+    "Archive node in Charlotte reporting slow write speeds.",
+    "Tokyo backup vault reporting minor index corruption; auto-repair running."
+];
+
+const telemetry = [
+    "Telemetry desync: Tokyo node reporting timestamps 11 seconds ahead.",
+    "Log corruption detected in Charlotte cluster; 4 entries unreadable.",
+    "Packet loss spike (1.2%) on Istanbul monitoring feed.",
+    "Checksum mismatch on Seoul event stream; re-requesting packets.",
+    "Anomaly: Manila node reporting negative latency values; ignoring."
+];
+
+// ------------------------------
+// LOW-TIER VIRUSES (from your reservoir)
+// ------------------------------
+const viruses = [
+    "Minor Vermeer Strain signatures detected; visual corruption isolated.",
+    "Monet Sporewave haze affecting detection modules; blur-field active.",
+    "Degas Vector jitter detected in animation subsystem.",
+    "Kandinsky Spiral event reorganizing UI elements on operator console.",
+    "Basquiat Pulse graffiti markers appearing in Detroit logs.",
+    "Socratic Loop recursion detected in automated audit script.",
+    "Camus Absurdity Strain scrambling objective metadata temporarily."
+];
+
+// ------------------------------
+// EVENT TYPE LABELS
+// ------------------------------
+const types = [
+    "INFO",
+    "NOTICE",
+    "WARN",
+    "ALERT"
+];
+
+// ------------------------------
+// MASTER EVENT POOL
+// ------------------------------
+const pools = [
+    satellites,
+    subsea,
+    datacenters,
+    routing,
+    auth,
+    environment,
+    backups,
+    telemetry,
+    viruses
+];
+
+// ------------------------------
+// RANDOM EVENT GENERATOR
+// ------------------------------
+function randomEvent() {
+    const pool = pools[Math.floor(Math.random() * pools.length)];
+    const msg = pool[Math.floor(Math.random() * pool.length)];
+    const type = types[Math.floor(Math.random() * types.length)];
+    return { type, msg };
+}
+
+// ------------------------------
+// LOGGING
+// ------------------------------
+function addLog() {
+    const log = document.getElementById("log");
+    const ev = randomEvent();
+
+    const div = document.createElement("div");
+    div.className = "entry";
+    div.innerHTML = `
+        <span class="time">${timestamp()}</span>
+        <span class="type">[${ev.type}]</span>
+        <span class="msg">${ev.msg}</span>
+    `;
+
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+}
+
+// ------------------------------
+// INTERVAL (every 2–5 seconds)
+// ------------------------------
+function randomInterval() {
+    return Math.floor(Math.random() * 3000) + 2000;
+}
+
+function loop() {
+    addLog();
+    setTimeout(loop, randomInterval());
+}
+
+loop();
+</script>
+
+</body>
+</html>

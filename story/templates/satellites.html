@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Satellites and Space Assets</title>
+</head>
+<body>
+    <h1>Game Satellites and Space Assets</h1>
+
+    <p>This document details the various orbital and space-based assets in the game, including their functions, connectivity, and stats relevant for hacking, data operations, and infrastructure development.</p>
+
+    <div class="space-asset-list">
+
+        <!-- Communication Satellites -->
+        <div class="space-asset-entry">
+            <h2>Comms Sat: EchoNet-01</h2>
+            <ul>
+                <li><strong>Type:</strong> Communication Satellite</li>
+                <li><strong>Description:</strong> A standard low-earth orbit communications satellite, providing basic data relay.</li>
+                <li><strong>Orbital Parameters:</strong> Low Earth Orbit (LEO)</li>
+                <li><strong>Connected Servers:</strong> Manhattan Digital Fortress (New York), Thames Node Exchange (London), Iron Curtain Cloud (Berlin)</li>
+                <li><strong>Visibility Schedule:</strong>
+                    <ul>
+                        <li>Manhattan Digital Fortress: Daily 08:00-09:00 UTC, 20:00-21:00 UTC</li>
+                        <li>Thames Node Exchange: Daily 10:00-11:00 UTC, 22:00-23:00 UTC</li>
+                        <li>Iron Curtain Cloud: Daily 11:30-12:30 UTC, 23:30-00:30 UTC</li>
+                    </ul>
+                </li>
+                <li><strong>Relay Capability:</strong> Yes (Max 2 hops)</li>
+                <li><strong>Hacking Stats:</strong>
+                    <ul>
+                        <li><strong>Difficulty:</strong> Easy</li>
+                        <li><strong>Reward (Data):</strong> Low-value Comms Data (5-15 MB)</li>
+                        <li><strong>Speed Boost/Optimization:</strong> +10% Network Speed for connected ground servers</li>
+                        <li><strong>Intercept Chance:</strong> 70% success</li>
+                        <li><strong>Traceback Risk:</strong> Low (5%)</li>
+                        <li><strong>Special Abilities:</strong> Data bouncing, basic comms relay.</li>
+                    </ul>
+                </li>
+                <li><strong>Deployment/Acquisition Cost:</strong> N/A (Part of default infrastructure)</li>
+            </ul>
+        </div>
+
+        <div class="space-asset-entry">
+            <h2>Comms Sat: EchoNet-02 (Geosync)</h2>
+            <ul>
+                <li><strong>Type:</strong> Communication Satellite</li>
+                <li><strong>Description:</strong> A geosynchronous communications satellite, offering continuous coverage over a specific region.</li>
+                <li><strong>Orbital Parameters:</strong> Geosynchronous Orbit (GEO) over São Paulo</li>
+                <li><strong>Connected Servers:</strong> Amazon Flow Center (São Paulo), Aztec Packet Relay (Mexico City)</li>
+                <li><strong>Visibility Schedule:</strong>
+                    <ul>
+                        <li>Amazon Flow Center: Continuous</li>
+                        <li>Aztec Packet Relay: Daily 16:00-22:00 UTC</li>
+                    </ul>
+                </li>
+                <li><strong>Relay Capability:</strong> Yes (Max 3 hops)</li>
+                <li><strong>Hacking Stats:</strong>
+                    <ul>
+                        <li><strong>Difficulty:</strong> Medium</li>
+                        <li><strong>Reward (Data):</strong> Medium-value Regional Comms (20-40 MB)</li>
+                        <li><strong>Speed Boost/Optimization:</strong> +25% Network Speed for connected ground servers</li>
+                        <li><strong>Intercept Chance:</strong> 55% success</li>
+                        <li><strong>Traceback Risk:</strong> Medium (15%)</li>
+                        <li><strong>Special Abilities:</strong> Continuous regional coverage, advanced comms relay.</li>
+                    </ul>
+                </li>
+                <li><strong>Deployment/Acquisition Cost:</strong> N/A (Part of default infrastructure)</li>
+            </ul>
+        </div>
+
+        <!-- Research Stations (ISS parody) -->
+        <div class="space-asset-entry">
+            <h2>Orbital Research Platform (ORP) "Ascension"</h2>
+            <ul>
+                <li><strong>Type:</strong> Research Station (ISS Parody)</li>
+                <li><strong>Description:</strong> An international space station dedicated to scientific research and observation.</li>
+                <li><strong>Orbital Parameters:</strong> Low Earth Orbit (LEO)</li>
+                <li><strong>Connected Servers:</strong> Shinjuku Cyber Core (Tokyo), Outback Data Oasis (Sydney), Coastal Connect Hub (Vancouver)</li>
+                <li><strong>Visibility Schedule:</strong> Varies; typically 2-3 short passes per day over connected servers.</li>
+                <li><strong>Relay Capability:</strong> Yes (Max 1 hop to other LEOs)</li>
+                <li><strong>Hacking Stats:</strong>
+                    <ul>
+                        <li><strong>Difficulty:</strong> Hard</li>
+                        <li><strong>Reward (Data):</strong> High-value Research Data (50-100 MB), Scientific Blueprints, rare resources.</li>
+                        <li><strong>Speed Boost/Optimization:</strong> N/A (Focus on data retrieval)</li>
+                        <li><strong>Intercept Chance:</strong> 40% success</li>
+                        <li><strong>Traceback Risk:</strong> High (30%)</li>
+                        <li><strong>Special Abilities:</strong> Unlocks specific research missions, provides access to advanced schematics.</li>
+                    </ul>
+                </li>
+                <li><strong>Deployment/Acquisition Cost:</strong> N/A (Exists in game world)</li>
+            </ul>
+        </div>
+
+        <!-- Spy Satellites -->
+        <div class="space-asset-entry">
+            <h2>Spectre Recon Satellite</h2>
+            <ul>
+                <li><strong>Type:</strong> Spy Satellite</li>
+                <li><strong>Description:</strong> A covert reconnaissance satellite used for high-resolution imaging and signals intelligence.</li>
+                <li><strong>Orbital Parameters:</strong> Highly Elliptical Orbit (HEO)</li>
+                <li><strong>Connected Servers:</strong> Iron Curtain Cloud (Berlin), Denali Digital Vault (Anchorage - UNTRAVELABLE), Icecap Data Fortress (Greenland - UNTRAVELABLE)</li>
+                <li><strong>Visibility Schedule:</strong> Intermittent; few long passes per week over target regions.</li>
+                <li><strong>Relay Capability:</strong> Yes (Max 1 hop to other HEOs)</li>
+                <li><strong>Hacking Stats:</strong>
+                    <ul>
+                        <li><strong>Difficulty:</strong> Very Hard</li>
+                        <li><strong>Reward (Data):</strong> Critical Intelligence (75-150 MB), encryption keys, surveillance feeds.</li>
+                        <li><strong>Speed Boost/Optimization:</strong> N/A (Focus on intelligence)</li>
+                        <li><strong>Intercept Chance:</strong> 25% success</li>
+                        <li><strong>Traceback Risk:</strong> Very High (50%)</li>
+                        <li><strong>Special Abilities:</strong> Provides intel for high-stakes missions, unlocks target locations.</li>
+                    </ul>
+                </li>
+                <li><strong>Deployment/Acquisition Cost:</strong> $5,000,000 (Late game)</li>
+            </ul>
+        </div>
+
+        <!-- Astronomical Telescopes -->
+        <div class="space-asset-entry">
+            <h2>Hubble-X Orbital Telescope</h2>
+            <ul>
+                <li><strong>Type:</strong> Astronomical Telescope</li>
+                <li><strong>Description:</strong> A powerful space telescope observing distant galaxies and cosmic phenomena.</li>
+                <li><strong>Orbital Parameters:</strong> Low Earth Orbit (LEO)</li>
+                <li><strong>Connected Servers:</strong> Silicon Prairie Server Farm (Near Austin), Desert Cache Center (Near Phoenix)</li>
+                <li><strong>Visibility Schedule:</strong> Varies; multiple passes per day over wide regions.</li>
+                <li><strong>Relay Capability:</strong> Yes (Max 1 hop to LEO comms sats)</li>
+                <li><strong>Hacking Stats:</strong>
+                    <ul>
+                        <li><strong>Difficulty:</strong> Medium</li>
+                        <li><strong>Reward (Data):</strong> Astronomical Data (30-60 MB), rare scientific insights.</li>
+                        <li><strong>Speed Boost/Optimization:</strong> N/A</li>
+                        <li><strong>Intercept Chance:</strong> 60% success</li>
+                        <li><strong>Traceback Risk:</strong> Medium (10%)</li>
+                        <li><strong>Special Abilities:</strong> Provides data for scientific research, contributes to long-term game goals.</li>
+                    </ul>
+                </li>
+                <li><strong>Deployment/Acquisition Cost:</strong> N/A (Exists in game world)</li>
+            </ul>
+        </div>
+
+        <!-- Specialized Assets -->
+        <div class="space-asset-entry">
+            <h2>Testla Roadster Mk. II (Orbital)</h2>
+            <ul>
+                <li><strong>Type:</strong> Specialized Asset (Parody Car)</li>
+                <li><strong>Description:</strong> A luxury electric car famously launched into space, now a derelict but valuable piece of orbital junk.</li>
+                <li><strong>Orbital Parameters:</strong> Highly Elliptical Orbit (HEO)</li>
+                <li><strong>Connected Servers:</strong> None (Derelict)</li>
+                <li><strong>Visibility Schedule:</strong> Extremely rare, unpredictable passes over random ground servers.</li>
+                <li><strong>Relay Capability:</strong> No</li>
+                <li><strong>Hacking Stats:</strong>
+                    <ul>
+                        <li><strong>Difficulty:</strong> Hard</li>
+                        <li><strong>Reward (Data):</strong> Rare Historical Data (40-80 MB), Unique Schematics, potential salvage.</li>
+                        <li><strong>Speed Boost/Optimization:</strong> N/A</li>
+                        <li><strong>Intercept Chance:</strong> 30% success (due to erratic orbit)</li>
+                        <li><strong>Traceback Risk:</strong> Low (5%, due to derelict status)</li>
+                        <li><strong>Special Abilities:</strong> Source of unique, one-time rewards.</li>
+                    </ul>
+                </li>
+                <li><strong>Deployment/Acquisition Cost:</strong> N/A (Already in orbit)</li>
+            </ul>
+        </div>
+
+        <div class="space-asset-entry">
+            <h2>DeepCore Orbital Data Vault</h2>
+            <ul>
+                <li><strong>Type:</strong> Space Datacenter</li>
+                <li><strong>Description:</strong> A high-security, low-capacity datacenter in orbit, designed for extremely fast, secure data operations.</li>
+                <li><strong>Orbital Parameters:</strong> Geosynchronous Orbit (GEO) over the Pacific</li>
+                <li><strong>Connected Servers:</strong> Outback Data Oasis (Sydney), Mariana Trench Hub (Guam - UNTRAVELABLE)</li>
+                <li><strong>Visibility Schedule:</strong> Continuous over Pacific region.</li>
+                <li><strong>Relay Capability:</strong> Yes (Max 5 hops to any LEO/GEO sat)</li>
+                <li><strong>Hacking Stats:</strong>
+                    <ul>
+                        <li><strong>Difficulty:</strong> Legendary</li>
+                        <li><strong>Reward (Data):</strong> N/A (Not for data interception, but for secure storage/relay)</li>
+                        <li><strong>Speed Boost/Optimization:</strong> +50% Global Network Speed when actively used.</li>
+                        <li><strong>Intercept Chance:</strong> 10% success</li>
+                        <li><strong>Traceback Risk:</strong> Extremely High (80%)</li>
+                        <li><strong>Special Abilities:</strong> Ultra-secure storage, fastest global data relay, critical infrastructure for late-game.</li>
+                    </ul>
+                </li>
+                <li><strong>Deployment/Acquisition Cost:</strong> $15,000,000</li>
+                <li><strong>Build Time:</strong> 180 days</li>
+                <li><strong>Storage:</strong> Small (20 TB)</li>
+                <li><strong>Resource Cost (Ongoing):</strong> None</li>
+            </ul>
+        </div>
+
+    </div>
+
+</body>
+</html>

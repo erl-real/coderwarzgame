@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Node Database Viewer</title>
+  <link rel="stylesheet" href="https://public.codepenassets.com/css/reset-2.0.min.css">
+  <style>
+    @import url("https://fonts.googleapis.com/css?family=Josefin+Sans|Montserrat");
+    * { box-sizing: border-box; }
+    body {
+      display: flex;
+      justify-content: center;
+      height: 100%;
+      font-size: 16px;
+      color: white;
+      font-family: "Josefin Sans", "Roboto", sans-serif;
+      background: #111;
+      overflow: auto;
+    }
+    main {
+      display: flex;
+      flex-flow: row wrap;
+      align-content: center;
+      justify-content: center;
+      width: 100%;
+      height: 100dvh;
+    }
+    .group-period {
+      height: 100%;
+      width: 100%;
+      position: relative;
+      min-width: 1450px;
+      background: radial-gradient(#2c3e50, #000);
+    }
+    .group__list, .period__list {
+      background: #1a1a1a;
+      box-shadow: 0 0 0.5rem #000;
+    }
+    .group__list {
+      position: sticky;
+      top: 0;
+      display: grid;
+      grid-template: repeat(1, 46px)/repeat(18, 70px);
+      grid-gap: 5px;
+      justify-content: center;
+      width: 100%;
+      min-width: 1300px;
+      height: 46px;
+      margin: 0 auto;
+      font-size: 0.8rem;
+      z-index: 10;
+    }
+    .group__item {
+      width: 70px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+    .period__list {
+      position: absolute;
+      display: grid;
+      grid-template: repeat(10, 70px)/repeat(1, 46px);
+      grid-gap: 5px;
+      width: 46px;
+      padding-top: 0.4rem;
+      font-size: 0.8rem;
+    }
+    .period__item {
+      width: 46px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .dynamic-periodic-table {
+      display: grid;
+      position: absolute;
+      top: 46px;
+      grid-gap: 5px;
+      grid-template: repeat(10, 70px)/repeat(18, 70px);
+      justify-content: center;
+      width: 100%;
+      min-width: 1300px;
+      margin-top: 0.4rem;
+    }
+    .element {
+      position: relative;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid #444;
+      cursor: pointer;
+      background: rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+      overflow: hidden;
+    }
+    .element:hover {
+      transform: scale(1.1);
+      z-index: 20;
+      box-shadow: 0 0 15px currentColor;
+    }
+    .element__icon {
+      width: 40px;
+      height: 40px;
+      object-contain: contain;
+      filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+    }
+    .element__name {
+      font-size: 0.5rem;
+      text-transform: uppercase;
+      margin-top: 4px;
+      text-align: center;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .element__id {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      font-size: 0.5rem;
+      opacity: 0.5;
+    }
+
+    /* Colors */
+    .element[data-type="Invasive"] { color: #e74d3c; border-color: #e74d3c; }
+    .element[data-type="Security"] { color: #1abc9c; border-color: #1abc9c; }
+    .element[data-type="Network"] { color: #3398db; border-color: #3398db; }
+    .element[data-type="Utility"] { color: #95a6a7; border-color: #95a6a7; }
+    .element[data-type="System"] { color: #f1c40e; border-color: #f1c40e; }
+
+    .legend {
+      grid-area: 1/4/3/11;
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      align-items: center;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .legend-color {
+      width: 15px;
+      height: 15px;
+      border: 1px solid white;
+    }
+
+    .temperature {
+      grid-area: 3/4/3/11;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .slider {
+      flex-grow: 1;
+      height: 4px;
+      appearance: none;
+      background: #444;
+      outline: none;
+    }
+    .slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      background: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal.--is-visible { display: flex; }
+    .modal-content {
+      background: #1a1a1a;
+      border: 2px solid #444;
+      padding: 40px;
+      max-width: 600px;
+      width: 90%;
+      position: relative;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 20px;
+    }
+    .modal-icon { width: 80px; height: 80px; }
+    .modal-title { font-size: 2rem; font-weight: bold; text-transform: uppercase; }
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 1.5rem;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.05);
+      padding: 10px;
+      border-left: 3px solid currentColor;
+    }
+    .stat-label { font-size: 0.6rem; opacity: 0.6; text-transform: uppercase; }
+    .stat-value { font-size: 1.2rem; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="group-period">
+      <ul class="group__list">
+        <!-- 18 columns -->
+        <script>
+          for(let i=1; i<=18; i++) document.write(`<li class="group__item"><span>SEC-${i}</span></li>`);
+        </script>
+      </ul>
+      <ul class="period__list">
+        <!-- 10 rows -->
+        <script>
+          for(let i=1; i<=10; i++) document.write(`<li class="period__item"><span>L-${i}</span></li>`);
+        </script>
+      </ul>
+    </section>
+
+    <section class="dynamic-periodic-table" id="node-grid">
+      <div class="legend">
+        <div class="legend-item"><div class="legend-color" style="background:#e74d3c"></div>Invasive</div>
+        <div class="legend-item"><div class="legend-color" style="background:#1abc9c"></div>Security</div>
+        <div class="legend-item"><div class="legend-color" style="background:#3398db"></div>Network</div>
+        <div class="legend-item"><div class="legend-color" style="background:#95a6a7"></div>Utility</div>
+        <div class="legend-item"><div class="legend-color" style="background:#f1c40e"></div>System</div>
+      </div>
+      
+      <div class="temperature">
+        <span style="font-size:0.7rem; font-weight:bold;">ENCRYPTION STRENGTH</span>
+        <input type="range" class="slider" min="0" max="100" value="42">
+        <span id="temp-val">42%</span>
+      </div>
+
+      <!-- Nodes will be injected here -->
+    </section>
+  </main>
+
+  <div class="modal" id="modal">
+    <div class="modal-content" id="modal-inner">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <div class="modal-header">
+        <img src="" class="modal-icon" id="m-icon">
+        <div>
+          <div id="m-type" style="font-size:0.7rem; opacity:0.7; font-weight:bold;">TYPE: SECURITY</div>
+          <h2 class="modal-title" id="m-title">NODE_NAME</h2>
+        </div>
+      </div>
+      <p id="m-desc" style="margin-bottom:20px; line-height:1.4; opacity:0.8;">Node description goes here...</p>
+      <div class="stats-grid">
+        <div class="stat-box" id="s-box-1"><div class="stat-label">POWER</div><div class="stat-value" id="s-power">0</div></div>
+        <div class="stat-box" id="s-box-2"><div class="stat-label">STEALTH</div><div class="stat-value" id="s-stealth">0</div></div>
+        <div class="stat-box" id="s-box-3"><div class="stat-label">SECURITY</div><div class="stat-value" id="s-security">0</div></div>
+        <div class="stat-box" id="s-box-4"><div class="stat-label">LATENCY</div><div class="stat-value" id="s-latency">0</div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const nodes = [
+      { id: 'hack-sim', name: 'Hacker Sim', type: 'Invasive', row: 1, col: 1, power: 85, stealth: 40, sec: 30, lat: 12 },
+      { id: 'dark-web', name: 'Dark Web', type: 'System', row: 1, col: 18, power: 90, stealth: 95, sec: 10, lat: 450 },
+      { id: 'miner', name: 'Crypto Miner', type: 'Invasive', row: 2, col: 1, power: 20, stealth: 10, sec: 5, lat: 80 },
+      { id: 'vpn', name: 'VPN Tunnel', type: 'Security', row: 2, col: 2, power: 10, stealth: 80, sec: 70, lat: 120 },
+      { id: 'defender', name: 'Defender', type: 'Security', row: 3, col: 1, power: 5, stealth: 20, sec: 95, lat: 2 },
+      { id: 'net-scanner', name: 'Net Scanner', type: 'Network', row: 3, col: 2, power: 40, stealth: 50, sec: 20, lat: 15 },
+      { id: 'sql-inj', name: 'SQL Injector', type: 'Invasive', row: 4, col: 1, power: 75, stealth: 30, sec: 15, lat: 25 },
+      { id: 'node-mgr', name: 'Node Manager', type: 'Network', row: 4, col: 2, power: 50, stealth: 40, sec: 40, lat: 10 },
+      { id: 'file-scrape', name: 'File Scraper', type: 'Utility', row: 5, col: 1, power: 30, stealth: 60, sec: 20, lat: 35 },
+      { id: 'cloud-vault', name: 'Cloud Vault', type: 'Utility', row: 5, col: 2, power: 10, stealth: 10, sec: 90, lat: 5 },
+      { id: 'wallet', name: 'Crypto Wallet', type: 'System', row: 6, col: 1, power: 5, stealth: 10, sec: 100, lat: 10 },
+      { id: 'bank-app', name: 'Onchain Bank', type: 'System', row: 6, col: 2, power: 5, stealth: 5, sec: 100, lat: 50 },
+      { id: 'email', name: 'Mail Client', type: 'Utility', row: 7, col: 1, power: 10, stealth: 20, sec: 40, lat: 100 },
+      { id: 'vm', name: 'Virtual Machine', type: 'System', row: 7, col: 2, power: 60, stealth: 90, sec: 80, lat: 5 },
+      { id: 'overclocker', name: 'Overclocker', type: 'Invasive', row: 4, col: 3, power: 100, stealth: 5, sec: 0, lat: 1 },
+      { id: 'chatroom', name: 'Chatroom', type: 'System', row: 5, col: 3, power: 5, stealth: 50, sec: 20, lat: 200 },
+      { id: 'script-mgr', name: 'Script Mgr', type: 'Invasive', row: 6, col: 3, power: 70, stealth: 40, sec: 30, lat: 10 },
+      { id: 'srv-term', name: 'Server Term', type: 'System', row: 7, col: 3, power: 80, stealth: 20, sec: 50, lat: 5 },
+      { id: 'notes', name: 'Notes', type: 'Utility', row: 4, col: 4, power: 0, stealth: 100, sec: 10, lat: 0 },
+      { id: 'hackster', name: 'Hackster', type: 'Invasive', row: 5, col: 4, power: 90, stealth: 20, sec: 10, lat: 30 },
+      { id: 'widgets', name: 'Widgets', type: 'Utility', row: 6, col: 4, power: 5, stealth: 10, sec: 10, lat: 0 },
+      { id: 'malware-scanner', name: 'Malware Scan', type: 'Security', row: 7, col: 4, power: 40, stealth: 30, sec: 85, lat: 10 },
+      { id: 'auto-clicker', name: 'Auto Clicker', type: 'Invasive', row: 4, col: 5, power: 50, stealth: 10, sec: 5, lat: 1 },
+      { id: 'remote-pc', name: 'Remote PC', type: 'Network', row: 5, col: 5, power: 60, stealth: 40, sec: 30, lat: 80 },
+      { id: 'file-transfer', name: 'File X-fer', type: 'Utility', row: 6, col: 5, power: 20, stealth: 50, sec: 40, lat: 15 },
+      { id: 'password-manager', name: 'Pass Manager', type: 'Invasive', row: 7, col: 5, power: 10, stealth: 90, sec: 95, lat: 5 },
+      { id: 'backup-downloader', name: 'Backup DL', type: 'Utility', row: 4, col: 6, power: 15, stealth: 20, sec: 60, lat: 100 },
+      { id: 'hdd-cloner', name: 'HDD Cloner', type: 'System', row: 5, col: 6, power: 40, stealth: 10, sec: 30, lat: 200 },
+      { id: 'calculator', name: 'Calculator', type: 'Utility', row: 6, col: 6, power: 5, stealth: 100, sec: 10, lat: 0 },
+      { id: 'photo-editor', name: 'Photo Editor', type: 'Utility', row: 7, col: 6, power: 10, stealth: 80, sec: 20, lat: 50 },
+      { id: 'software-repair', name: 'S/W Repair', type: 'Utility', row: 4, col: 7, power: 30, stealth: 10, sec: 70, lat: 10 },
+      { id: 'proxy', name: 'Proxy Node', type: 'Network', row: 5, col: 7, power: 10, stealth: 95, sec: 40, lat: 150 },
+      { id: 'virus-scanner', name: 'Virus Scan', type: 'Security', row: 6, col: 7, power: 45, stealth: 25, sec: 90, lat: 12 },
+      { id: 'phone-link', name: 'Phone Link', type: 'System', row: 7, col: 7, power: 20, stealth: 60, sec: 40, lat: 20 },
+      { id: 'news-app', name: 'News Feed', type: 'Utility', row: 4, col: 8, power: 5, stealth: 10, sec: 5, lat: 50 },
+      { id: 'screensaver', name: 'Screensaver', type: 'Utility', row: 5, col: 8, power: 0, stealth: 99, sec: 5, lat: 0 },
+      { id: 'thermal-manager', name: 'Thermal Mgr', type: 'Utility', row: 6, col: 8, power: 10, stealth: 10, sec: 50, lat: 1 },
+      { id: 'archive-manager', name: 'Archive Mgr', type: 'Utility', row: 7, col: 8, power: 20, stealth: 30, sec: 40, lat: 10 },
+      { id: 'file-compresser', name: 'File Zip', type: 'Utility', row: 4, col: 9, power: 15, stealth: 40, sec: 30, lat: 20 },
+      { id: 'port-scanner', name: 'Port Scan', type: 'Network', row: 5, col: 9, power: 55, stealth: 45, sec: 25, lat: 10 },
+      { id: 'packet-sniffer', name: 'Packet Snif', type: 'Invasive', row: 6, col: 9, power: 65, stealth: 75, sec: 20, lat: 5 },
+      { id: 'exploit-analyzer', name: 'Exploit Ana', type: 'Invasive', row: 7, col: 9, power: 85, stealth: 55, sec: 15, lat: 40 },
+      { id: 'firewall-manager', name: 'Firewall Mgr', type: 'Security', row: 4, col: 10, power: 20, stealth: 10, sec: 100, lat: 2 },
+      { id: 'market-tracker', name: 'Market Trk', type: 'Utility', row: 5, col: 10, power: 10, stealth: 20, sec: 30, lat: 100 },
+      { id: 'heuristic-boost', name: 'Heuristic B', type: 'Utility', row: 6, col: 10, power: 90, stealth: 10, sec: 10, lat: 1 },
+      { id: 'defragger', name: 'Defragger', type: 'Utility', row: 7, col: 10, power: 25, stealth: 10, sec: 20, lat: 50 },
+      { id: 'pos-software', name: 'P.O.S Soft', type: 'System', row: 4, col: 11, power: 15, stealth: 10, sec: 80, lat: 30 },
+      { id: 'daw-studio', name: 'DAW Studio', type: 'System', row: 5, col: 11, power: 40, stealth: 20, sec: 10, lat: 10 },
+      { id: 'blueprint-viewer', name: 'Blueprint V', type: 'System', row: 6, col: 11, power: 30, stealth: 50, sec: 40, lat: 5 },
+      { id: 'biometric-scanner', name: 'Bio Scanner', type: 'System', row: 7, col: 11, power: 10, stealth: 10, sec: 95, lat: 2 },
+      { id: 'ecu-tuner', name: 'ECU Tuner', type: 'System', row: 4, col: 12, power: 50, stealth: 30, sec: 20, lat: 10 },
+      { id: 'crime-near-me', name: 'Crime Trk', type: 'System', row: 5, col: 12, power: 20, stealth: 70, sec: 30, lat: 15 },
+      { id: 'locate-device', name: 'GPS Locator', type: 'System', row: 6, col: 12, power: 10, stealth: 80, sec: 40, lat: 5 },
+      { id: 'virus-builder', name: 'Virus Build', type: 'Invasive', row: 7, col: 12, power: 95, stealth: 15, sec: 5, lat: 60 }
+    ];
+
+    const grid = document.getElementById('node-grid');
+    const modal = document.getElementById('modal');
+
+    nodes.forEach(node => {
+      const el = document.createElement('div');
+      el.className = 'element';
+      el.style.gridArea = `${node.row}/${node.col}`;
+      el.dataset.type = node.type;
+      el.innerHTML = `
+        <span class="element__id">${node.id.slice(0,3).toUpperCase()}</span>
+        <img src="../../../../art/icons/nodes/${node.id}.png" class="element__icon" onerror="this.src='../../../../art/icons/nodes/vm.png'">
+        <span class="element__name">${node.name}</span>
+      `;
+      el.onclick = () => openModal(node);
+      grid.appendChild(el);
+    });
+
+    function openModal(node) {
+      document.getElementById('m-icon').src = `../../../../art/icons/nodes/${node.id}.png`;
+      document.getElementById('m-title').innerText = node.name;
+      document.getElementById('m-type').innerText = `TYPE: ${node.type.toUpperCase()}`;
+      document.getElementById('m-desc').innerText = `Node sequence detected at L-${node.row} SEC-${node.col}. Status: ACTIVE. Encrypted payload matches signature 0x${node.id.length}${node.power}.`;
+      
+      document.getElementById('s-power').innerText = node.power;
+      document.getElementById('s-stealth').innerText = node.stealth;
+      document.getElementById('s-security').innerText = node.sec;
+      document.getElementById('s-latency').innerText = node.lat + 'ms';
+
+      const colorMap = { 'Invasive': '#e74d3c', 'Security': '#1abc9c', 'Network': '#3398db', 'Utility': '#95a6a7', 'System': '#f1c40e' };
+      const color = colorMap[node.type];
+      document.getElementById('modal-inner').style.borderColor = color;
+      [1,2,3,4].forEach(i => document.getElementById('s-box-'+i).style.color = color);
+
+      modal.classList.add('--is-visible');
+    }
+
+    function closeModal() {
+      modal.classList.remove('--is-visible');
+    }
+
+    document.querySelector('.slider').oninput = function() {
+      document.getElementById('temp-val').innerText = this.value + '%';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Card Navigation</title>
+    <style>
+body {
+  background:url(http://www.powerpointthemes.net/wp-content/uploads/2015/09/green-texture-painting-background.jpg);
+background-position:cover;
+  
+}
+
+#container {
+  margin: 20px 0px 0px 50px;
+}
+
+#div1 {
+  -webkit-perspective: 150px;
+  perspective: 150px;
+  width:200px;
+  height:90px;
+  margin-top:-10px;
+}
+
+#div1:nth-child(odd) {
+  -ms-transform: rotate(2deg);
+  -webkit-transform: rotate(2deg);
+  transform: rotate(2deg);
+}
+
+#div1:nth-child(even) {
+  margin-left:4px;
+}
+
+#div2 {
+  border: #ededed solid 8px;
+ background:url(https://dpanoply.s3.amazonaws.com/blog/combining-vectors-and-textures-for-a-background-with-depth/final-full.jpg);
+  display:block;
+  width:200px;
+  height:90px;
+  padding:15px 10px;
+  font-size:36px;
+  text-align:center;
+  transition:3s;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.9);
+  color:#fff;
+  text-shadow: 0px 0px 15px rgba(0,0,0,0.9);
+}
+
+#div1:hover #div2 {
+  -webkit-transform: rotateX(-45deg); 
+  transform: rotateX(-45deg);
+  border: #ededed solid 2px;
+  display:block;
+  width:200px;
+  height:90px;
+  padding:15px 10px;
+  font-size:36px;
+  text-align:center;
+  transition:1s;
+  box-shadow: 0px -20px 25px rgba(0, 0, 0, 0.6);
+
+}
+    </style>
+
+  </head>
+    
+  <body>
+  <nav id="container">
+  <div id="div1">
+  <div id="div2">Home</div>
+</div>
+
+<div id="div1">
+  <div id="div2">About Me</div>
+</div>
+
+<div id="div1">
+  <div id="div2">My Services</div>
+</div>
+
+<div id="div1">
+  <div id="div2">Contact Me</div>
+</div>
+</nav>
+    
+  </body>
+  
+</html>

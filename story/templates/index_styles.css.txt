@@ -1,0 +1,58 @@
+/* CSS Visual Effects and System Styles extracted from index.html */
+
+:root {
+  --neon-color: #00ff99;
+  --pixel-size: 4px;
+  --pixel-blur: 2px;
+  --rgb-offset: 2px;
+  --rgb-opacity: 0.5;
+  --color-count: 256;
+}
+
+/* Scrollbars */
+.scrollbar-sleek *::-webkit-scrollbar { width: 10px; height: 10px; }
+.scrollbar-sleek *::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+.scrollbar-sleek *::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.24); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+.scrollbar-sleek *::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.36); }
+
+/* Visual Effects */
+.effect-scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 150, 0.03));
+  background-size: 100% 3px, 3px 100%;
+}
+
+.effect-pixel-look {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  backdrop-filter: blur(var(--pixel-blur));
+}
+
+.effect-noise {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Animations */
+@keyframes glitch-anim {
+  0% { clip-path: inset(0 0 0 0); transform: translate(0,0); }
+  92% { clip-path: inset(0 0 0 0); transform: translate(0,0); }
+  93% { clip-path: inset(45% 0 54% 0); transform: translateX(-20px); filter: hue-rotate(90deg); }
+  94% { clip-path: inset(0 0 0 0); transform: translate(0,0); }
+  97% { clip-path: inset(10% 0 89% 0); transform: translateX(20px); filter: invert(1); }
+  98% { clip-path: inset(0 0 0 0); transform: translate(0,0); }
+}
+
+@keyframes vhold-drift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-100%); }
+}

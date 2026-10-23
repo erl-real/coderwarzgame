@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Component Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      height: 100%;
+      overflow: auto;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000000;
+      color: #ffffff;
+    }
+    .component-wrapper {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      box-sizing: border-box;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="component-wrapper">
+    <html><head></head><body><section class="antialiased flex flex-col items-center justify-center min-h-screen bg-neutral-950 text-neutral-200 overflow-hidden select-none m-0" style="font-family: 'Inter', sans-serif;">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+
+<div id="canvas-container" class="absolute top-0 left-0 w-screen h-screen z-10 cursor-grab active:cursor-grabbing"></div>
+
+<div class="absolute bottom-10 left-0 right-0 flex flex-col items-center pointer-events-none z-20">
+        <div class="px-5 py-2.5 rounded-full bg-neutral-900/60 backdrop-blur-md border border-neutral-700/50 shadow-lg flex items-center gap-2.5">
+            <iconify-icon icon="solar:hand-grab-linear" stroke-width="1.5" class="text-base text-neutral-400"></iconify-icon>
+            <p class="text-xs font-medium tracking-wide text-neutral-300 uppercase">
+                Grab and drag the ticket
+            </p>
+        </div>
+    </div>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+<script>
+        // --- 1. Generate Flight Ticket Texture via Canvas ---
+        function createTicketTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+
+            // Dark Ticket Background
+            ctx.fillStyle = '#0f0f0f';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Edge border
+            ctx.strokeStyle = '#262626';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(2, 2, 508, 1020);
+
+            const t = (txt, x, y, font, align, color) => {
+                ctx.font = font; ctx.textAlign = align; ctx.fillStyle = color; ctx.fillText(txt, x, y);
+            };
+
+            ctx.textBaseline = 'top';
+            let y = 60;
+
+            // Header
+            t('BOARDING PASS', 256, y, '500 36px "JetBrains Mono"', 'center', '#f5f5f5'); y += 50;
+            t('FIRST CLASS TICKET', 256, y, '400 18px "JetBrains Mono"', 'center', '#737373'); y += 60;
+
+            // Divider
+            ctx.setLineDash([6, 6]); ctx.lineWidth = 2; ctx.strokeStyle = '#333';
+            ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(472, y); ctx.stroke(); y += 40;
+            ctx.setLineDash([]);
+
+            // Passenger
+            t('PASSENGER', 40, y, '400 14px "JetBrains Mono"', 'left', '#737373');
+            t('ALEXANDER W.', 40, y + 20, '500 24px "JetBrains Mono"', 'left', '#f5f5f5'); y += 80;
+
+            // Flight Info
+            t('FLIGHT', 40, y, '400 14px "JetBrains Mono"', 'left', '#737373');
+            t('DATE', 256, y, '400 14px "JetBrains Mono"', 'left', '#737373');
+            t('GL-842', 40, y + 20, '500 24px "JetBrains Mono"', 'left', '#f5f5f5');
+            t('23 OCT 2026', 256, y + 20, '500 24px "JetBrains Mono"', 'left', '#f5f5f5'); y += 80;
+
+            // Route
+            t('FROM', 40, y, '400 14px "JetBrains Mono"', 'left', '#737373');
+            t('TO', 256, y, '400 14px "JetBrains Mono"', 'left', '#737373');
+            t('JFK', 40, y + 20, '500 42px "JetBrains Mono"', 'left', '#f5f5f5');
+            t('SFO', 256, y + 20, '500 42px "JetBrains Mono"', 'left', '#f5f5f5'); y += 100;
+
+            // Seat & Gate
+            t('GATE', 40, y, '400 14px "JetBrains Mono"', 'left', '#737373');
+            t('SEAT', 180, y, '400 14px "JetBrains Mono"', 'left', '#737373');
+            t('ZONE', 320, y, '400 14px "JetBrains Mono"', 'left', '#737373');
+            t('42', 40, y + 20, '500 28px "JetBrains Mono"', 'left', '#f5f5f5');
+            t('04A', 180, y + 20, '500 28px "JetBrains Mono"', 'left', '#f5f5f5');
+            t('1', 320, y + 20, '500 28px "JetBrains Mono"', 'left', '#f5f5f5'); y += 80;
+
+            // Divider
+            ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(472, y); ctx.stroke(); y += 50;
+
+            // Barcode Simulation
+            ctx.fillStyle = '#f5f5f5';
+            for(let i = 40; i < 472; i += Math.random() * 8 + 3) {
+                const w = Math.random() * 4 + 1;
+                ctx.fillRect(i, y, w, 70);
+            }
+            y += 90;
+            t('01234567890123456789', 256, y, '400 14px "JetBrains Mono"', 'center', '#737373');
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.anisotropy = 16;
+            return texture;
+        }
+
+        // --- 2. Three.js Setup ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0a0a0a, 0.02);
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 0, 11);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        // Lighting (Dark Mode Adjusted)
+        scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+        
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        dirLight.position.set(5, 10, 7);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 1024;
+        dirLight.shadow.mapSize.height = 1024;
+        scene.add(dirLight);
+
+        const fillLight = new THREE.DirectionalLight(0x4466aa, 0.8);
+        fillLight.position.set(-5, -2, -5);
+        scene.add(fillLight);
+
+        // --- 3. WebGL Background (Waves & Shooting Lines) ---
+        const bgGroup = new THREE.Group();
+        scene.add(bgGroup);
+
+        const waveGeo = new THREE.PlaneGeometry(80, 60, 50, 40);
+        waveGeo.rotateX(-Math.PI / 2);
+        
+        const wavePointsMat = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.06, transparent: true, opacity: 0.4 });
+        const wavePoints = new THREE.Points(waveGeo, wavePointsMat);
+        bgGroup.add(wavePoints);
+
+        const waveLinesMat = new THREE.MeshBasicMaterial({ color: 0x335588, wireframe: true, transparent: true, opacity: 0.1 });
+        const waveMesh = new THREE.Mesh(waveGeo, waveLinesMat);
+        bgGroup.add(waveMesh);
+
+        bgGroup.position.set(0, -10, -15);
+
+        const shootingLines = [];
+        for(let i = 0; i < 12; i++) {
+            const sGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,-3)]);
+            const sMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
+            const sLine = new THREE.Line(sGeo, sMat);
+            sLine.position.set((Math.random()-0.5)*50, (Math.random()-0.5)*30, -40 + Math.random()*30);
+            sLine.userData = { speed: Math.random() * 0.8 + 0.3 };
+            scene.add(sLine);
+            shootingLines.push(sLine);
+        }
+
+        // --- 4. Cloth Geometry & Material ---
+        const width = 3.5, height = 7, segX = 25, segY = 50;
+        const geometry = new THREE.PlaneGeometry(width, height, segX, segY);
+        
+        const material = new THREE.MeshStandardMaterial({
+            map: createTicketTexture(),
+            side: THREE.DoubleSide,
+            roughness: 0.8,
+            metalness: 0.1,
+            color: 0xdddddd
+        });
+
+        const clothMesh = new THREE.Mesh(geometry, material);
+        clothMesh.castShadow = true;
+        clothMesh.receiveShadow = true;
+        scene.add(clothMesh);
+
+        // --- 5. Custom Verlet Physics System ---
+        const particles = [], constraints = [];
+        const positionAttr = geometry.attributes.position;
+
+        for (let i = 0; i < positionAttr.count; i++) {
+            const x = positionAttr.getX(i), y = positionAttr.getY(i), z = positionAttr.getZ(i);
+            particles.push({
+                pos: new THREE.Vector3(x, y, z),
+                prev: new THREE.Vector3(x, y, z),
+                mass: y === height / 2 ? 0 : 1
+            });
+        }
+
+        const index = (u, v) => u + v * (segX + 1);
+        const addConstraint = (p1, p2) => constraints.push({ p1, p2, dist: particles[p1].pos.distanceTo(particles[p2].pos) });
+
+        for (let v = 0; v <= segY; v++) {
+            for (let u = 0; u <= segX; u++) {
+                if (u < segX) addConstraint(index(u, v), index(u + 1, v));
+                if (v < segY) addConstraint(index(u, v), index(u, v + 1));
+                if (u < segX && v < segY) {
+                    addConstraint(index(u, v), index(u + 1, v + 1));
+                    addConstraint(index(u + 1, v), index(u, v + 1));
+                }
+                if (u < segX - 1) addConstraint(index(u, v), index(u + 2, v));
+                if (v < segY - 1) addConstraint(index(u, v), index(u, v + 2));
+            }
+        }
+
+        const gravity = new THREE.Vector3(0, -0.008, 0), damping = 0.96, constraintIterations = 7;
+
+        function simulatePhysics() {
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                if (p.mass === 0 || i === grabbedIndex) continue;
+                const velocity = p.pos.clone().sub(p.prev).multiplyScalar(damping);
+                p.prev.copy(p.pos);
+                p.pos.add(velocity).add(gravity);
+            }
+
+            for (let iter = 0; iter < constraintIterations; iter++) {
+                for (let i = 0; i < constraints.length; i++) {
+                    const c = constraints[i], p1 = particles[c.p1], p2 = particles[c.p2];
+                    const delta = p2.pos.clone().sub(p1.pos);
+                    const currentDist = delta.length();
+                    if (currentDist === 0) continue;
+                    const offset = delta.multiplyScalar(0.5 * ((currentDist - c.dist) / currentDist));
+                    if (p1.mass !== 0 && c.p1 !== grabbedIndex) p1.pos.add(offset);
+                    if (p2.mass !== 0 && c.p2 !== grabbedIndex) p2.pos.sub(offset);
+                }
+            }
+
+            for (let i = 0; i < particles.length; i++) {
+                positionAttr.setXYZ(i, particles[i].pos.x, particles[i].pos.y, particles[i].pos.z);
+            }
+            positionAttr.needsUpdate = true;
+            geometry.computeVertexNormals();
+        }
+
+        // --- 6. Interaction ---
+        const raycaster = new THREE.Raycaster(), mouse = new THREE.Vector2();
+        let grabbedIndex = -1;
+        const dragPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), intersectionPoint = new THREE.Vector3();
+
+        const indicator = new THREE.Mesh(
+            new THREE.SphereGeometry(0.15, 16, 16),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3, depthTest: false })
+        );
+        indicator.visible = false;
+        scene.add(indicator);
+
+        const updateMouse = (e) => {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        };
+
+        window.addEventListener('pointerdown', (e) => {
+            updateMouse(e); raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObject(clothMesh);
+            if (intersects.length > 0) {
+                let minDist = Infinity;
+                for (let i = 0; i < particles.length; i++) {
+                    if (particles[i].mass === 0) continue;
+                    const dist = particles[i].pos.distanceTo(intersects[0].point);
+                    if (dist < minDist) { minDist = dist; grabbedIndex = i; }
+                }
+                if (grabbedIndex !== -1) {
+                    indicator.visible = true;
+                    dragPlane.setFromNormalAndCoplanarPoint(camera.getWorldDirection(new THREE.Vector3()), particles[grabbedIndex].pos);
+                }
+            }
+        });
+
+        window.addEventListener('pointermove', (e) => {
+            if (grabbedIndex !== -1) {
+                updateMouse(e); raycaster.setFromCamera(mouse, camera);
+                raycaster.ray.intersectPlane(dragPlane, intersectionPoint);
+                particles[grabbedIndex].pos.copy(intersectionPoint);
+                indicator.position.copy(intersectionPoint);
+            }
+        });
+
+        const release = () => { grabbedIndex = -1; indicator.visible = false; };
+        window.addEventListener('pointerup', release);
+        window.addEventListener('pointerleave', release);
+
+        // --- 7. Render Loop ---
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+
+            // Animate Waves
+            const wavePos = waveGeo.attributes.position;
+            for(let i = 0; i < wavePos.count; i++) {
+                const x = wavePos.getX(i), z = wavePos.getZ(i);
+                wavePos.setY(i, Math.sin(x * 0.2 + time) * Math.cos(z * 0.2 + time) * 1.5);
+            }
+            wavePos.needsUpdate = true;
+
+            // Animate Shooting Lines
+            shootingLines.forEach(line => {
+                line.position.z += line.userData.speed;
+                if(line.position.z > -5) {
+                    line.position.z = -40;
+                    line.position.x = (Math.random()-0.5)*50;
+                    line.position.y = (Math.random()-0.5)*30;
+                }
+            });
+
+            simulatePhysics();
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</section></body></html>
+  </div>
+  
+    <script>
+      (function() {
+        function checkAndCenter() {
+          // Use double requestAnimationFrame to ensure DOM is fully painted and layout is stable
+          requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+              const wrapper = document.querySelector('.component-wrapper');
+              if (!wrapper) return;
+              
+              // Get all child elements
+              const children = Array.from(wrapper.children);
+              if (children.length === 0) return;
+              
+              // Temporarily override wrapper styles to shrink-wrap for measurement
+              // Set inline styles to shrink-wrap (inline styles override CSS)
+              wrapper.style.display = 'inline-block';
+              wrapper.style.width = 'auto';
+              wrapper.style.height = 'auto';
+              wrapper.style.overflow = 'visible';
+              wrapper.style.boxSizing = 'content-box';
+              
+              // Force multiple reflows to ensure styles are fully applied
+              void wrapper.offsetHeight;
+              void wrapper.offsetWidth;
+              void wrapper.offsetHeight;
+              
+              // Measure the wrapper's content size
+              const contentWidth = wrapper.offsetWidth;
+              const contentHeight = wrapper.offsetHeight;
+              
+              // Restore original styles by removing inline styles we added
+              wrapper.style.removeProperty('display');
+              wrapper.style.removeProperty('width');
+              wrapper.style.removeProperty('height');
+              wrapper.style.removeProperty('overflow');
+              wrapper.style.removeProperty('box-sizing');
+              
+              // If content is less than 500x500, center it
+              if (contentWidth > 0 && contentHeight > 0 && contentWidth < 500 && contentHeight < 500) {
+                wrapper.style.display = 'flex';
+                wrapper.style.alignItems = 'center';
+                wrapper.style.justifyContent = 'center';
+              }
+            });
+          });
+        }
+        
+        // Check immediately and after delays to ensure content is rendered and styled
+        function runChecks() {
+          checkAndCenter();
+          setTimeout(checkAndCenter, 50);
+          setTimeout(checkAndCenter, 150);
+          setTimeout(checkAndCenter, 300);
+          setTimeout(checkAndCenter, 500);
+          setTimeout(checkAndCenter, 1000);
+        }
+        
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', runChecks);
+        } else {
+          runChecks();
+        }
+        
+        // Also check when images or other resources load
+        window.addEventListener('load', () => {
+          setTimeout(checkAndCenter, 100);
+          setTimeout(checkAndCenter, 300);
+        });
+        
+        // Use ResizeObserver to detect size changes
+        if (window.ResizeObserver) {
+          setTimeout(() => {
+            const wrapper = document.querySelector('.component-wrapper');
+            if (wrapper) {
+              const observer = new ResizeObserver(() => {
+                setTimeout(checkAndCenter, 50);
+              });
+              observer.observe(wrapper);
+            }
+          }, 500);
+        }
+      })();
+    </script>
+  
+</body>
+</html>

@@ -1,0 +1,130 @@
+{
+  "servers": [
+    {
+      "id": "NYC_MAIN",
+      "name": "Manhattan Digital Fortress",
+      "location": "New York, USA",
+      "type": "Global Hub",
+      "links": ["LDN_MAIN", "ATX_REG", "PHX_REG", "YVR_REG", "PR_REMOTE"]
+    },
+    {
+      "id": "LDN_MAIN",
+      "name": "Thames Node Exchange",
+      "location": "London, UK",
+      "type": "Global Hub",
+      "links": ["NYC_MAIN", "BER_REG", "MCR_REG", "FAR_REMOTE", "TKY_MAIN"]
+    },
+    {
+      "id": "TKY_MAIN",
+      "name": "Shinjuku Cyber Core",
+      "location": "Tokyo, Japan",
+      "type": "Global Hub",
+      "links": ["LDN_MAIN", "SEL_MAIN", "SYD_REG", "GUM_REMOTE"]
+    },
+    {
+      "id": "SEL_MAIN",
+      "name": "Gangnam Grid Hub",
+      "location": "Seoul, South Korea",
+      "type": "Global Hub",
+      "links": ["TKY_MAIN", "SYD_REG", "NYC_MAIN"]
+    },
+    {
+      "id": "MEX_REG",
+      "name": "Aztec Packet Relay",
+      "location": "Mexico City, Mexico",
+      "type": "Regional Node",
+      "links": ["NYC_MAIN", "SP_REG"]
+    },
+    {
+      "id": "SP_REG",
+      "name": "Amazon Flow Center",
+      "location": "São Paulo, Brazil",
+      "type": "Regional Node",
+      "links": ["MEX_REG", "NYC_MAIN"]
+    },
+    {
+      "id": "SYD_REG",
+      "name": "Outback Data Oasis",
+      "location": "Sydney, Australia",
+      "type": "Regional Node",
+      "links": ["TKY_MAIN", "SEL_MAIN"]
+    },
+    {
+      "id": "YVR_REG",
+      "name": "Coastal Connect Hub",
+      "location": "Vancouver, Canada",
+      "type": "Regional Node",
+      "links": ["NYC_MAIN", "ANC_REMOTE"]
+    },
+    {
+      "id": "BER_REG",
+      "name": "Iron Curtain Cloud",
+      "location": "Berlin, Germany",
+      "type": "Regional Node",
+      "links": ["LDN_MAIN"]
+    },
+    {
+      "id": "ATX_REG",
+      "name": "Silicon Prairie Server Farm",
+      "location": "Austin, USA",
+      "type": "Regional Node",
+      "links": ["NYC_MAIN"]
+    },
+    {
+      "id": "PHX_REG",
+      "name": "Desert Cache Center",
+      "location": "Phoenix, USA",
+      "type": "Regional Node",
+      "links": ["NYC_MAIN"]
+    },
+    {
+      "id": "MCR_REG",
+      "name": "Industrial Byte Works",
+      "location": "Manchester, UK",
+      "type": "Regional Node",
+      "links": ["LDN_MAIN"]
+    },
+    {
+      "id": "SVB_REMOTE",
+      "name": "Arctic Data Glacier",
+      "location": "Svalbard",
+      "type": "Remote Node",
+      "links": ["GRL_REMOTE"]
+    },
+    {
+      "id": "GUM_REMOTE",
+      "name": "Mariana Trench Hub",
+      "location": "Guam",
+      "type": "Remote Node",
+      "links": ["TKY_MAIN"]
+    },
+    {
+      "id": "FAR_REMOTE",
+      "name": "North Atlantic Cache",
+      "location": "Faroe Islands",
+      "type": "Remote Node",
+      "links": ["LDN_MAIN", "GRL_REMOTE"]
+    },
+    {
+      "id": "ANC_REMOTE",
+      "name": "Denali Digital Vault",
+      "location": "Anchorage, USA",
+      "type": "Remote Node",
+      "links": ["YVR_REG"]
+    },
+    {
+      "id": "PR_REMOTE",
+      "name": "Caribbean Cloud Relay",
+      "location": "Puerto Rico",
+      "type": "Remote Node",
+      "links": ["NYC_MAIN"]
+    },
+    {
+      "id": "GRL_REMOTE",
+      "name": "Icecap Data Fortress",
+      "location": "Greenland",
+      "type": "Remote Node",
+      "links": ["FAR_REMOTE", "SVB_REMOTE"]
+    }
+  ]
+}

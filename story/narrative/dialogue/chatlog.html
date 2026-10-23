@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chat Room Emulator – Live Social Stream</title>
+<style>
+  body { background:#050607; color:#e6e6e6; font-family:system-ui, sans-serif; margin:0; padding:20px; }
+  h1 { margin:0 0 8px; font-size:20px; }
+  #meta { font-size:12px; color:#9fa3b5; margin-bottom:10px; }
+  #chat { border:1px solid #222; background:#0b0c0f; padding:12px; height:80vh; overflow-y:auto; font-size:13px; line-height:1.4; }
+  .line { margin-bottom:6px; }
+  .time { color:#7fa8ff; font-family:monospace; margin-right:4px; }
+  .user { font-weight:600; color:#ffd27f; margin-right:4px; }
+  .msg { color:#e0e0e0; }
+</style>
+</head>
+<body>
+
+<h1>Chat Room Emulator – Social Channel</h1>
+<div id="meta">Simulated multi-user chat: overlapping topics, gossip, memes, hardware talk, city talk, light trolling.</div>
+<div id="chat"></div>
+
+<script>
+// ------------------------------
+// BASIC UTILITIES
+// ------------------------------
+function ts() {
+  const d = new Date();
+  return d.toTimeString().split(" ")[0];
+}
+function choice(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// ------------------------------
+// USER POOL (RANDOM BUT STABLE PER SESSION)
+// ------------------------------
+const baseNames = [
+  "Hexline","NullKit","ByteGhost","PortNexus","ColdStart","Traceback",
+  "BlueRelay","DustSocket","NightPing","SoftReset","DryRun","StackFlood",
+  "QuietPort","GhostRoute","DeepCache","Wireframe","PatchNote","DrySignal"
+];
+
+const users = [];
+const maxUsers = 6 + Math.floor(Math.random() * 3); // 6–8 users
+
+while (users.length < maxUsers) {
+  const n = choice(baseNames) + Math.floor(Math.random() * 99);
+  if (!users.includes(n)) users.push(n);
+}
+
+// Archetypes
+const archetypes = [
+  "enthusiast",
+  "cynic",
+  "helper",
+  "lurker",
+  "troll",
+  "gossip",
+  "techhead",
+  "social"
+];
+
+const userProfiles = users.map(u => ({
+  name: u,
+  role: choice(archetypes)
+}));
+
+// ------------------------------
+// TOPIC POOLS
+// ------------------------------
+const artists = [
+  "{artist}", // placeholder for your artist list
+  "{artist_from_list}",
+  "{artist_placeholder}"
+];
+
+const hardware = [
+  "HX-1 Quad-Core",
+  "HX-2 Processor",
+  "HackBoard B450",
+  "GTX 650",
+  "RX Shadow GPU",
+  "CUBE OS",
+  "NEE BIOS",
+  "Realtek Gigabit",
+  "Generic Flash"
+];
+
+const brands = [
+  "Yoboo Mail",
+  "EyeCloud",
+  "Nap Mail",
+  "WebTree",
+  "OffChainBank",
+  "What’s Mine Bank",
+  "Multimark Bank",
+  "Amazin’",
+  "Shopnado",
+  "PrimeTime",
+  "Pear",
+  "OpenGenius",
+  "ByteMason",
+  "CoinLaunder",
+  "StonkHub",
+  "LoneBuddy",
+  "BlockTrain"
+];
+
+const cities = [
+  "Austin","Phoenix","Charlotte","Columbus","Tampa","New York",
+  "London","Tokyo","Seoul","Singapore","Berlin","Mexico City",
+  "São Paulo","Istanbul","Manila","Jakarta","Lagos","Dhaka",
+  "Karachi","Cairo","Sydney","Vancouver","Oslo","Detroit",
+  "Manchester","Katowice","Tbilisi","Reykjavik","Tallinn"
+];
+
+const npcNames = [
+  "random", // placeholder for your NPC name generator
+  "random_npc",
+  "random_handle"
+];
+
+// ------------------------------
+// MESSAGE TEMPLATES BY TOPIC
+// ------------------------------
+const gamingTemplates = [
+  "Anyone running missions tonight? Need one more.",
+  "Lag on the {city} node is brutal right now.",
+  "Looking for someone who actually knows how to hack the random mainframe.",
+  "I swear the {hardware} update broke my whole rig.",
+  "{hardware} still holding strong, argue with the benchmarks.",
+  "Who’s down to queue in like 5 minutes?"
+];
+
+const musicTemplates = [
+  "Anyone else listening to {artist} lately? Their new drop is wild.",
+  "{artist} carried my whole night shift.",
+  "Hot take: {artist} fell off after 2024.",
+  "I only code to {artist}. Everything else feels wrong.",
+  "{artist} + late-night grind = perfect combo."
+];
+
+const hardwareTemplates = [
+  "{hardware} is actually solid if you don’t cheap out on cooling.",
+  "Mine fried last week. Smoke and everything.",
+  "You probably installed it upside down.",
+  "{hardware} benchmarks are fake, I’m calling it.",
+  "Realtek Gigabit drivers are cursed, I’m convinced."
+];
+
+const brandTemplates = [
+  "{brand} locked me out again for ‘suspicious activity’.",
+  "Shopnado lost my package for the third time.",
+  "Amazin’ same-day delivery is a myth.",
+  "{brand} flagged my transfer for vibes only.",
+  "Using {brand} in 2026 is wild behavior."
+];
+
+const cityTemplates = [
+  "Anyone here from {city}? My ping is melting.",
+  "{city} weather is wild today.",
+  "{city} servers are smooth as butter right now.",
+  "{city} routing is cooked tonight.",
+  "I swear everyone from {city} plays like they’re on dial-up."
+];
+
+const npcGossipTemplates = [
+  "Did you hear {npc} got caught selling fake access tokens?",
+  "I think {npc} is secretly working for a corp.",
+  "{npc} owes me crypto and I’m not letting it go.",
+  "Pretty sure {npc} is just an NPC.exe Corruption case.",
+  "Someone said {npc} got banned from half the markets already."
+];
+
+const memeTemplates = [
+  "Bro typed like he’s infected with Brainrot++.",
+  "This chat is giving Sigma Strain energy.",
+  "NPC.exe Corruption moment right here.",
+  "That take is pure Doomscroll Rot.",
+  "You’re one Hopium Cascade away from disaster."
+];
+
+const newsTemplates = [
+  "Heard a rumor that a new darkweb market is opening in {city}.",
+  "Someone said a satellite went down over {city}.",
+  "Shopnado warehouse in {city} caught fire again.",
+  "OffChainBank quietly changed their risk model last night.",
+  "Streamlyfe is shadowbanning people from {city} again."
+];
+
+const flirtingTemplates = [
+  "You always show up right when the chat gets boring.",
+  "You gaming tonight or just teasing the lobby?",
+  "If you’re from {city}, you owe me a coffee.",
+  "You type like someone who never misses a headshot.",
+  "You talk a lot of game, but are you actually good?"
+];
+
+const argumentTemplates = [
+  "No way {hardware} beats the old model in real workloads.",
+  "Pear devices are overpriced, admit it.",
+  "{city} > {city2}, don’t fight me.",
+  "{brand} is only good if you like suffering.",
+  "You’re coping, those benchmarks are cherry-picked."
+];
+
+const trollTemplates = [
+  "Imagine using Nap Mail in 2026.",
+  "Your router is powered by hope and duct tape.",
+  "You sound like a Shopnado customer service bot.",
+  "That’s a bold statement from someone on {hardware}.",
+  "You’re typing like your ping is 900ms."
+];
+
+const lifeTemplates = [
+  "I burned my dinner again.",
+  "Why is it 3 AM and I’m still here?",
+  "Anyone else bored out of their mind?",
+  "I was supposed to log off an hour ago.",
+  "My sleep schedule is officially corrupted."
+];
+
+// ------------------------------
+// TOPIC TYPES
+// ------------------------------
+const topicTypes = [
+  "gaming",
+  "music",
+  "hardware",
+  "brand",
+  "city",
+  "npc",
+  "meme",
+  "news",
+  "flirt",
+  "argument",
+  "troll",
+  "life"
+];
+
+// ------------------------------
+// MESSAGE GENERATION
+// ------------------------------
+function fillTemplate(tpl) {
+  return tpl
+    .replace("{artist}", choice(artists))
+    .replace("{artist_from_list}", choice(artists))
+    .replace("{artist_placeholder}", choice(artists))
+    .replace("{hardware}", choice(hardware))
+    .replace("{brand}", choice(brands))
+    .replace("{city}", choice(cities))
+    .replace("{city2}", choice(cities))
+    .replace("{npc}", choice(npcNames));
+}
+
+function generateMessage(topic) {
+  let tplPool;
+  switch (topic) {
+    case "gaming": tplPool = gamingTemplates; break;
+    case "music": tplPool = musicTemplates; break;
+    case "hardware": tplPool = hardwareTemplates; break;
+    case "brand": tplPool = brandTemplates; break;
+    case "city": tplPool = cityTemplates; break;
+    case "npc": tplPool = npcGossipTemplates; break;
+    case "meme": tplPool = memeTemplates; break;
+    case "news": tplPool = newsTemplates; break;
+    case "flirt": tplPool = flirtingTemplates; break;
+    case "argument": tplPool = argumentTemplates; break;
+    case "troll": tplPool = trollTemplates; break;
+    case "life": tplPool = lifeTemplates; break;
+    default: tplPool = lifeTemplates; break;
+  }
+  return fillTemplate(choice(tplPool));
+}
+
+// ------------------------------
+// CONVERSATION STATE
+// ------------------------------
+let currentTopic = choice(topicTypes);
+let topicMessagesLeft = 3 + Math.floor(Math.random() * 4); // 3–6 messages per topic
+
+function pickUserForRole(preferredRoles) {
+  const candidates = userProfiles.filter(u => preferredRoles.includes(u.role));
+  if (candidates.length === 0) return choice(userProfiles);
+  return choice(candidates);
+}
+
+// ------------------------------
+// MAIN LOOP
+// ------------------------------
+const chatEl = document.getElementById("chat");
+
+function addLine(user, text) {
+  const div = document.createElement("div");
+  div.className = "line";
+  div.innerHTML = `<span class="time">${ts()}</span><span class="user">${user}:</span><span class="msg">${text}</span>`;
+  chatEl.appendChild(div);
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+function step() {
+  // Decide if we change topic
+  if (topicMessagesLeft <= 0) {
+    currentTopic = choice(topicTypes);
+    topicMessagesLeft = 3 + Math.floor(Math.random() * 4);
+  }
+
+  // Decide how many messages in this "burst"
+  const burstSize = 1 + Math.floor(Math.random() * 3); // 1–3 messages
+
+  for (let i = 0; i < burstSize; i++) {
+    let user;
+    // Bias user selection based on topic
+    if (currentTopic === "hardware" || currentTopic === "gaming" || currentTopic === "brand") {
+      user = pickUserForRole(["techhead","enthusiast","cynic"]);
+    } else if (currentTopic === "npc" || currentTopic === "news" || currentTopic === "meme") {
+      user = pickUserForRole(["gossip","troll","enthusiast"]);
+    } else if (currentTopic === "flirt") {
+      user = pickUserForRole(["social","enthusiast"]);
+    } else if (currentTopic === "argument") {
+      user = pickUserForRole(["cynic","troll"]);
+    } else {
+      user = choice(userProfiles);
+    }
+
+    const msg = generateMessage(currentTopic);
+    addLine(user.name, msg);
+    topicMessagesLeft--;
+  }
+
+  // Occasionally add a side comment from a lurker or troll
+  if (Math.random() < 0.35) {
+    const sideUser = pickUserForRole(["lurker","troll","cynic"]);
+    const sideTopic = choice(["meme","life","troll"]);
+    const sideMsg = generateMessage(sideTopic);
+    addLine(sideUser.name, sideMsg);
+  }
+
+  // Schedule next step
+  const delay = 1200 + Math.random() * 2500; // 1.2–3.7s
+  setTimeout(step, delay);
+}
+
+// Seed a few lines
+for (let i = 0; i < 5; i++) {
+  const u = choice(userProfiles);
+  const t = choice(["life","gaming","city"]);
+  addLine(u.name, generateMessage(t));
+}
+
+// Start loop
+setTimeout(step, 1500);
+</script>
+
+</body>
+</html>

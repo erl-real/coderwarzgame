@@ -1,0 +1,169 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N E X U S</title>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-neutral-400 font-mono overflow-hidden relative min-h-screen selection:bg-cyan-900/30 selection:text-cyan-100">
+
+    <!-- Multidimensional Void Background -->
+    <div class="fixed inset-0 z-0 pointer-events-none flex items-center justify-center">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,30,50,0.1)_0%,transparent_70%)]"></div>
+        <div class="w-full h-full border-t border-b border-neutral-900/40 flex flex-col justify-between opacity-30" style="background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 3rem 3rem;">
+        </div>
+    </div>
+
+    <!-- Axis Crosshairs -->
+    <div class="fixed top-1/2 left-0 w-full h-px bg-neutral-900/60 -translate-y-1/2 z-0"></div>
+    <div class="fixed top-0 left-1/2 w-px h-full bg-neutral-900/60 -translate-x-1/2 z-0"></div>
+
+    <!-- Header / Nav -->
+    <nav class="relative z-10 flex justify-between items-start p-6 md:p-12">
+        <div class="flex flex-col gap-1 uppercase">
+            <span class="text-sm font-medium tracking-tighter text-neutral-200">N E X U S</span>
+            <span class="text-xs text-neutral-600 tracking-widest">ITERATION 9.4.0</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="hidden md:flex items-center gap-2 text-xs text-neutral-500">
+                <div class="w-1.5 h-1.5 rounded-full bg-cyan-800 animate-pulse"></div>
+                SYNC: NON-LOCAL
+            </div>
+            <button class="text-xl text-neutral-400 hover:text-neutral-200 transition-colors">
+                <iconify-icon icon="solar:hamburger-menu-linear" stroke-width="1.5"></iconify-icon>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Central Impossible Geometry -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 flex items-center justify-center w-full max-w-2xl aspect-square pointer-events-none">
+        
+        <!-- Deep Core Anomaly -->
+        <div class="absolute w-1/2 h-1/2 bg-cyan-950/20 rounded-full blur-3xl animate-[pulse_4s_ease-in-out_infinite]"></div>
+        
+        <!-- Outer Orbitals -->
+        <div class="absolute w-[90%] h-[90%] border border-neutral-800/40 rounded-full border-dashed animate-[spin_120s_linear_infinite]"></div>
+        <div class="absolute w-[85%] h-[85%] border border-neutral-900/50 rounded-full animate-[spin_90s_linear_infinite_reverse]"></div>
+        
+        <!-- Intersecting Planes -->
+        <div class="absolute w-[60%] h-[60%] border border-neutral-700/20 rotate-45 flex items-center justify-center animate-[spin_60s_linear_infinite]">
+            <div class="w-full h-full border border-neutral-800/30 rotate-12 flex items-center justify-center backdrop-blur-sm bg-white/[0.01]">
+                <div class="w-full h-full border border-neutral-800/40 -rotate-24"></div>
+            </div>
+        </div>
+
+        <!-- Inner Focus Ring -->
+        <div class="absolute w-[30%] h-[30%] border-t border-b border-cyan-900/40 rounded-full animate-[spin_20s_linear_infinite]"></div>
+        <div class="absolute w-[25%] h-[25%] border-l border-r border-indigo-900/30 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
+        
+        <!-- Core Node -->
+        <div class="absolute flex items-center justify-center text-cyan-500/50 text-2xl animate-[pulse_2s_ease-in-out_infinite]">
+            <iconify-icon icon="solar:asterisk-linear" stroke-width="1.5"></iconify-icon>
+        </div>
+    </div>
+
+    <!-- Left Interface Column: State Metrics -->
+    <div class="absolute left-6 md:left-12 top-1/3 z-10 flex flex-col gap-8 w-48">
+        
+        <!-- Data Feed -->
+        <div class="text-xs flex flex-col gap-2 border-l border-neutral-800 pl-4">
+            <span class="text-neutral-300 font-medium">OBSERVATION MATRIX</span>
+            <span class="text-neutral-600">STATE: COLLAPSED</span>
+            <span class="text-neutral-600">ENTROPY: 0.000000</span>
+            
+            <div class="h-px w-full bg-neutral-900 mt-2 relative overflow-hidden">
+                <div class="absolute top-0 left-0 h-full bg-cyan-800/60 w-1/3 animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]"></div>
+            </div>
+            <div class="h-px w-3/4 bg-neutral-900 relative overflow-hidden">
+                <div class="absolute top-0 left-0 h-full bg-indigo-800/50 w-2/3 animate-[pulse_3s_cubic-bezier(0.4,0,0.6,1)_infinite]"></div>
+            </div>
+        </div>
+
+        <!-- Abstract Controls -->
+        <div class="flex flex-col gap-5 border-l border-neutral-800 pl-4">
+            
+            <!-- Dimensional Fold Toggle -->
+            <div class="flex items-center gap-3 cursor-pointer group">
+                <span class="text-xs text-neutral-500 group-hover:text-neutral-300 transition-colors">DIMENSIONAL FOLD</span>
+                <div class="w-8 h-3 rounded-full border border-neutral-700 relative flex items-center px-0.5 group-hover:border-neutral-500 transition-colors">
+                    <div class="w-2 h-2 rounded-full bg-cyan-900/80 translate-x-full transition-transform"></div>
+                </div>
+            </div>
+
+            <!-- Resonance Slider -->
+            <div class="flex flex-col gap-2 w-full pr-4">
+                <span class="text-xs text-neutral-500">RESONANCE</span>
+                <div class="h-1 w-full bg-neutral-900 relative cursor-crosshair">
+                    <div class="absolute left-0 top-0 h-full w-[68%] bg-neutral-600"></div>
+                    <div class="absolute left-[68%] top-1/2 w-1.5 h-3 bg-neutral-300 -translate-y-1/2 -translate-x-1/2 hover:scale-125 transition-transform"></div>
+                </div>
+                <div class="flex justify-between text-xs text-neutral-700">
+                    <span>0.0</span>
+                    <span>1.0</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Interface Column: Cryptic Logic -->
+    <div class="absolute right-6 md:right-12 bottom-1/4 z-10 w-64 md:w-72 flex flex-col items-end text-right">
+        
+        <h1 class="text-2xl md:text-3xl tracking-tight text-neutral-200 font-sans font-medium mb-4 flex flex-col">
+            <span>RECURSION</span>
+            <span class="text-neutral-600">UNBOUND</span>
+        </h1>
+        
+        <p class="text-xs text-neutral-500 leading-relaxed mb-6 text-justify">
+            The architecture observes. Dimensional collapse is a feature, not a failure. Fold space to iterate the physical form into pure data streams. Understanding is secondary to existence.
+        </p>
+        
+        <!-- Cryptic Symbols & Logic Gates -->
+        <div class="flex justify-end gap-3 text-base text-neutral-500 mb-6 border-b border-neutral-800 pb-4 w-full">
+            <span class="hover:text-cyan-500/80 transition-colors cursor-help" title="Null Sector">[ ∰ ]</span>
+            <span class="hover:text-cyan-500/80 transition-colors cursor-help" title="Ascend">[ ⍙ ]</span>
+            <span class="hover:text-cyan-500/80 transition-colors cursor-help" title="Framework">[ ⎈ ]</span>
+            <span class="hover:text-cyan-500/80 transition-colors cursor-help" title="Boundary">[ ⍾ ]</span>
+        </div>
+
+        <!-- Nonlinear Navigation Nodes -->
+        <div class="flex gap-2 text-xl text-neutral-600">
+            <button class="hover:text-neutral-300 transition-colors"><iconify-icon icon="solar:infinity-linear" stroke-width="1.5"></iconify-icon></button>
+            <button class="hover:text-neutral-300 transition-colors"><iconify-icon icon="solar:command-linear" stroke-width="1.5"></iconify-icon></button>
+            <button class="hover:text-neutral-300 transition-colors"><iconify-icon icon="solar:code-circle-linear" stroke-width="1.5"></iconify-icon></button>
+            <button class="hover:text-neutral-300 transition-colors"><iconify-icon icon="solar:radar-linear" stroke-width="1.5"></iconify-icon></button>
+        </div>
+    </div>
+
+    <!-- Right Vertical Typography -->
+    <div class="absolute right-4 md:right-8 top-1/4 text-xs text-neutral-800 font-medium tracking-[0.5rem] z-0 select-none" style="writing-mode: vertical-rl;">
+        T R A N S C E N D E N C E
+    </div>
+
+    <!-- Bottom Interface Bar -->
+    <div class="absolute bottom-0 left-0 w-full p-6 md:p-12 z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-t border-neutral-900/50 bg-gradient-to-t from-black via-black/80 to-transparent">
+        
+        <div class="text-xs text-neutral-600 flex flex-wrap gap-4 md:gap-8">
+            <span class="flex items-center gap-2">
+                <iconify-icon icon="solar:cpu-linear" stroke-width="1.5"></iconify-icon>
+                SYSTEM_ARCH: HYPERCUBE
+            </span>
+            <span class="flex items-center gap-2">
+                <iconify-icon icon="solar:map-point-linear" stroke-width="1.5"></iconify-icon>
+                COORD: 11.0945° / Z: 99.4
+            </span>
+            <span class="hidden md:flex items-center gap-2">
+                <iconify-icon icon="solar:database-linear" stroke-width="1.5"></iconify-icon>
+                NODE_0x7F
+            </span>
+        </div>
+        
+        <div class="flex items-center gap-2 text-xs text-neutral-500 font-medium bg-neutral-900/30 px-3 py-1.5 rounded backdrop-blur-md border border-neutral-800/50 cursor-wait">
+            <iconify-icon icon="solar:sort-from-bottom-to-top-linear" stroke-width="1.5" class="animate-bounce"></iconify-icon>
+            INTERCEPTING SIGNAL...
+        </div>
+
+    </div>
+
+
+</body></html>

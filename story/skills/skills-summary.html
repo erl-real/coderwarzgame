@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Skills Summary</title>
+    <style>
+body { max-width: 1024px; margin: auto; background: white; font-family: sans-serif; }
+
+.clickme { cursor: pointer; }
+.hidden { opacity: 0.1; transition: opacity 3s; }
+.hidden:hover { opacity: 1.0; transition: opacity 0.5s; }
+
+@counter-style thumbs {
+  system: cyclic;
+  symbols: "⭐" "🚀" "👽";
+  suffix: " ";
+}
+.finding { list-style-position: inside; list-style-type: thumbs; margin: 4px; }
+
+/* Tailwind Style... */
+.p-0 { padding: 0; }
+
+.m-0 { margin: 0px; }
+.mx-0 { margin-left: 0px; margin-right: 0px; }
+.my-0 { margin-top: 0px; margin-bottom: 0px; }
+.mt-0 { margin-top: 0px; }
+.mr-0 { margin-right: 0px; }
+.mb-0 { margin-bottom: 0px; }
+.ml-0 { margin-left: 0px; }
+
+.m-1 { margin: 1pc; }
+.mx-1 { margin-left: 1pc; margin-right: 1pc; }
+.my-1 { margin-top: 1pc; margin-bottom: 1pc; }
+.mt-1 { margin-top: 1pc; }
+.mr-1 { margin-right: 1pc; }
+.mb-1 { margin-bottom: 1pc; }
+.ml-1 { margin-left: 1pc; }
+
+.block { display: block; }
+.inline-block { display: inline-block; }
+.inline { display: inline; }
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.table { display: table; }
+.inline-table { display: inline-table; }
+.table-caption { display: table-caption; }
+
+.flex-row { flex-direction: row; }
+.flex-row-reverse { flex-direction: row-reverse; }
+.flex-col { flex-direction: column; }
+.flex-col-reverse { flex-direction: column-reverse; }
+
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.items-center { align-items: center; }
+.items-baseline { align-items: baseline; }
+.items-stretch { align-items: stretch; }
+
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-evenly { justify-content: space-evenly; }
+</style>
+
+  </head>
+    
+  <body>
+  <h1>Skills Summary</h1>
+    <div id="radar"></div>
+    <script src="js/mithril.js"></script>
+    <script src="js/app.js"></script>
+    <script src='https://unpkg.com/mithril/mithril.js'></script><script>
+const POINTS = ["Analytical", "Communication", "Creativity",
+                "Execution", "Interpersonal", "Leadership",
+                "Organizational", "Technical"];
+const FINDS = ["Family-oriented", "Committee-driven", "Difficult", "Protected", "Signature Move", "Strategic", "Efficient", "Communicator", "Connector", "Jumps to Conclusions", "Resolute", "Sympathetic", "Important", "Studio-centred", "Reflective", "Well Marketed", "Sexy", "Makes Assumptions", "A Passenger", "Departmental", "Chemical", "Empowered of Greyskull", "Contributing", "Prepares Lunch", "Delivers", "Ripe for Promotion", "Entertaining", "Currenct", "Grocery Mad", "Cabinet Material", "Recording Star", "Energetic", "Historian", "Out of Ideas", "Vehicular Manslaughter", "Inebriated", "Lazy", "Smelly", "Discussion-oriented", "Surgical", "Poetic", "Memory Lapse", "Educated", "Pining for a Cigarette", "Opinionated", "Receptive", "Agent of Chaos", "Apartment Over the Store", "Recognizer", "Giant Chcolate Chip Cookie", "Despair of Employers", "Video Star", "Agreeable", "Presentor", "Accident-prone"];
+
+// TODO
+// - [X] Draw Radar chart.
+// - [X] Plot scores on radar chart.
+// - [X] Get random scores working.
+// - [X] Get random findings working.
+// - [X] Update name working.
+// - [X] Refresh to update scores.
+
+
+function Refresh() {
+    function view(vnode) {
+        return m("span.clickme.hidden", {
+            onclick: vnode.attrs.onclick }, " 🔄 ");
+    }
+
+    return { view };
+}
+
+
+function Name() {
+    var state = "view"; // view | change
+    var old = null; // Hold old name in case of abandon.
+
+    function view(vnode) {
+        return [
+            "change" === state ? [
+                m("input", {
+                    value: vnode.attrs.name,
+                    oninput: (e) => vnode.attrs.changing(e.target.value)
+                }), " ",
+                m("button", {
+                    onclick: (e) => { state = "view"; }}, "change"),
+                m("button", {
+                    onclick: (e) => {
+                        vnode.attrs.changing(old); state = "view"; }
+                }, "abandon")
+            ] : m("span.clickme", {
+                title: "Click to change name.",
+                onclick: (e) => { old = vnode.attrs.name,
+                                  state = "change"; }
+            }, vnode.attrs.name)
+            ]
+    }
+
+    return { view };
+}
+
+
+const DEGRAD = 180 / Math.PI;
+
+function deg2rad(degrees) { return degrees / DEGRAD; }
+
+function p2c(angle, distance, offset) {
+    // ( angle distance /offset/ -- [x y]) Convert from polar to cartesian.
+
+    offset = offset || [0, 0];
+    var x = Math.sin(deg2rad(angle)) * distance;
+    var y = Math.cos(deg2rad(angle)) * distance;
+    return [x + offset[0], y + offset[1]];
+}
+
+
+function Radar() {
+    var size = [500, 340];
+    var centre = [size[0] / 2, size[1] / 2];
+    var angles = [0, 45, 90, 135, 180, 225, 270, 315]
+    var steps = [];
+    for(var i=0; i <= 5; i += 0.5) { steps.push(i); }
+        
+    function view(vnode) {
+        var points = vnode.attrs.scores.map((v, i) => {
+            p = p2c(angles[i], v * 25, centre);
+            return p[0] + "," + p[1];
+        }).join(" ");
+
+        return m("svg", { version: "1.1", width: size[0], height: size[1],
+                          xmlns: "http://www.w3.org/2000/svg" },
+                 // m("rect", { width: "100%", height: "100%", fill: "#bee"}),
+                 m("g",
+                   angles.map((a, i) => {
+                       var p = p2c(a, 140, centre);
+                       var anchor =
+                           p[0] > (centre[0] + 0.01) ? "start" :
+                           p[0] < centre[0] ? "end" :
+                           "middle";
+                       var y =
+                           p[1] > (centre[1] + 0.1) ? p[1] + 16 :
+                           p[1] < (centre[1] - 0.1) ? p[1] :
+                           p[1] + 6; 
+                       return m("g",
+                                m("line", { x1: centre[0], y1: centre[1],
+                                            x2: p[0], y2: p[1],
+                                            stroke: "#bbb" }),
+                                m("text", { x: p[0], y: y,
+                                            "text-anchor": anchor,
+                                            "font-size": 16 }, POINTS[i]));
+                   })
+                  ),
+                 m("g",
+                   steps.map((x) => {
+                       y = centre[1] - (x * 25);
+                       return m("g",
+                         m("circle", { cx: centre[0], cy: centre[1],
+                                       r: x * 25,
+                                       stroke: "#bbb", fill: "none" }),
+                         x > 0 && m("g",
+                                    m("rect", {
+                                        x: centre[0] - 8, y: y - 4,
+                                        width: 16, height: 8,
+                                        fill: "white" }),
+                                    m("text", {
+                                        x: centre[0], y: y + 5,
+                                        "font-size": "10",
+                                        font_weight: "bold",
+                                        "text-anchor": "middle",
+                                        fill: "black" }, x)
+                                   )
+                               );
+                   })),
+                 m("g",
+                   m("polygon", {
+                       points: points, fill: "#8874ff", opacity: 0.5 }),
+                   m("polygon", {
+                       points: points, fill: "none", stroke: "#8874ff",
+                       "stroke-width": 4 })
+                  )
+                );
+    }
+
+    return { view };
+}
+
+
+function genscores() {
+    // ( -- [ ... ]) Generate eight skill scores.
+    
+    var scores = [];
+    for(var i = 1; i <= 8; i += 1) {
+        scores.push(1 + Math.floor(Math.random() * 8) / 2);
+    }
+    return scores;
+}
+
+function genfindings() {
+    // ( -- [finding, ...]) Generate "findings" about person.
+    
+    var ii = [];
+    while(3 != ii.length) {
+        var x = Math.floor(Math.random() * FINDS.length);
+        if(ii.indexOf(x) < 0) { ii.push(x); }
+    }
+    return ii.map((i) => FINDS[i]);
+}
+
+
+function App() {
+    var name = "John Doe";
+    var scores = genscores();
+    var findings = genfindings();
+
+
+    function renaming(value) { name = value; }
+    
+    
+    function view(vnode) {
+        return [
+            m("h2",
+              m(Name, { name, changing: renaming }),
+              "'s Professional Skills Radar Chart",
+              m(Refresh, { onclick: (e) => scores = genscores() })
+             ),
+            m(Radar, { scores }),
+            m("h2", "Based on our findings, ",
+              m(Name, { name, changing: renaming }), " is ...",
+              m(Refresh, { onclick: (e) => findings = genfindings() })),
+            m("ul.flex.p-0",
+              findings.map((x) => m("li.finding", x)))
+        ];
+    }
+
+    return { view };
+}
+
+m.mount(document.getElementById("radar"), App);
+</script>
+
+  </body>
+  
+</html>
+
