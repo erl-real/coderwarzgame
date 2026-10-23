@@ -1,0 +1,460 @@
+/* CoderWarz City Map — Isometric Macro Layer Styles */
+
+/* === LAYOUT === */
+.cm-root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  background: #0a0c0f;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #e7e9ea;
+  overflow: hidden;
+}
+
+.cm-canvas-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.cm-canvas-wrap canvas {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.cm-canvas-wrap canvas:active {
+  cursor: grabbing;
+}
+
+/* === SIDEBAR === */
+.cm-sidebar {
+  width: 280px;
+  background: #111318;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cm-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #6b7280;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.cm-logo {
+  font-size: 16px;
+}
+
+/* === TABS === */
+.cm-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 0 8px;
+}
+
+.cm-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 10px 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.15s ease;
+}
+
+.cm-tab:hover {
+  color: #9ca3af;
+}
+
+.cm-tab.active {
+  color: #22d3ee;
+  border-bottom-color: #22d3ee;
+}
+
+/* === PANEL CONTENT === */
+.cm-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.cm-panel-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.cm-panel-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cm-panel-content::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 2px;
+}
+
+/* === CARDS === */
+.cm-card {
+  background: #1a1d24;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.cm-card-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.cm-card-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e7e9ea;
+}
+
+.cm-card-meta {
+  font-size: 11px;
+  color: #8b949b;
+  margin-top: 4px;
+}
+
+/* === NAV ROWS === */
+.cm-nav-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #1a1d24;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  margin-bottom: 4px;
+  transition: all 0.15s ease;
+}
+
+.cm-nav-row:hover {
+  background: #22252e;
+  border-color: rgba(255,255,255,0.1);
+}
+
+.cm-nav-icon {
+  font-size: 20px;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.cm-nav-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cm-nav-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #e7e9ea;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cm-nav-meta {
+  font-size: 10px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* === BUTTONS === */
+.cm-btn {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.cm-btn-primary {
+  background: #4a9eff;
+  color: #fff;
+}
+
+.cm-btn-primary:hover {
+  background: #3a8eef;
+}
+
+.cm-btn-disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.cm-btn-sm {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cm-btn-travel {
+  background: #4a9eff;
+  color: #fff;
+}
+
+.cm-btn-travel:hover {
+  background: #3a8eef;
+}
+
+.cm-btn-mission {
+  background: #f59e0b;
+  color: #000;
+}
+
+.cm-btn-mission:hover {
+  background: #e58e0b;
+}
+
+.cm-btn-crime {
+  background: #ef4444;
+  color: #fff;
+  font-size: 9px;
+  padding: 4px 8px;
+}
+
+.cm-btn-crime:hover {
+  background: #dc2626;
+}
+
+/* === MISSIONS === */
+.cm-mission-card {
+  background: #1a1d24;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.cm-mission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.cm-mission-type {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.cm-type-syndicate {
+  background: rgba(239,68,68,0.15);
+  color: #ef4444;
+}
+
+.cm-type-crime {
+  background: rgba(249,115,22,0.15);
+  color: #f97316;
+}
+
+.cm-type-logistics {
+  background: rgba(96,165,250,0.15);
+  color: #60a5fa;
+}
+
+.cm-mission-reward {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4ade80;
+}
+
+.cm-mission-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e7e9ea;
+  margin-bottom: 4px;
+}
+
+.cm-mission-desc {
+  font-size: 11px;
+  color: #8b949b;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.cm-mission-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cm-mission-stat {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+/* === DISTRICTS === */
+.cm-district-card {
+  background: #1a1d24;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.cm-district-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.cm-district-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.cm-district-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #e7e9ea;
+}
+
+.cm-district-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cm-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cm-stat-label {
+  font-size: 10px;
+  color: #6b7280;
+  width: 70px;
+  flex-shrink: 0;
+}
+
+.cm-stat-bar {
+  flex: 1;
+  height: 4px;
+  background: #2a2d34;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cm-stat-bar span {
+  display: block;
+  height: 100%;
+  background: #4a9eff;
+  border-radius: 2px;
+}
+
+.cm-stat-val {
+  font-size: 10px;
+  color: #8b949b;
+  width: 32px;
+  text-align: right;
+}
+
+/* === RIVALS === */
+.cm-rival-card {
+  background: #1a1d24;
+  border: 1px solid rgba(239,68,68,0.15);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.cm-rival-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cm-rival-icon {
+  font-size: 18px;
+}
+
+.cm-rival-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ef4444;
+}
+
+.cm-rival-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.cm-rival-stat {
+  font-size: 10px;
+  color: #8b949b;
+}
+
+.cm-rival-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* === TRAVEL CARD === */
+.cm-travel-card {
+  border-color: rgba(74,158,255,0.3);
+  background: rgba(74,158,255,0.05);
+}
+
+/* === EMPTY STATE === */
+.cm-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: #4b5563;
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .cm-root {
+    flex-direction: column;
+  }
+  .cm-sidebar {
+    width: 100%;
+    height: 40%;
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .cm-canvas-wrap {
+    height: 60%;
+  }
+}

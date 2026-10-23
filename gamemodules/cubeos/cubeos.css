@@ -1,0 +1,172 @@
+/* CubeOS Display Effects & Scrollbar Themes */
+/* These styles only apply when CubeOS desktop is active */
+
+.scrollbar-sleek *::-webkit-scrollbar { width: 10px; height: 10px; }
+.scrollbar-sleek *::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+.scrollbar-sleek *::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.24); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+.scrollbar-sleek *::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.36); }
+.scrollbar-sleek * { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.24) rgba(255, 255, 255, 0.05); }
+
+.scrollbar-classic *::-webkit-scrollbar { width: 14px; height: 14px; }
+.scrollbar-classic *::-webkit-scrollbar-track { background: #15325f; border: 1px solid #6aa0d8; }
+.scrollbar-classic *::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #9fc7f2, #3c79be); border: 1px solid #102c52; border-radius: 3px; }
+.scrollbar-classic *::-webkit-scrollbar-thumb:hover { background: linear-gradient(to bottom, #b7d9fa, #4b8ad2); }
+.scrollbar-classic * { scrollbar-width: auto; scrollbar-color: #5d97d6 #15325f; }
+
+.scrollbar-thin *::-webkit-scrollbar { width: 6px; height: 6px; }
+.scrollbar-thin *::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+.scrollbar-thin *::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.55); border-radius: 999px; }
+.scrollbar-thin *::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.75); }
+.scrollbar-thin * { scrollbar-width: thin; scrollbar-color: rgba(148,163,184,0.7) rgba(255,255,255,0.03); }
+
+:root {
+  --neon-color: #00ff99;
+  --pixel-size: 4px;
+  --pixel-blur: 2px;
+  --rgb-offset: 2px;
+  --rgb-opacity: 0.5;
+  --color-count: 256;
+}
+
+.effect-scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 150, 0.03));
+  background-size: 100% 3px, 3px 100%;
+}
+.effect-pixel-look {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  backdrop-filter: blur(var(--pixel-blur));
+}
+.effect-pixel-look::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(0,0,0,0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,0.2) 1px, transparent 1px);
+  background-size: var(--pixel-size) var(--pixel-size);
+}
+
+.effect-noise {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+@keyframes glitch-anim {
+  0% { clip-path: inset(0 0 0 0); transform: translate(0,0); }
+  92% { clip-path: inset(0 0 0 0); transform: translate(0,0); }
+  93% { clip-path: inset(45% 0 54% 0); transform: translateX(-20px); filter: hue-rotate(90deg); }
+  94% { clip-path: inset(0 0 0 0); transform: translate(0,0); }
+  97% { clip-path: inset(10% 0 89% 0); transform: translateX(20px); filter: invert(1); }
+  98% { clip-path: inset(0 0 0 0); transform: translate(0,0); }
+}
+.effect-glitch-active {
+  animation: glitch-anim 10s infinite linear;
+}
+
+@keyframes vhold-drift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-100%); }
+}
+.effect-vhold-scroll {
+  animation: vhold-drift 25s linear infinite;
+}
+
+@keyframes cam-scanline-anim {
+  0% { transform: translateY(-100%); opacity: 0; }
+  5% { opacity: 1; }
+  95% { opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+.effect-cam-scanline {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.03) 50%, transparent);
+  height: 40px;
+  animation: cam-scanline-anim 6s linear infinite;
+}
+.effect-cam-scanline-2 {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.02) 50%, transparent);
+  height: 20px;
+  animation: cam-scanline-anim 11s linear infinite;
+  animation-delay: 3s;
+}
+
+.effect-ufo-active {
+  filter: url(#ufo-filter);
+}
+
+.effect-rgb-active {
+  filter: url(#chromatic-aberration);
+}
+
+.effect-static-active::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9996;
+  opacity: 0.08;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='staticFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23staticFilter)'/%3E%3C/svg%3E");
+}
+
+.effect-horror-active {
+  filter: grayscale(0.8) contrast(1.5) brightness(0.8) sepia(0.2);
+}
+
+.effect-curved-active {
+  perspective: 1000px;
+  transform: scale(1.02);
+}
+.effect-curved-active > div:first-child {
+  transform: rotateX(2deg);
+  border-radius: 5% / 10%;
+  overflow: hidden;
+}
+.effect-curved-active::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10000;
+  background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.4) 100%),
+              linear-gradient(to right, rgba(0,0,0,0.1), transparent 5%, transparent 95%, rgba(0,0,0,0.1)),
+              linear-gradient(to bottom, rgba(0,0,0,0.1), transparent 5%, transparent 95%, rgba(0,0,0,0.1));
+}
+
+.effect-neon-active * {
+  background-image: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+.effect-neon-active .bg-slate-900, 
+.effect-neon-active .bg-slate-950, 
+.effect-neon-active .bg-black {
+  background-color: #000000 !important;
+}
+.effect-neon-active .text-sky-400, 
+.effect-neon-active .text-emerald-400,
+.effect-neon-active .text-white {
+  color: var(--neon-color) !important;
+}
+.effect-neon-active .border,
+.effect-neon-active .ring-1 {
+  border-color: var(--neon-color) !important;
+  --tw-ring-color: var(--neon-color) !important;
+}
