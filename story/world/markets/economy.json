@@ -1,0 +1,17 @@
+{
+  "currencies": [
+    { "code": "USD", "label": "US Dollar", "rate": 1, "symbol": "$" },
+    { "code": "EUR", "label": "Euro", "rate": 1.08, "symbol": "€" },
+    { "code": "JPY", "label": "Japanese Yen", "rate": 0.0067, "symbol": "¥" },
+    { "code": "GBP", "label": "British Pound", "rate": 1.27, "symbol": "£" },
+    { "code": "AUD", "label": "Australian Dollar", "rate": 0.66, "symbol": "A$" }
+  ],
+  "crypto": [
+    { "code": "BTC", "label": "Bitcoin", "rate": 62000 },
+    { "code": "ETH", "label": "Ethereum", "rate": 3300 },
+    { "code": "XMR", "label": "Monero", "rate": 145 },
+    { "code": "SOL", "label": "Solana", "rate": 110 },
+    { "code": "ADA", "label": "Cardano", "rate": 0.62 },
+    { "code": "DOGE", "label": "Dogecoin", "rate": 0.19 }
+  ]
+}

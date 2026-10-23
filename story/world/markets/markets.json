@@ -1,0 +1,23 @@
+{
+  "brands": [
+    { "id": "nodex", "label": "Nodex Systems", "sector": "Infrastructure", "basePrice": 450 },
+    { "id": "cybershield", "label": "CyberShield Inc", "sector": "Security", "basePrice": 820 },
+    { "id": "quantum", "label": "Quantum Dynamics", "sector": "Compute", "basePrice": 12500 },
+    { "id": "voltmotors", "label": "Volt Motors", "sector": "Automotive", "basePrice": 1200 },
+    { "id": "aerodrone", "label": "AeroDrone", "sector": "Robotics", "basePrice": 2400 },
+    { "id": "biocore", "label": "BioCore Labs", "sector": "Healthcare", "basePrice": 3100 },
+    { "id": "starrelay", "label": "StarRelay", "sector": "Satellite", "basePrice": 15000 },
+    { "id": "nanolink", "label": "NanoLink", "sector": "Telecom", "basePrice": 650 },
+    { "id": "voidsoft", "label": "Void Software", "sector": "Software", "basePrice": 150 }
+  ],
+  "indices": [
+    { "id": "US-DOW", "label": "US Tech 100", "region": "USA" },
+    { "id": "UK-FTSE", "label": "UK Bluechip", "region": "UK" },
+    { "id": "DE-DAX", "label": "German DAX", "region": "Germany" },
+    { "id": "JP-NIKKEI", "label": "Japan Nikkei", "region": "Japan" },
+    { "id": "ASIA-TECH", "label": "Asia Tech 50", "region": "Asia" },
+    { "id": "EM-LATAM", "label": "LatAm Growth", "region": "EM" },
+    { "id": "EM-AFRICA", "label": "Africa Emerging", "region": "EM" },
+    { "id": "GLOBAL-DOW", "label": "Global Index", "region": "Global" }
+  ]
+}
